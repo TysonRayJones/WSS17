@@ -3,3 +3,7 @@ calendar.ics
 
 # meta
 push.bat
+.gitignore
+
+# private
+creds.txt

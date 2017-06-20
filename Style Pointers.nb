@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      2589,         90]
-NotebookOptionsPosition[      1931,         67]
-NotebookOutlinePosition[      2273,         82]
-CellTagsIndexPosition[      2230,         79]
+NotebookDataLength[      4001,        131]
+NotebookOptionsPosition[      2910,         98]
+NotebookOutlinePosition[      3255,        113]
+CellTagsIndexPosition[      3212,        110]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -48,9 +48,9 @@ Cell[BoxData[{
   RowBox[{"supposed", "[", "x_", "]"}], " ", ":=", " ", 
   RowBox[{"-", "x"}]}]}], "Input",
  InitializationCell->True,
- CellChangeTimes->{{3.706954894766301*^9, 
-  3.7069549835566797`*^9}},ExpressionUUID->"2ec6ebe9-fa56-491e-a149-\
-458430845df4"],
+ CellChangeTimes->{{3.706954894766301*^9, 3.7069549835566797`*^9}},
+ EmphasizeSyntaxErrors->
+  True,ExpressionUUID->"2ec6ebe9-fa56-491e-a149-458430845df4"],
 
 Cell["\<\
 No infix on multiline
@@ -63,10 +63,41 @@ Uppcase vars reserved for inbuilt\
   3.70695513926199*^9, 
   3.706955144686288*^9}},ExpressionUUID->"608ad5b6-00da-45db-aa6a-\
 f4df901b463e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Use pointers", "Section",
+ CellChangeTimes->{{3.706955234934452*^9, 
+  3.7069552393189535`*^9}},ExpressionUUID->"27006e1e-0b51-46da-a608-\
+ec87faab0aa5"],
+
+Cell["click expressions to expand highlight through scopes", "Text",
+ CellChangeTimes->{{3.706955240050359*^9, 
+  3.706955272553362*^9}},ExpressionUUID->"f8916c47-2763-40e4-9dac-\
+a05852b9f94c"],
+
+Cell[BoxData[
+ RowBox[{"f", "[", 
+  RowBox[{"g", "[", 
+   RowBox[{"h", "[", 
+    RowBox[{"i", "[", 
+     RowBox[{"j", "[", 
+      RowBox[{"k", "[", 
+       RowBox[{"l", "[", "x", "]"}], "]"}], "]"}], "]"}], "]"}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7069552535408707`*^9, 
+  3.7069552609741936`*^9}},ExpressionUUID->"7aa7db5e-2165-4abc-8693-\
+9ad35594114e"],
+
+Cell["Useful for checking operator precedece", "Text",
+ CellChangeTimes->{{3.706955330565432*^9, 
+  3.7069553352175465`*^9}},ExpressionUUID->"68ec369e-c6d6-4ea6-885b-\
+0d2236fe0ebd"]
 }, Open  ]]
 },
-WindowSize->{958, 988},
-WindowMargins->{{Automatic, -7}, {Automatic, 0}},
+WindowSize->{958, 897},
+WindowMargins->{{319, Automatic}, {-73, Automatic}},
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
 StyleDefinitions->"Default.nb"
 ]
@@ -86,11 +117,21 @@ Cell[580, 22, 163, 3, 70, "Section", "ExpressionUUID" -> \
 "a8a9affb-f46e-4538-b2d7-be512ed971a3"],
 Cell[746, 27, 300, 7, 30, "Text", "ExpressionUUID" -> \
 "9434fae8-44cf-44f0-aece-f0e14b8a4b4b"],
-Cell[1049, 36, 536, 16, 87, "Input", "ExpressionUUID" -> \
+Cell[1049, 36, 564, 16, 87, "Input", "ExpressionUUID" -> \
 "2ec6ebe9-fa56-491e-a149-458430845df4",
  InitializationCell->True],
-Cell[1588, 54, 327, 10, 106, "Text", "ExpressionUUID" -> \
+Cell[1616, 54, 327, 10, 106, "Text", "ExpressionUUID" -> \
 "608ad5b6-00da-45db-aa6a-f4df901b463e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1980, 69, 159, 3, 70, "Section", "ExpressionUUID" -> \
+"27006e1e-0b51-46da-a608-ec87faab0aa5"],
+Cell[2142, 74, 194, 3, 30, "Text", "ExpressionUUID" -> \
+"f8916c47-2763-40e4-9dac-a05852b9f94c"],
+Cell[2339, 79, 370, 11, 30, "Input", "ExpressionUUID" -> \
+"7aa7db5e-2165-4abc-8693-9ad35594114e"],
+Cell[2712, 92, 182, 3, 30, "Text", "ExpressionUUID" -> \
+"68ec369e-c6d6-4ea6-885b-0d2236fe0ebd"]
 }, Open  ]]
 }
 ]

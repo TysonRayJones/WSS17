@@ -10,18 +10,60 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      1026,         39]
-NotebookOptionsPosition[       725,         25]
-NotebookOutlinePosition[      1067,         40]
-CellTagsIndexPosition[      1024,         37]
+NotebookDataLength[      2589,         90]
+NotebookOptionsPosition[      1931,         67]
+NotebookOutlinePosition[      2273,         82]
+CellTagsIndexPosition[      2230,         79]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+
+Cell[CellGroupData[{
 Cell["Style Pointers", "Section",
  CellChangeTimes->{{3.7069544587409325`*^9, 
   3.7069544603251457`*^9}},ExpressionUUID->"a8a9affb-f46e-4538-b2d7-\
-be512ed971a3"]
+be512ed971a3"],
+
+Cell["\<\
+Use code-cells for long code (control 8), WYSIWYG.   Forces manual \
+indentation for copy/pasting\
+\>", "Text",
+ CellChangeTimes->{{3.7069548862650614`*^9, 3.706954901701293*^9}, {
+  3.7069549426482573`*^9, 
+  3.706954956934075*^9}},ExpressionUUID->"9434fae8-44cf-44f0-aece-\
+f0e14b8a4b4b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"this", "[", "x_", "]"}], " ", ":=", " ", 
+     SuperscriptBox["x", "2"]}], "\[IndentingNewLine]", 
+    RowBox[{"is", 
+     RowBox[{"{", "x_"}]}]}], "]"}], " ", ":=", " ", 
+  "x"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"supposed", "[", "x_", "]"}], " ", ":=", " ", 
+  RowBox[{"-", "x"}]}]}], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.706954894766301*^9, 
+  3.7069549835566797`*^9}},ExpressionUUID->"2ec6ebe9-fa56-491e-a149-\
+458430845df4"],
+
+Cell["\<\
+No infix on multiline
+indent
+don\[CloseCurlyQuote]t nest pure funcs
+whitespace around operators
+Uppcase vars reserved for inbuilt\
+\>", "Text",
+ CellChangeTimes->{{3.706955050074328*^9, 3.706955093486855*^9}, {
+  3.70695513926199*^9, 
+  3.706955144686288*^9}},ExpressionUUID->"608ad5b6-00da-45db-aa6a-\
+f4df901b463e"]
+}, Open  ]]
 },
 WindowSize->{958, 988},
 WindowMargins->{{Automatic, -7}, {Automatic, 0}},
@@ -39,11 +81,18 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 163, 3, 70, "Section", "ExpressionUUID" -> \
-"a8a9affb-f46e-4538-b2d7-be512ed971a3"]
+Cell[CellGroupData[{
+Cell[580, 22, 163, 3, 70, "Section", "ExpressionUUID" -> \
+"a8a9affb-f46e-4538-b2d7-be512ed971a3"],
+Cell[746, 27, 300, 7, 30, "Text", "ExpressionUUID" -> \
+"9434fae8-44cf-44f0-aece-f0e14b8a4b4b"],
+Cell[1049, 36, 536, 16, 87, "Input", "ExpressionUUID" -> \
+"2ec6ebe9-fa56-491e-a149-458430845df4",
+ InitializationCell->True],
+Cell[1588, 54, 327, 10, 106, "Text", "ExpressionUUID" -> \
+"608ad5b6-00da-45db-aa6a-f4df901b463e"]
+}, Open  ]]
 }
 ]
 *)
-
-(* End of internal cache information *)
 

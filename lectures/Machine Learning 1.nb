@@ -1,0 +1,233 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      7691,        225]
+NotebookOptionsPosition[      5699,        173]
+NotebookOutlinePosition[      6042,        188]
+CellTagsIndexPosition[      5999,        185]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Machine learning", "Title",
+ CellChangeTimes->{{3.707233817320737*^9, 
+  3.707233820507233*^9}},ExpressionUUID->"98a39e33-36ce-4e73-8304-\
+bf297910d4f2"],
+
+Cell["\<\
+supervised learning (  \[OpenCurlyDoubleQuote]inp & out\
+\[CloseCurlyDoubleQuote] at training,  \[OpenCurlyDoubleQuote]inp -> out\
+\[CloseCurlyDoubleQuote] at gen )\
+\>", "Text",
+ CellChangeTimes->{{3.7072340601408157`*^9, 3.7072340618539762`*^9}, {
+  3.707234156990656*^9, 
+  3.7072341803883824`*^9}},ExpressionUUID->"2796319f-9b7c-4ee8-a39f-\
+78702d2742f7"],
+
+Cell["\tClassify, Predict", "Text",
+ CellChangeTimes->{{3.707234064095868*^9, 
+  3.7072340711309447`*^9}},ExpressionUUID->"94ff9b85-a0a6-4c22-ae65-\
+8aad405bf53c"],
+
+Cell["unsupervised learning   (\[OpenCurlyDoubleQuote]out\
+\[CloseCurlyDoubleQuote] at training,   ? )", "Text",
+ CellChangeTimes->{{3.7072340770842333`*^9, 3.707234080022396*^9}, {
+  3.707234183304594*^9, 
+  3.707234202560378*^9}},ExpressionUUID->"82e89546-3dbb-48e9-9653-\
+0bc3242ad1d4"],
+
+Cell["\<\
+\tClusterClassify, FindClusters, DimensionReduction, FeatureExtraction, \
+SequencePredict\
+\>", "Text",
+ CellChangeTimes->{{3.707234087006476*^9, 
+  3.707234142500722*^9}},ExpressionUUID->"fe74a161-544c-4acb-b59b-\
+05c690a00fcb"],
+
+Cell["\<\
+reinforcement learning (active learning with feedback from environment)\
+\>", "Text",
+ CellChangeTimes->{{3.7072342317992296`*^9, 3.707234232860015*^9}, {
+  3.7072343866323705`*^9, 
+  3.707234432654557*^9}},ExpressionUUID->"d96d0a90-69d8-40ac-9cbf-\
+8294984ec945"],
+
+Cell["\<\
+\tBayesianMinimization, ActiveClassification, ActivePrediction\
+\>", "Text",
+ CellChangeTimes->{{3.707234416707819*^9, 
+  3.707234418330426*^9}},ExpressionUUID->"685706a5-c442-4d2c-8f04-\
+a5b47171e912"],
+
+Cell[BoxData["\[IndentingNewLine]"], "Input",
+ CellChangeTimes->{
+  3.707234448239106*^9},ExpressionUUID->"4eb5a1a8-339e-43c1-93ea-\
+7940bb38e17e"],
+
+Cell["related: Data Mining", "Text",
+ CellChangeTimes->{{3.7072344503077793`*^9, 
+  3.7072344530154576`*^9}},ExpressionUUID->"106555ef-86cc-4891-8ceb-\
+e0f143bb3542"],
+
+Cell["\tFindFormula, FindDistribution", "Text",
+ CellChangeTimes->{{3.707234458870964*^9, 3.707234461202464*^9}, {
+  3.7072346200288496`*^9, 
+  3.707234622492097*^9}},ExpressionUUID->"4ac2d828-cbbd-435b-ab81-\
+425ce10190ec"],
+
+Cell[CellGroupData[{
+
+Cell["Pretrained networks", "Section",
+ CellChangeTimes->{{3.7072350790202045`*^9, 
+  3.707235083818406*^9}},ExpressionUUID->"47ecc703-310e-44bb-824b-\
+aad6c4f89a88"],
+
+Cell[BoxData[
+ RowBox[{"net", " ", "=", " ", "NetModel"}]], "Input",
+ CellChangeTimes->{{3.7072351017362285`*^9, 
+  3.7072351168201723`*^9}},ExpressionUUID->"c513c56c-478f-4e3e-a188-\
+1d3ea92272c5"],
+
+Cell["built in classifiers", "Text",
+ CellChangeTimes->{{3.7072351472910824`*^9, 
+  3.7072351496074467`*^9}},ExpressionUUID->"ea85f14a-65ce-4643-9ba5-\
+a40b1e9d1560"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"lang", " ", "=", " ", 
+  RowBox[{"Classify", "[", "\"\<Language\>\"", "]"}]}]], "Input",
+ CellChangeTimes->{{3.707235215321522*^9, 
+  3.7072352214968104`*^9}},ExpressionUUID->"f7972c30-d3c5-443d-9771-\
+d5920babc13c"],
+
+Cell[BoxData[
+ PanelBox[
+  StyleBox[
+   InterpretationBox["\<\"Loading from Wolfram Research server \
+(\\!\\(\\*DynamicBox[ToBoxes[Refresh[Round[Function[Which[Or[Not[NumericQ[\
+Slot[1]]], Less[Slot[1], 0]], 0, LessEqual[0, Slot[1], 1], Times[100, \
+Slot[1]], True, \
+100]][Last[PacletManager`Package`getTaskData[AsynchronousTaskObject[\\\"http:/\
+/pacletserver.wolfram.com/Paclets/Classifier_Language-1.0.2.paclet\\\", 1, \
+32564408059794701574]]]]], Rule[UpdateInterval, 0.5`]], StandardForm]]\\)%)\"\
+\>",
+    StringForm["Loading from Wolfram Research server (`1`%)", 
+     Dynamic[
+      Refresh[
+       Round[
+        (Which[
+         Or[
+          Not[
+           NumericQ[#]], # < 0], 0, 0 <= # <= 1, 100 #, True, 100]& )[
+         Last[
+          PacletManager`Package`getTaskData[
+           AsynchronousTaskObject[
+           "http://pacletserver.wolfram.com/Paclets/Classifier_Language-1.0.2.\
+paclet", 1, 32564408059794701574]]]]], UpdateInterval -> 0.5]]],
+    Editable->False], "Button",
+   StripOnInput->False,
+   LineColor->GrayLevel[0.5],
+   FrontFaceColor->GrayLevel[0.5],
+   BackFaceColor->GrayLevel[0.5],
+   GraphicsColor->GrayLevel[0.5],
+   FontColor->GrayLevel[0.5]],
+  Alignment->{Center, Center},
+  Appearance->{
+   "Default" -> 
+    FrontEnd`FileName[{"Typeset", "PrintTemporary"}, "LightBlue.9.png"]},
+  FrameMargins->{{12, 12}, {8, 12}}]], "PrintTemporary",
+ CellChangeTimes->{
+  3.7072352241406355`*^9},ExpressionUUID->"c3e7d0fc-5e8c-4630-94cf-\
+6a2c6fd99929"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"lang", "[", 
+  RowBox[{"\"\<Quello\>\"", ",", " ", "\"\<TopProbabilities\>\""}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.7072352238460474`*^9, 
+  3.7072352321098843`*^9}},ExpressionUUID->"5be9c54a-126a-497d-adb7-\
+34e6282a04d4"],
+
+Cell[BoxData[
+ RowBox[{"ImageIdentify", "[", " ", 
+  RowBox[{"CurrentImage", "[", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7072352738900647`*^9, 
+  3.707235282860052*^9}},ExpressionUUID->"d0eedd9c-8663-47c0-8176-\
+76b9c5bf23f0"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{958, 468},
+WindowMargins->{{Automatic, -7}, {-7, Automatic}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 159, 3, 101, "Title", "ExpressionUUID" -> \
+"98a39e33-36ce-4e73-8304-bf297910d4f2"],
+Cell[742, 27, 369, 8, 30, "Text", "ExpressionUUID" -> \
+"2796319f-9b7c-4ee8-a39f-78702d2742f7"],
+Cell[1114, 37, 163, 3, 30, "Text", "ExpressionUUID" -> \
+"94ff9b85-a0a6-4c22-ae65-8aad405bf53c"],
+Cell[1280, 42, 289, 5, 30, "Text", "ExpressionUUID" -> \
+"82e89546-3dbb-48e9-9653-0bc3242ad1d4"],
+Cell[1572, 49, 239, 6, 30, "Text", "ExpressionUUID" -> \
+"fe74a161-544c-4acb-b59b-05c690a00fcb"],
+Cell[1814, 57, 274, 6, 30, "Text", "ExpressionUUID" -> \
+"d96d0a90-69d8-40ac-9cbf-8294984ec945"],
+Cell[2091, 65, 212, 5, 30, "Text", "ExpressionUUID" -> \
+"685706a5-c442-4d2c-8f04-a5b47171e912"],
+Cell[2306, 72, 147, 3, 50, "Input", "ExpressionUUID" -> \
+"4eb5a1a8-339e-43c1-93ea-7940bb38e17e"],
+Cell[2456, 77, 166, 3, 30, "Text", "ExpressionUUID" -> \
+"106555ef-86cc-4891-8ceb-e0f143bb3542"],
+Cell[2625, 82, 224, 4, 30, "Text", "ExpressionUUID" -> \
+"4ac2d828-cbbd-435b-ab81-425ce10190ec"],
+Cell[CellGroupData[{
+Cell[2874, 90, 166, 3, 70, "Section", "ExpressionUUID" -> \
+"47ecc703-310e-44bb-824b-aad6c4f89a88"],
+Cell[3043, 95, 198, 4, 30, "Input", "ExpressionUUID" -> \
+"c513c56c-478f-4e3e-a188-1d3ea92272c5"],
+Cell[3244, 101, 166, 3, 30, "Text", "ExpressionUUID" -> \
+"ea85f14a-65ce-4643-9ba5-a40b1e9d1560"],
+Cell[CellGroupData[{
+Cell[3435, 108, 240, 5, 30, "Input", "ExpressionUUID" -> \
+"f7972c30-d3c5-443d-9771-d5920babc13c"],
+Cell[3678, 115, 1488, 38, 56, "PrintTemporary", "ExpressionUUID" -> \
+"c3e7d0fc-5e8c-4630-94cf-6a2c6fd99929"]
+}, Open  ]],
+Cell[5181, 156, 254, 6, 30, "Input", "ExpressionUUID" -> \
+"5be9c54a-126a-497d-adb7-34e6282a04d4"],
+Cell[5438, 164, 233, 5, 30, "Input", "ExpressionUUID" -> \
+"d0eedd9c-8663-47c0-8176-76b9c5bf23f0"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

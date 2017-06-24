@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    218118,       4710]
+NotebookDataLength[    218119,       4710]
 NotebookOptionsPosition[    205493,       4414]
-NotebookOutlinePosition[    206258,       4439]
-CellTagsIndexPosition[    206215,       4436]
+NotebookOutlinePosition[    206259,       4439]
+CellTagsIndexPosition[    206216,       4436]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -4150,7 +4150,7 @@ MVEg+vaSXc9A9NIZnq9BdHjFVtsTQPp6YY8diAYAIIW1UA==
 Cell[BoxData[
  TagBox[
   StyleBox[
-   DynamicModuleBox[{Notation`t$$ = 2.514017744027212, Typeset`show$$ = True, 
+   DynamicModuleBox[{Notation`t$$ = 3.625005726498369, Typeset`show$$ = True, 
     Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
     "\"untitled\"", Typeset`specs$$ = {{
@@ -4412,8 +4412,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{958, 988},
-WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+WindowSize->{958, 468},
+WindowMargins->{{Automatic, -7}, {-7, Automatic}},
 Magnification:>1.1 Inherited,
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
 StyleDefinitions->Notebook[{

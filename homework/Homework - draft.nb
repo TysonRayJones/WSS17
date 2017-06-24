@@ -4412,7 +4412,7 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{958, 468},
+WindowSize->{958, 371},
 WindowMargins->{{Automatic, -7}, {-7, Automatic}},
 Magnification:>1.1 Inherited,
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",

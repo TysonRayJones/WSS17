@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      7691,        225]
-NotebookOptionsPosition[      5699,        173]
-NotebookOutlinePosition[      6042,        188]
-CellTagsIndexPosition[      5999,        185]
+NotebookDataLength[     16884,        505]
+NotebookOptionsPosition[     12004,        385]
+NotebookOutlinePosition[     12347,        400]
+CellTagsIndexPosition[     12304,        397]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -168,11 +168,223 @@ Cell[BoxData[
  CellChangeTimes->{{3.7072352738900647`*^9, 
   3.707235282860052*^9}},ExpressionUUID->"d0eedd9c-8663-47c0-8176-\
 76b9c5bf23f0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["good practises", "Section",
+ CellChangeTimes->{{3.7074714587220435`*^9, 
+  3.7074714607531233`*^9}},ExpressionUUID->"15215b62-e802-4bc7-b2d3-\
+06a368c3dfc9"],
+
+Cell["\<\
+shuffle dataset
+test on un-trained data\
+\>", "Text",
+ CellChangeTimes->{{3.7074714628367233`*^9, 
+  3.707471472248039*^9}},ExpressionUUID->"f33d9131-d050-40fa-b3d1-\
+003bc6887591"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Machine Learning 2", "Title",
+ CellChangeTimes->{{3.707471299521286*^9, 
+  3.7074713025092206`*^9}},ExpressionUUID->"edb7fbcb-f3e7-4bd6-88c0-\
+ff9e7727a8a1"],
+
+Cell[CellGroupData[{
+
+Cell["Data prediction", "Section",
+ CellChangeTimes->{{3.707471818501199*^9, 
+  3.707471820016791*^9}},ExpressionUUID->"eacabce4-5303-4f14-b352-\
+59ea18930d4d"],
+
+Cell[BoxData[
+ RowBox[{"FindDistribution", " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"pretty", " ", "whack"}], ";", " ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+      "returns", " ", "list", " ", "of", " ", "possible", " ", 
+       "distributions"}], " ", "&"}], " ", "their", " ", "parameters"}]}], 
+   " ", "*)"}]}]], "Input",
+ CellChangeTimes->{{3.707473015491562*^9, 
+  3.7074730316561513`*^9}},ExpressionUUID->"30b45477-fda1-40fd-99ec-\
+6fc3cb59b10a"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.707471719487527*^9, 
+  3.7074717207190633`*^9}},ExpressionUUID->"d2afab23-8429-47ec-ab2f-\
+0b2a0ee5b15e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Learning principles", "Section",
+ CellChangeTimes->{{3.707473230703829*^9, 
+  3.7074732335886145`*^9}},ExpressionUUID->"b3e3c721-1fe7-4f47-8222-\
+db615e20cef2"],
+
+Cell["no free lunch ", "Text",
+ CellChangeTimes->{{3.7074733116541524`*^9, 
+  3.7074733156403117`*^9}},ExpressionUUID->"3abcfc1a-329e-420b-b349-\
+cc2291c4c750"],
+
+Cell[CellGroupData[{
+
+Cell["optimisation (of inference parameters)", "Subsection",
+ CellChangeTimes->{{3.7074733318903074`*^9, 
+  3.7074733452503004`*^9}},ExpressionUUID->"3e5e2ef6-e794-40ed-80b7-\
+359b2ea98923"],
+
+Cell["\<\
+- tune parameters iteratively (steepest descent), converge to best solution\
+\>", "Text",
+ CellChangeTimes->{{3.7074733491954155`*^9, 
+  3.7074733754537487`*^9}},ExpressionUUID->"5e55c0ae-026a-4ec6-a706-\
+3acb56a29658"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Machine Learning Models", "Section",
+ CellChangeTimes->{{3.707473539917483*^9, 
+  3.7074735428033233`*^9}},ExpressionUUID->"878ba234-2858-4914-a096-\
+c142a2601ddd"],
+
+Cell["Conditional distribution / discriminative model:", "Text",
+ CellChangeTimes->{{3.7074735587983065`*^9, 
+  3.707473592525093*^9}},ExpressionUUID->"4968d799-1249-436d-8319-\
+976f3b50119d"],
+
+Cell["\tP(y|x)", "Text",
+ CellChangeTimes->{{3.707473566980581*^9, 
+  3.7074735706661377`*^9}},ExpressionUUID->"312bc342-9b6d-4654-a011-\
+4f584a0c19b2"],
+
+Cell["\<\
+Generative models\t(no features; learns joint probability of output)\
+\>", "Text",
+ CellChangeTimes->{{3.7074735742177176`*^9, 
+  3.707473610918193*^9}},ExpressionUUID->"4b41f7f9-13a5-4dce-a850-\
+8db20debcc79"],
+
+Cell["\tP(y)", "Text",
+ CellChangeTimes->{{3.7074735952630634`*^9, 
+  3.707473596599394*^9}},ExpressionUUID->"62a96f01-90bf-474c-bd58-\
+a1759fea9a43"],
+
+Cell["Parametric models: learn from parameters", "Text",
+ CellChangeTimes->{{3.707473952757369*^9, 
+  3.7074739596200075`*^9}},ExpressionUUID->"2237cea4-a8ca-464c-8445-\
+9d1367000013"],
+
+Cell[CellGroupData[{
+
+Cell["Logistic Regression", "Subsubsection",
+ CellChangeTimes->{{3.707473760447674*^9, 
+  3.7074737628664045`*^9}},ExpressionUUID->"364fac30-d591-44e9-b29f-\
+d891aa0eb91d"],
+
+Cell["(use Classify)", "Text",
+ CellChangeTimes->{{3.707473772100762*^9, 
+  3.7074737758517084`*^9}},ExpressionUUID->"4e7e7995-3b94-4f9b-a1b2-\
+a02575e49c5c"],
+
+Cell[TextData[{
+ "uses log probability of features    ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    SubscriptBox["class", "i"]}], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "d6e41851-dc20-4064-8b7d-7262c9e5468a"],
+ " | features):"
+}], "Text",
+ CellChangeTimes->{{3.707473778270258*^9, 3.7074737931221724`*^9}, {
+  3.7074738470585966`*^9, 
+  3.707473861266768*^9}},ExpressionUUID->"20a25fad-a1ec-4dd5-ac85-\
+fd8badf3ec93"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Theta]1", " ", "feature1"}], " ", "+", " ", 
+   RowBox[{"\[Theta]2", " ", "feature2"}], " ", "+"}], " ", "..."}]], "Input",
+ CellChangeTimes->{{3.7074738640332127`*^9, 
+  3.70747388439293*^9}},ExpressionUUID->"d811ffe6-b113-4eae-8cff-\
+40d7e4c60bc5"],
+
+Cell[TextData[{
+ "minimises ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalSigma]", " ", "-", " ", 
+    RowBox[{"Log", "[", 
+     RowBox[{"P", "(", 
+      RowBox[{"class", " ", "=", " ", 
+       RowBox[{
+        SubscriptBox["class", "i"], " ", "|", " ", "features"}]}], ")"}], 
+     "]"}], " ", "+", " ", 
+    RowBox[{
+     FractionBox["\[Lambda]", "2"], 
+     SuperscriptBox[
+      RowBox[{"Norm", "[", " ", "featurescoefficients", " ", "]"}], "2"]}]}], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "c7b0beda-ef2c-4db8-b50d-9c7b79f5ad8e"]
+}], "Text",
+ CellChangeTimes->{{3.707473890408716*^9, 
+  3.7074739318269815`*^9}},ExpressionUUID->"05e64897-29a9-433a-9c9e-\
+339076be1655"],
+
+Cell["LinearLayer + SoftmaxLayer", "Text",
+ CellChangeTimes->{{3.7074739686889696`*^9, 
+  3.7074739751456785`*^9}},ExpressionUUID->"2adf33a8-0511-46db-abdc-\
+6028630d6151"],
+
+Cell["\<\
+Hyperparameters:
+\t- number of neighbours
+\t- distance function\
+\>", "Text",
+ CellChangeTimes->{{3.7074741394097157`*^9, 
+  3.7074741630063953`*^9}},ExpressionUUID->"9c9c952d-8065-4c3f-b4dd-\
+f8dd142dc9e9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Non-parametric models", "Subsubsection",
+ CellChangeTimes->{{3.7074740129068613`*^9, 
+  3.7074740180216856`*^9}},ExpressionUUID->"ef0071e0-07ef-4a17-9b5b-\
+d0beb4db2a53"],
+
+Cell["\<\
+(template-based model; an extension of nearest neighbours)
+decision trees, random forest, gradient boosted trees\
+\>", "Text",
+ CellChangeTimes->{{3.7074740213082595`*^9, 
+  3.707474043462926*^9}},ExpressionUUID->"0ccbe450-839a-4889-92ac-\
+1e1bd4cdf541"],
+
+Cell["\<\
+size of tree will grow with more training data (no fixed parameters)\
+\>", "Text",
+ CellChangeTimes->{{3.707474235241705*^9, 
+  3.7074742485638943`*^9}},ExpressionUUID->"bba07397-573e-4480-928a-\
+8d0fa1909619"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{958, 468},
-WindowMargins->{{Automatic, -7}, {-7, Automatic}},
+WindowSize->{958, 465},
+WindowMargins->{{Automatic, 28}, {34, Automatic}},
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
 StyleDefinitions->"Default.nb"
 ]
@@ -225,6 +437,74 @@ Cell[5181, 156, 254, 6, 30, "Input", "ExpressionUUID" -> \
 "5be9c54a-126a-497d-adb7-34e6282a04d4"],
 Cell[5438, 164, 233, 5, 30, "Input", "ExpressionUUID" -> \
 "d0eedd9c-8663-47c0-8176-76b9c5bf23f0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5708, 174, 163, 3, 70, "Section", "ExpressionUUID" -> \
+"15215b62-e802-4bc7-b2d3-06a368c3dfc9"],
+Cell[5874, 179, 191, 6, 49, "Text", "ExpressionUUID" -> \
+"f33d9131-d050-40fa-b3d1-003bc6887591"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6114, 191, 163, 3, 101, "Title", "ExpressionUUID" -> \
+"edb7fbcb-f3e7-4bd6-88c0-ff9e7727a8a1"],
+Cell[CellGroupData[{
+Cell[6302, 198, 160, 3, 70, "Section", "ExpressionUUID" -> \
+"eacabce4-5303-4f14-b352-59ea18930d4d"],
+Cell[6465, 203, 469, 13, 30, "Input", "ExpressionUUID" -> \
+"30b45477-fda1-40fd-99ec-6fc3cb59b10a"],
+Cell[6937, 218, 154, 3, 30, "Input", "ExpressionUUID" -> \
+"d2afab23-8429-47ec-ab2f-0b2a0ee5b15e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7128, 226, 166, 3, 70, "Section", "ExpressionUUID" -> \
+"b3e3c721-1fe7-4f47-8222-db615e20cef2"],
+Cell[7297, 231, 160, 3, 30, "Text", "ExpressionUUID" -> \
+"3abcfc1a-329e-420b-b349-cc2291c4c750"],
+Cell[CellGroupData[{
+Cell[7482, 238, 190, 3, 49, "Subsection", "ExpressionUUID" -> \
+"3e5e2ef6-e794-40ed-80b7-359b2ea98923"],
+Cell[7675, 243, 229, 5, 30, "Text", "ExpressionUUID" -> \
+"5e55c0ae-026a-4ec6-a706-3acb56a29658"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7953, 254, 170, 3, 70, "Section", "ExpressionUUID" -> \
+"878ba234-2858-4914-a096-c142a2601ddd"],
+Cell[8126, 259, 192, 3, 30, "Text", "ExpressionUUID" -> \
+"4968d799-1249-436d-8319-976f3b50119d"],
+Cell[8321, 264, 152, 3, 30, "Text", "ExpressionUUID" -> \
+"312bc342-9b6d-4654-a011-4f584a0c19b2"],
+Cell[8476, 269, 220, 5, 30, "Text", "ExpressionUUID" -> \
+"4b41f7f9-13a5-4dce-a850-8db20debcc79"],
+Cell[8699, 276, 150, 3, 30, "Text", "ExpressionUUID" -> \
+"62a96f01-90bf-474c-bd58-a1759fea9a43"],
+Cell[8852, 281, 184, 3, 30, "Text", "ExpressionUUID" -> \
+"2237cea4-a8ca-464c-8445-9d1367000013"],
+Cell[CellGroupData[{
+Cell[9061, 288, 172, 3, 39, "Subsubsection", "ExpressionUUID" -> \
+"364fac30-d591-44e9-b29f-d891aa0eb91d"],
+Cell[9236, 293, 158, 3, 30, "Text", "ExpressionUUID" -> \
+"4e7e7995-3b94-4f9b-a1b2-a02575e49c5c"],
+Cell[9397, 298, 452, 13, 30, "Text", "ExpressionUUID" -> \
+"20a25fad-a1ec-4dd5-ac85-fd8badf3ec93"],
+Cell[9852, 313, 299, 7, 30, "Input", "ExpressionUUID" -> \
+"d811ffe6-b113-4eae-8cff-40d7e4c60bc5"],
+Cell[10154, 322, 712, 21, 42, "Text", "ExpressionUUID" -> \
+"05e64897-29a9-433a-9c9e-339076be1655"],
+Cell[10869, 345, 172, 3, 30, "Text", "ExpressionUUID" -> \
+"2adf33a8-0511-46db-abdc-6028630d6151"],
+Cell[11044, 350, 217, 7, 68, "Text", "ExpressionUUID" -> \
+"9c9c952d-8065-4c3f-b4dd-f8dd142dc9e9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11298, 362, 176, 3, 39, "Subsubsection", "ExpressionUUID" -> \
+"ef0071e0-07ef-4a17-9b5b-d0beb4db2a53"],
+Cell[11477, 367, 264, 6, 49, "Text", "ExpressionUUID" -> \
+"0ccbe450-839a-4889-92ac-1e1bd4cdf541"],
+Cell[11744, 375, 220, 5, 30, "Text", "ExpressionUUID" -> \
+"bba07397-573e-4480-928a-8d0fa1909619"]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }

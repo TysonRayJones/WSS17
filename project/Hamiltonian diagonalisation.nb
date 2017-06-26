@@ -1,0 +1,1580 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     77425,       1572]
+NotebookOptionsPosition[     73179,       1466]
+NotebookOutlinePosition[     73521,       1481]
+CellTagsIndexPosition[     73478,       1478]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Numerical Diagonalisation of an arbitrary Hamiltonian", "Title",
+ CellChangeTimes->{{3.7074311443022237`*^9, 
+  3.707431150958149*^9}},ExpressionUUID->"82d16c13-a4eb-4dff-88b1-\
+256f342d7961"],
+
+Cell[CellGroupData[{
+
+Cell["Initialisation", "Section",
+ CellChangeTimes->{{3.7074728833753977`*^9, 
+  3.7074728851626635`*^9}},ExpressionUUID->"84fa818c-6a8a-4d1c-be9c-\
+f9313f98a286"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[StyleBox["Old initialisation (continuous)", "Subsection"]], \
+"Subsubsection",
+ CellChangeTimes->{{3.7074734441409383`*^9, 
+  3.7074734488724527`*^9}},ExpressionUUID->"3ab1ff59-7003-4472-9341-\
+9a085843069e"],
+
+Cell[BoxData[
+ RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}]], "Code",
+ CellChangeTimes->{
+  3.707401573738562*^9},ExpressionUUID->"7d33919b-3482-4426-ba8e-\
+615f4ccc7d13"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"AutoCollapse", "[", "]"}], " ", ":=", " ", 
+  RowBox[{"(", "\n", "  ", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"$FrontEnd", " ", "=!=", " ", "$Failed"}], ",", " ", "\n", "   ", 
+     RowBox[{
+      RowBox[{"SelectionMove", "[", 
+       RowBox[{
+        RowBox[{"EvaluationNotebook", "[", "]"}], ",", " ", "All", ",", " ", 
+        "GeneratedCell"}], "]"}], ";", "\n", "   ", 
+      RowBox[{
+      "FrontEndTokenExecute", "[", "\"\<SelectionCloseUnselectedCells\>\"", 
+       "]"}]}]}], "]"}], ")"}]}]], "Code",
+ CellChangeTimes->{{3.7072503647797594`*^9, 3.707250380426972*^9}, {
+  3.7072504113361893`*^9, 
+  3.7072504116593933`*^9}},ExpressionUUID->"3b9864b8-9385-42c2-a2a9-\
+10c61c6f1a20"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"colorBar", "[", 
+    RowBox[{"title_:", "\"\<arg[\[Psi]]\>\""}], "]"}], " ", ":=", "\n", "\t", 
+   RowBox[{"BarLegend", "[", "\n", "\t\t", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\"\<Rainbow\>\"", ",", " ", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "\[Pi]"}], ",", " ", "\[Pi]"}], "}"}]}], "}"}], ",", 
+     " ", "\n", "\t\t", 
+     RowBox[{"LegendLabel", " ", "\[Rule]", " ", "title"}], ",", "\n", "\t\t", 
+     RowBox[{"\"\<Ticks\>\"", " ", "\[Rule]", " ", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"-", "3.14"}], ",", " ", 
+        RowBox[{
+         RowBox[{"-", "3.14"}], "/", "2"}], ",", " ", "0", ",", " ", 
+        RowBox[{"3.14", "/", "2"}], ",", " ", "3.14"}], "}"}]}], ",", " ", 
+     "\n", "\t\t", 
+     RowBox[{"\"\<TickLabels\>\"", " ", "\[Rule]", " ", 
+      RowBox[{"{", 
+       RowBox[{
+       "\"\<-\[Pi]\>\"", ",", " ", "\"\<-\[Pi]/2\>\"", ",", " ", "\"\<0\>\"", 
+        ",", " ", "\"\<\[Pi]/2\>\"", ",", " ", "\"\<\[Pi]\>\""}], "}"}]}]}], 
+    "\n", "\t", "]"}]}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"colorBarNorm", "[", "title_", "]"}], " ", ":=", "\n", "\t", 
+   RowBox[{"BarLegend", "[", "\n", "\t\t", 
+    RowBox[{"\"\<Rainbow\>\"", ",", " ", "\n", "\t\t", 
+     RowBox[{"LegendLabel", " ", "\[Rule]", " ", "title"}]}], "\n", "\t", 
+    "]"}]}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"plotWavefunction", "[", 
+   RowBox[{"psi_", ",", " ", 
+    RowBox[{"{", 
+     RowBox[{"r_", ",", " ", "range__"}], "}"}], ",", " ", 
+    RowBox[{"showbar_:", "True"}], ",", " ", 
+    RowBox[{"title_:", 
+     SuperscriptBox[
+      RowBox[{"Abs", "[", "\[Psi]", "]"}], "2"]}], ",", " ", 
+    RowBox[{"legendpsi_:", "\[Psi]"}], ",", " ", 
+    RowBox[{"plotrange_:", "All"}], ",", " ", 
+    RowBox[{"ticks_:", "Automatic"}]}], "]"}], " ", ":=", "\n", "\t", 
+  RowBox[{"ReplaceAll", "[", "\n", "\t\t", 
+   RowBox[{
+    RowBox[{"Plot", "[", "\n", "\t\t\t", 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"Abs", "[", "psi", "]"}], "2"], ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"r", ",", " ", "range"}], "}"}], ",", " ", "\n", "\t\t\t", 
+      RowBox[{"AxesLabel", " ", "\[Rule]", " ", 
+       RowBox[{"{", 
+        RowBox[{"r", ",", " ", "title"}], "}"}]}], ",", "\n", "\t\t\t", 
+      RowBox[{"PlotRange", " ", "\[Rule]", " ", "plotrange"}], ",", "\n", 
+      "\t\t\t", 
+      RowBox[{"ColorFunction", " ", "\[Rule]", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"ColorData", "[", "\"\<Rainbow\>\"", "]"}], "[", 
+          RowBox[{"Rescale", "[", 
+           RowBox[{
+            RowBox[{"Arg", "[", 
+             RowBox[{"psi", " ", "/.", " ", 
+              RowBox[{"r", " ", "\[Rule]", " ", "#"}]}], "]"}], ",", " ", 
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "\[Pi]"}], ",", " ", "\[Pi]"}], "}"}]}], "]"}], 
+          "]"}], " ", "&"}], ")"}]}], ",", "\n", "\t\t\t", 
+      RowBox[{"ColorFunctionScaling", " ", "\[Rule]", " ", "False"}], ",", 
+      "\n", "\t\t\t", 
+      RowBox[{"Ticks", " ", "\[Rule]", " ", "ticks"}], ",", "\n", "\t\t\t", 
+      RowBox[{"Filling", " ", "\[Rule]", " ", "Axis"}], ",", "\n", "\t\t\t", 
+      RowBox[{"PlotLegends", " ", "\[Rule]", " ", 
+       RowBox[{"If", "[", 
+        RowBox[{"showbar", ",", " ", 
+         RowBox[{"colorBarNorm", "[", 
+          RowBox[{"\"\<arg[\>\"", " ", "<>", " ", 
+           RowBox[{"ToString", "[", "legendpsi", "]"}], " ", "<>", " ", 
+           "\"\<] / 2\[Pi]\>\""}], "]"}], ",", " ", "None"}], "]"}]}]}], "\n",
+      "\t\t", "]"}], ",", "\n", "\t\t", 
+    RowBox[{
+     RowBox[{"Line", "[", 
+      RowBox[{"pts_", ",", " ", "_"}], "]"}], " ", "\[RuleDelayed]", " ", 
+     RowBox[{"{", 
+      RowBox[{"Black", ",", " ", 
+       RowBox[{"Line", "[", "pts", "]"}]}], "}"}]}]}], "\n", "\t", 
+   "]"}]}]}], "Code",
+ CellChangeTimes->{
+  3.707250684768882*^9, {3.707327748060455*^9, 3.707327760834208*^9}, {
+   3.7073278667410846`*^9, 3.707327898062024*^9}, {3.7073282132515697`*^9, 
+   3.7073282139600525`*^9}, {3.707333754300393*^9, 3.7073338615878*^9}, {
+   3.7073340125736313`*^9, 3.7073340529269733`*^9}, {3.707334381805196*^9, 
+   3.707334421595986*^9}, {3.7073344531517878`*^9, 3.707334468083632*^9}, {
+   3.7073345256643486`*^9, 3.7073345579097366`*^9}, {3.7073346224611516`*^9, 
+   3.70733462515864*^9}, {3.707334674005803*^9, 3.7073346769948883`*^9}, {
+   3.707334772049922*^9, 3.7073347895875607`*^9}, {3.7073352516801615`*^9, 
+   3.707335260732541*^9}, {3.707336437367014*^9, 3.7073364376138935`*^9}, {
+   3.7073369285395813`*^9, 3.7073369408217382`*^9}, {3.707337653904242*^9, 
+   3.7073376740077686`*^9}, {3.7073377055022078`*^9, 
+   3.7073377306157417`*^9}, {3.7073378127003174`*^9, 
+   3.7073378489704437`*^9}, {3.707337901504786*^9, 3.707337980119998*^9}, {
+   3.707338085551382*^9, 3.7073380872327313`*^9}, {3.7073458264056044`*^9, 
+   3.7073458433898745`*^9}, {3.707347091911105*^9, 3.70734711619184*^9}, 
+   3.7074011759380417`*^9, {3.7074132946602864`*^9, 3.7074132996711874`*^9}, {
+   3.707473436857559*^9, 
+   3.7074734383257017`*^9}},ExpressionUUID->"066a10eb-3f4e-4c54-a46d-\
+a500ffccb5de"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"simulateWavefunction", "[", 
+    RowBox[{"psi_", ",", " ", "potential_", ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"r_", ",", " ", "domain__"}], "}"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"_", ",", " ", "times__"}], "}"}]}], "]"}], " ", ":=", 
+   StyleBox["\n", "Code"], 
+   StyleBox["\t", "Code"], 
+   RowBox[{
+    StyleBox["NDSolveValue", "Code"], 
+    StyleBox["[", "Code"], 
+    StyleBox["\n", "Code"], 
+    StyleBox["\t\t", "Code"], 
+    RowBox[{
+     RowBox[{
+      StyleBox["{", "Code"], 
+      RowBox[{
+       RowBox[{
+        StyleBox[
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{
+           SuperscriptBox["\[Psi]", 
+            TagBox[
+             RowBox[{"(", 
+              RowBox[{"0", ",", "1"}], ")"}],
+             Derivative],
+            MultilineFunction->None], "[", 
+           RowBox[{"r", ",", " ", "\[Tau]"}], "]"}]}], "Code"], 
+        StyleBox[" ", "Code"], 
+        StyleBox["\[Equal]", "Code"], 
+        StyleBox["  ", "Code"], 
+        RowBox[{
+         StyleBox[
+          RowBox[{
+           RowBox[{"-", 
+            RowBox[{
+             SuperscriptBox["\[Psi]", 
+              TagBox[
+               RowBox[{"(", 
+                RowBox[{"2", ",", "0"}], ")"}],
+               Derivative],
+              MultilineFunction->None], "[", 
+             RowBox[{"r", ",", " ", "\[Tau]"}], "]"}]}], " ", "/", " ", "2"}],
+           "Code"], 
+         StyleBox[" ", "Code"], 
+         StyleBox["+", "Code"], 
+         StyleBox[" ", "Code"], 
+         RowBox[{
+          StyleBox[
+           RowBox[{"\[Psi]", "[", 
+            RowBox[{"r", ",", " ", "\[Tau]"}], "]"}], "Code"], 
+          StyleBox[" ", "Code"], "potential"}]}]}], 
+       StyleBox[",", "Code"], 
+       StyleBox[" ", "Code"], 
+       StyleBox[
+        RowBox[{
+         RowBox[{"\[Psi]", "[", 
+          RowBox[{"r", ",", " ", "0"}], "]"}], " ", "\[Equal]", " ", "psi"}], 
+        "Code"]}], 
+      StyleBox[" ", "Code"], 
+      StyleBox["}", "Code"]}], 
+     StyleBox[",", "Code"], 
+     StyleBox["\n", "Code"], 
+     StyleBox["\t\t", "Code"], 
+     StyleBox["\[Psi]", "Code"], 
+     StyleBox[",", "Code"], 
+     StyleBox[" ", "Code"], 
+     StyleBox["\n", "Code"], 
+     StyleBox["\t\t", "Code"], 
+     StyleBox[
+      RowBox[{"{", 
+       RowBox[{"r", ",", " ", "domain"}], "}"}], "Code"], 
+     StyleBox[",", "Code"], 
+     StyleBox[" ", "Code"], 
+     StyleBox["\n", "Code"], 
+     StyleBox["\t\t", "Code"], 
+     StyleBox[
+      RowBox[{"{", 
+       RowBox[{"\[Tau]", ",", " ", "times"}], "}"}], "Code"], 
+     StyleBox[",", "Code"], 
+     StyleBox["\n", "Code"], 
+     StyleBox["\t\t", "Code"], 
+     RowBox[{
+      StyleBox["Method", "Code"], 
+      StyleBox[" ", "Code"], 
+      StyleBox["\[Rule]", "Code"], " ", 
+      RowBox[{"{", "\"\<FiniteElement\>\"", "}"}]}]}], 
+    StyleBox["\n", "Code"], 
+    StyleBox["\t", "Code"], 
+    StyleBox["]", "Code"]}]}], 
+  StyleBox[" ", "Code"], "\n", 
+  StyleBox["\t", "Code"], "\n"}], "\n", 
+ RowBox[{"Off", "[", 
+  RowBox[{"NDSolveValue", "::", "bcart"}], "]"}], "\n", 
+ RowBox[{"Off", "[", 
+  RowBox[{"NDSolveValue", "::", "femcscd"}], "]"}], "\n"}], "Code",
+ CellChangeTimes->{{3.707250715794982*^9, 3.7072507338769197`*^9}, {
+   3.7072509292068596`*^9, 3.7072509295035706`*^9}, {3.707350667196171*^9, 
+   3.707350671470053*^9}, {3.70736108935268*^9, 3.7073610925868363`*^9}, 
+   3.7074011850781393`*^9, 3.707401431661846*^9, {3.7074022027349186`*^9, 
+   3.707402205610793*^9}, {3.707404840221735*^9, 3.7074048577084475`*^9}, {
+   3.707405768364189*^9, 3.707405780068262*^9}, {3.7074058405812583`*^9, 
+   3.707405847492797*^9}, 
+   3.707408944522748*^9},ExpressionUUID->"5dd005ea-8b4e-43e4-bdcd-\
+5df5a9f08893"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"hamiltonian", "[", 
+   RowBox[{"psi_", ",", " ", "potential_", ",", " ", "r_"}], "]"}], " ", ":=",
+   " ", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox["1", "2"]}], 
+    RowBox[{"D", "[", 
+     RowBox[{"psi", ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"r", ",", "2"}], "}"}]}], "]"}]}], " ", "+", " ", 
+   RowBox[{"potential", " ", "psi"}]}]}]], "Code",
+ CellChangeTimes->{
+  3.707251170532781*^9},ExpressionUUID->"900c5e8a-0ddd-4543-aad4-\
+84b680824e1e"],
+
+Cell[BoxData[
+ StyleBox[
+  RowBox[{
+   RowBox[{"expectedEnergy", "[", 
+    RowBox[{"psi_", ",", " ", "potential_", ",", "  ", "r_"}], "]"}], " ", ":=",
+    "\[IndentingNewLine]", "\t", 
+   RowBox[{"Integrate", "[", "\[IndentingNewLine]", "\t\t", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"Conjugate", "[", "psi", "]"}], " ", "/.", " ", 
+        RowBox[{
+         RowBox[{"Conjugate", "[", "r", "]"}], " ", "\[Rule]", " ", "r"}]}], 
+       ")"}], "\[IndentingNewLine]", "\t\t", 
+      RowBox[{"(", 
+       RowBox[{"hamiltonian", "[", 
+        RowBox[{"psi", ",", " ", "potential", ",", " ", "r"}], "]"}], ")"}]}],
+      ",", "\[IndentingNewLine]", "\t\t", 
+     RowBox[{"{", 
+      RowBox[{"r", ",", " ", 
+       RowBox[{"-", "\[Infinity]"}], ",", " ", "\[Infinity]"}], "}"}]}], 
+    "\[IndentingNewLine]", "\t", "]"}]}], "Code"]], "Code",
+ CellChangeTimes->{
+  3.7072509143164854`*^9},ExpressionUUID->"57ee9451-b6fa-452a-9e18-\
+7aae929f07cc"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"quickNormalise", "[", 
+    RowBox[{"psi_", ",", " ", 
+     RowBox[{"r_:", "x"}]}], "]"}], " ", ":=", " ", "\n", "\t", 
+   RowBox[{"psi", " ", "/", " ", 
+    RowBox[{"Sqrt", "[", 
+     RowBox[{"NIntegrate", "[", "\n", "\t\t\t\t\t", 
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"Abs", "[", "psi", "]"}], "2"], ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"r", ",", " ", 
+         RowBox[{"-", "\[Infinity]"}], ",", " ", "\[Infinity]"}], "}"}], ",", 
+       " ", "\n", "\t\t\t\t\t", 
+       RowBox[{
+        StyleBox["Method", "Code"], 
+        StyleBox[" ", "Code"], 
+        StyleBox["\[Rule]", "Code"], " ", 
+        RowBox[{"{", 
+         RowBox[{"Automatic", ",", " ", 
+          RowBox[{"\"\<SymbolicProcessing\>\"", " ", "\[Rule]", " ", "0"}]}], 
+         "}"}]}]}], "]"}], "]"}]}]}], "\n"}]], "Code",
+ CellChangeTimes->{{3.707339850746274*^9, 3.7073399085081654`*^9}, {
+  3.7073399561620646`*^9, 3.707339956413348*^9}, {3.7073400623341837`*^9, 
+  3.707340062748144*^9}, {3.7073457173662796`*^9, 
+  3.70734577330595*^9}},ExpressionUUID->"3b1b7e88-46ae-4660-86ca-\
+c57dc82dd91f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["new initialisation (discrete)", "Subsection",
+ CellChangeTimes->{{3.707473480600502*^9, 
+  3.7074734848053336`*^9}},ExpressionUUID->"3ef3124c-860a-41af-806b-\
+7fa3a81052dc"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.707473494588422*^9, 3.707473527941327*^9}, 
+   3.707475062569254*^9},ExpressionUUID->"503dda52-a66d-4d93-8f98-\
+e271bcb7525e"]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "Section",
+ CellChangeTimes->{{3.7074734549918985`*^9, 
+  3.707473466909192*^9}},ExpressionUUID->"8135c2d1-014e-4cbc-bbe8-\
+11e8350b6fbd"],
+
+Cell[CellGroupData[{
+
+Cell["Testing", "Section",
+ CellChangeTimes->{{3.70747289850778*^9, 
+  3.7074728991652346`*^9}},ExpressionUUID->"44a491ca-d668-4cc9-a7dd-\
+b131f90ad04f"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.707431175243924*^9, 
+  3.7074311768216867`*^9}},ExpressionUUID->"ad3733f1-cd27-4603-8357-\
+ad3da8c8893f"],
+
+Cell["Give me a discretised potential", "Text",
+ CellChangeTimes->{{3.7074348610899086`*^9, 
+  3.707434868311071*^9}},ExpressionUUID->"2b98c28b-7615-488a-ba94-\
+3b9524947653"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"potentialCont", "[", "x_", "]"}], " ", "=", " ", 
+    RowBox[{
+     FractionBox["1", "2"], 
+     SuperscriptBox["x", "2"]}]}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"x0", " ", "=", " ", 
+   RowBox[{"-", "5"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"x1", " ", "=", " ", 
+   RowBox[{"-", "x0"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[CapitalDelta]x", " ", "=", " ", "0.05"}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"grid", " ", "=", " ", 
+   RowBox[{"Range", "[", 
+    RowBox[{"x0", ",", " ", "x1", ",", " ", "\[CapitalDelta]x"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"gridsize", " ", "=", " ", 
+   RowBox[{"Length", "[", "grid", "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"potentialDisc", " ", "=", " ", 
+   RowBox[{"Map", "[", 
+    RowBox[{"potentialCont", ",", " ", "grid"}], "]"}]}], ";"}]}], "Code",
+ CellChangeTimes->{{3.7074348714635115`*^9, 3.707434907113177*^9}, {
+   3.7074371073170695`*^9, 3.70743717783509*^9}, {3.707439155025934*^9, 
+   3.7074392213669977`*^9}, {3.7074392616167727`*^9, 3.707439352617267*^9}, {
+   3.7074394208855076`*^9, 3.707439421931902*^9}, 3.7074396558887544`*^9, {
+   3.7074405774243555`*^9, 3.7074405833628125`*^9}, {3.7074713535565357`*^9, 
+   3.7074713556559224`*^9}, {3.707472256207985*^9, 3.7074722569924946`*^9}, 
+   3.7074722872242064`*^9, {3.707472615888422*^9, 3.7074726165048113`*^9}, {
+   3.707472744207652*^9, 3.7074727459097133`*^9}, {3.7074727835083804`*^9, 
+   3.7074727836774783`*^9}},ExpressionUUID->"455e9eca-7dfe-40cf-84c4-\
+7fd30829121a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ListPlot", "[", "potentialDisc", "]"}]], "Input",
+ CellChangeTimes->{{3.707440780542139*^9, 
+  3.7074407851628313`*^9}},ExpressionUUID->"d5bad8b6-cc79-4be7-9a75-\
+ddd04b883ad1"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, {{{}, {
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+       0.009166666666666668], AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxdl1lsVVUUhq+gUhEUpVBRaA8IUoizqHVo+zNDmdrbidLb9tz5oiZCQqIh
+Es+DDY+S6JMv3ojDgwkkaiKamBzRhBijRqMWDDEXcQgicWwcQ+zZ59vNPm3S
+7Px7nX/tYa291n8X5x5NF6elUqkPJv6jMf77pT0eV4gJ7W2dOXY4aAbX6f3x
+5szT0yyeowgeH10OrtfE13taZ1p8XTweugm8UCcjc4PFng4dn/Dw/DLwEkXu
+xpstXqro87HXl4LhyeJmtUULfnQjeKWGInrG4ps1GOGfloBvVXScPQcsvj0e
+51h8h16M1ju8GHynVkb7abH4Lhn3n3jgVTLHLVt89+S54vEezTuy8cz+VU3g
+e3W+61jj6MON4BY9FU28tAh8n87sr59gLATfH4+exQ/om8ievQH8oEYN/3pw
+q36M/J9fAG5TvVnf4vZ4DIhLSjo6Ya7/uIF5qdE4BKdWy7jbOx/7akWfHzkx
+D/sa9gcO1ugJs2A99rWK6F0n52Jfqzcj3AJOrZM57nPXYl/HPDi1Pl6vfA32
+9UpHDj+dg32DmqL9toGDDXG8M1dj3xiPugr7Ri03+TUb+6Y4fg2zsG9SnZm4
+EvtmHTf5PhP7ZuavYOzQu8Zeh72D/J+BfYu+MP4vx76F/L4M+1b2dyn2rex/
+OvZt5Os07Nv0gsnPS7BvJx9T2LczD07t0DmTbxfjdx3sIL/+45136muTT//G
+WJ3kz99834nfv2IcdmqRyY8/4XeRD+Pwu/S4if8f8LuI9+/wu9jXb/DT6jTx
+pO4ozfl/hp/WMnNfF+Cnic95+N34Owe/WzOM/Qf43dz3d/C7NWD8n4Xfw32e
+gd+Dvxr8Hn1r7us0/B6dNfdzCn6vFpj7GIPfy/k/h9+Lv8/g9yobBwx+ny5+
+Ge33Q/h9mm72fwJ+H/t9D34f/kL4/frV7Oct+P16xKz/Bvx+dRj+Ufj9+H8F
+/k78VeHvVNrwn4W/U6fN/g7Ct/Z98AfAPfAH8MdfMKCmeY49HNCxBH+XVow5
+/rVLo4n1dyX3F9rv7f4H9Zh7Pg3Ct+cfTN5PODjl/jJ6yL1fZTQ/cf8ZzR1z
+4hNmpsRvCH/EV0Osb+M/pOVufoRD7Mfmz3AyvzSMP5t/w3rVzc9wmPVt/o7o
+Fje/NaJZifwfwR/vIxzhPPb9+LrNfV+ej3/en3x1u+/T9/HH+w18veO+76qv
+J933H/rqcOtDzZeXqB/Z2J+tL16W+6H+KKvv3frkZ7kv6leQ1QW3vlXxZ+tf
+mNUzbn2sZfVyon7m1O7WVy+HfqD+KsdIffZz3Df1O8jpK7e+V3PcP/U/zKGX
+6A81/E32j7xOuP3Fy2u223+U1ym3P/n5WI/Y/hXk+Y7+Vs0TP/pfmI/v2/bH
+Wp542v5Z0Ca3v3oF5um/KuiA25/9QrJ/BwW97fb3aoH40/9D/Fl9UCuQD1Y/
+FJP6wiuSH+gPFfWaq0/8IuuiX4KiGlx9Uy0m9U9Y1EFXH9WK5JPVTyXWRV95
+JfILrFJSn/kl8g39FpS0wNV3VfxZ/ReW4vhZfVgrTdGP5aS+9MrkJ1jleLT6
+1C+Tr+CgnNS31XJS/4ZlydXHNfxN6udKvJ7V116F/EZ/q5LU536FfEeHB5V4
+tPq+WiH/0f9hRf+4vw9qlSm/H3Zrn/v7wtvN/Ar9DyrTDQg=
+        "]]}}, {}}}, {}, {}, {{}, {}}, {{}, {}}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->{True, True},
+  AxesLabel->{None, None},
+  AxesOrigin->{0., 0},
+  DisplayFunction->Identity,
+  Frame->{{False, False}, {False, False}},
+  FrameLabel->{{None, None}, {None, None}},
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{None, None},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImagePadding->All,
+  Method->{"CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        (Identity[#]& )[
+         Part[#, 1]], 
+        (Identity[#]& )[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        (Identity[#]& )[
+         Part[#, 1]], 
+        (Identity[#]& )[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 201.}, {0, 12.5}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.02], 
+     Scaled[0.02]}, {
+     Scaled[0.02], 
+     Scaled[0.05]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellChangeTimes->{3.707440785578709*^9, 3.7074723625972815`*^9, 
+  3.7074726194933844`*^9, 3.707472749026026*^9, 
+  3.707472785624957*^9},ExpressionUUID->"b5d3e0b1-5aae-4e16-8f8a-\
+cf3a3a0cf9fa"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"potential", " ", "center", " ", "is", " ", "at", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"x1", " ", "-", " ", "x0"}], ")"}], "/", "\[CapitalDelta]x"}], 
+    "/", "2"}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.7074723725341005`*^9, 
+  3.707472412703743*^9}},ExpressionUUID->"85e04be3-2b5a-4e50-9ea1-\
+15282ef089a3"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.7074392353042727`*^9, 
+  3.70743923547132*^9}},ExpressionUUID->"4e81da0a-1de2-430c-bbf2-\
+2c2cad457f57"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"laplacianMatrix", " ", "=", " ", 
+   RowBox[{"SparseArray", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"i_", ",", "i_"}], "}"}], "\[RuleDelayed]", 
+        RowBox[{"-", "2"}]}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"i_", ",", "j_"}], "}"}], "\[RuleDelayed]", 
+        RowBox[{"1", "/;", 
+         RowBox[{
+          RowBox[{"Abs", "[", 
+           RowBox[{"i", "-", "j"}], "]"}], "\[Equal]", "1"}]}]}]}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{"gridsize", ",", " ", "gridsize"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"laplacianMatrix", " ", "=", " ", 
+   RowBox[{"SparseArray", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"i_", ",", "i_"}], "}"}], "\[RuleDelayed]", 
+        RowBox[{
+         RowBox[{"-", "5"}], "/", "2"}]}], ",", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"i_", ",", "j_"}], "}"}], "\[RuleDelayed]", 
+        RowBox[{
+         RowBox[{"4", "/", "3"}], "/;", 
+         RowBox[{
+          RowBox[{"Abs", "[", 
+           RowBox[{"i", "-", "j"}], "]"}], "\[Equal]", "1"}]}]}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"i_", ",", "j_"}], "}"}], " ", "\[RuleDelayed]", " ", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "12"}], "  ", "/;", " ", 
+         RowBox[{
+          RowBox[{"Abs", "[", 
+           RowBox[{"i", "-", "j"}], "]"}], " ", "\[Equal]", " ", "2"}]}]}]}], 
+      "\[IndentingNewLine]", "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"gridsize", ",", " ", "gridsize"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"kineticMatrix", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox["1", "2"]}], 
+    RowBox[{"laplacianMatrix", " ", "/", " ", "\[CapitalDelta]x"}]}]}], " ", 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"potentialMatrix", " ", "=", " ", 
+   RowBox[{"SparseArray", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"i_", ",", " ", "i_"}], "}"}], " ", "\[RuleDelayed]", " ", 
+      RowBox[{"potentialDisc", "[", 
+       RowBox[{"[", "i", "]"}], "]"}]}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"gridsize", ",", " ", "gridsize"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"hamiltonianMatrix", " ", "=", " ", 
+    RowBox[{"kineticMatrix", " ", "+", " ", "potentialMatrix"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"laplacianMatrix", " ", "//", " ", "MatrixForm"}], " ", 
+   "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.707439233803287*^9, 3.7074392338189244`*^9}, {
+   3.707439343976117*^9, 3.707439412945034*^9}, {3.7074394849488344`*^9, 
+   3.707439491983452*^9}, {3.7074395433678656`*^9, 3.707439555068324*^9}, {
+   3.707439628285439*^9, 3.707439703814152*^9}, {3.70743975482139*^9, 
+   3.7074397642107763`*^9}, 3.7074398166407084`*^9, {3.707469916288579*^9, 
+   3.707469922103471*^9}, {3.707470629063678*^9, 3.707470634014274*^9}, {
+   3.7074708135395184`*^9, 3.707470820322774*^9}, {3.707471373683586*^9, 
+   3.7074713744533963`*^9}, {3.707472081411808*^9, 3.7074721550168905`*^9}, {
+   3.7074722047774944`*^9, 
+   3.7074722778691587`*^9}},ExpressionUUID->"2cbf5f0f-905f-4106-862c-\
+69446173f0f1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.7074713424459233`*^9, 
+  3.7074713728136225`*^9}},ExpressionUUID->"f7e1b266-e96b-4afc-8ebf-\
+37c370a1667c"],
+
+Cell[BoxData[
+ RowBox[{"$Aborted", "[", "]"}]], "Output",
+ CellChangeTimes->{{3.7074713509863496`*^9, 
+  3.707471368023272*^9}},ExpressionUUID->"854c80a0-170c-45c4-a77d-\
+6215241469bd"]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"numModes", " ", "=", " ", "10"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"precision", " ", "=", " ", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"eigenvalues", ",", " ", "eigenfunctions"}], "}"}], " ", "=", " ", 
+   RowBox[{"N", "[", 
+    RowBox[{
+     RowBox[{"Eigensystem", "[", 
+      RowBox[{"hamiltonianMatrix", ",", " ", 
+       RowBox[{"-", "numModes"}]}], "]"}], ",", " ", "precision"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"eigenvalues", ",", " ", "eigenfunctions"}], "}"}], " ", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"eigenvalues", "[", 
+        RowBox[{"[", "#", "]"}], "]"}], ",", " ", 
+       RowBox[{"eigenfunctions", "[", 
+        RowBox[{"[", "#", "]"}], "]"}]}], "}"}], "&"}], " ", "@", " ", 
+    RowBox[{"Ordering", "[", "eigenvalues", "]"}]}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.707439827099334*^9, 3.7074398572434235`*^9}, {
+  3.707439915154188*^9, 3.7074399254926634`*^9}, {3.7074399803797884`*^9, 
+  3.70744000149111*^9}, {3.7074401717826166`*^9, 3.7074402119893756`*^9}, {
+  3.7074402777886877`*^9, 3.707440293709893*^9}, {3.707440756503379*^9, 
+  3.707440758875333*^9}, {3.7074408664712324`*^9, 3.7074409525153227`*^9}, {
+  3.7074702285149736`*^9, 3.707470269269773*^9}, {3.7074703012372556`*^9, 
+  3.707470301337566*^9}, {3.7074703792244043`*^9, 3.7074704032471523`*^9}, {
+  3.7074723281110973`*^9, 3.7074723282114224`*^9}, {3.7074731190954404`*^9, 
+  3.7074731526411157`*^9}},ExpressionUUID->"0af39ea0-e06b-4f1c-92ab-\
+6d50baa5676b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"eigenvalues", " ", "*", " ", 
+  RowBox[{"0.5", "/", 
+   RowBox[{"eigenvalues", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.7074731540261173`*^9, 3.70747315525636*^9}, {
+  3.7074742937376738`*^9, 
+  3.7074743275010605`*^9}},ExpressionUUID->"9c783e36-e00f-4993-ba09-\
+93dd2d83124d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0.5`", ",", "1.4999948185914747`", ",", "2.499974119387794`", ",", 
+   "3.4999276271094892`", ",", "4.499845134996515`", ",", 
+   "5.499716503157694`", ",", "6.499531656955483`", ",", "7.499280585424793`",
+    ",", "8.498953339724649`", ",", "9.498540031621772`"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.7074731555235376`*^9, {3.707474295255231*^9, 
+   3.7074743280010195`*^9}},ExpressionUUID->"83bfd594-6d74-4835-91d1-\
+8a25bcf584c0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"potentialCenter", " ", "=", " ", 
+    RowBox[{"IntegerPart", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"x1", " ", "-", " ", "x0"}], ")"}], "/", "\[CapitalDelta]x"}],
+       " ", "/", " ", "2"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{"ListLinePlot", "[", "\[IndentingNewLine]", "\t\t ", 
+    RowBox[{
+     RowBox[{"MapThread", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"#1", ",", " ", "#2"}], "}"}], "&"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"grid", ",", " ", 
+         RowBox[{"eigenfunctions", "[", 
+          RowBox[{"[", "n", "]"}], "]"}]}], "}"}]}], "]"}], ",", 
+     "\[IndentingNewLine]", "\t\t", 
+     RowBox[{"PlotRange", "\[Rule]", "All"}]}], "\[IndentingNewLine]", "\t", 
+    "]"}], ",", "\[IndentingNewLine]", "\t", 
+   RowBox[{"{", 
+    RowBox[{"n", ",", " ", "1", ",", "  ", "numModes", ",", " ", "1"}], 
+    "}"}]}], "\[IndentingNewLine]", "]"}]}], "Input",
+ CellChangeTimes->{{3.7074703241796904`*^9, 3.707470374949885*^9}, {
+   3.7074704085636444`*^9, 3.7074704100323334`*^9}, {3.7074705248707085`*^9, 
+   3.7074705731701794`*^9}, {3.7074706742132864`*^9, 3.7074706755778446`*^9}, 
+   3.70747087523552*^9, {3.70747243188124*^9, 3.7074725524909077`*^9}, {
+   3.7074726828433933`*^9, 3.707472688168437*^9}, {3.7074727281552277`*^9, 
+   3.707472732892683*^9}, 3.7074731971037683`*^9, {3.707473670029541*^9, 
+   3.707473678224613*^9}, {3.7074740799664836`*^9, 3.707474088188429*^9}, {
+   3.707474535615391*^9, 3.7074745711251106`*^9}, {3.707474611918442*^9, 
+   3.7074746227338767`*^9}, {3.70747468606745*^9, 3.707474738187228*^9}, {
+   3.707474802222769*^9, 3.7074748765534534`*^9}, {3.7074749318095884`*^9, 
+   3.707475043942378*^9}},ExpressionUUID->"e132853f-6a64-488e-ab92-\
+22becaa84a74"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`n$$ = 1, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{
+      Hold[$CellContext`n$$], 1, 10, 1}}, Typeset`size$$ = {
+    360., {109., 114.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`n$575461$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`n$$ = 1}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`n$$, $CellContext`n$575461$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> ListLinePlot[
+        MapThread[{#, #2}& , {$CellContext`grid, 
+          Part[$CellContext`eigenfunctions, $CellContext`n$$]}], PlotRange -> 
+        All], "Specifications" :> {{$CellContext`n$$, 1, 10, 1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{411., {155., 162.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.707474947093063*^9, 3.7074749515415564`*^9}, 
+   3.7074749843834887`*^9, {3.707475034461444*^9, 
+   3.7074750445591364`*^9}},ExpressionUUID->"708d4b17-7d83-4967-9c62-\
+7d0747d90424"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"x", "[", 
+     RowBox[{"i", "-", "1"}], "]"}], " ", "\[Rule]", " ", 
+    RowBox[{"x0", " ", "+", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"x1", "-", "x0"}], ")"}], " ", 
+      RowBox[{"i", " ", "/", " ", "\[CapitalDelta]x"}]}]}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"i", " ", "\[Rule]", " ", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"x", "[", 
+        RowBox[{"i", "-", "1"}], "]"}], " ", "-", " ", "x0"}], ")"}], " ", 
+     RowBox[{"\[CapitalDelta]x", " ", "/", " ", 
+      RowBox[{"(", 
+       RowBox[{"x1", "-", "x0"}], ")"}]}]}]}], " ", "*)"}], "\n", "\n", 
+  RowBox[{
+   RowBox[{"plotDiscrete\[Psi]", "[", 
+    RowBox[{"psi_", ",", " ", "grid_"}], "]"}], " ", ":=", "\n", "\t", 
+   RowBox[{"ListLinePlot", "[", "\n", "\t\t", 
+    RowBox[{
+     RowBox[{"MapThread", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"#1", ",", " ", "#2"}], "}"}], "&"}], ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"grid", ",", " ", 
+         SuperscriptBox[
+          RowBox[{"Abs", "[", "psi", "]"}], "2"]}], "}"}]}], "]"}], ",", "\n",
+      "\t\t", 
+     RowBox[{"ColorFunctionScaling", "\[Rule]", " ", "False"}], ",", "\n", 
+     "\t\t", 
+     RowBox[{"ColorFunction", " ", "\[Rule]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"ColorData", "[", "\"\<Rainbow\>\"", "]"}], "[", 
+         RowBox[{"Rescale", "[", 
+          RowBox[{
+           RowBox[{"Arg", "[", 
+            RowBox[{"psi", "[", 
+             RowBox[{"[", "\n", "\t\t\t", 
+              RowBox[{"IntegerPart", "[", " ", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{"#", " ", "-", " ", "x0"}], ")"}], " ", 
+                RowBox[{"\[CapitalDelta]x", " ", "/", " ", 
+                 RowBox[{"(", 
+                  RowBox[{"x1", " ", "-", " ", "x0"}], ")"}]}]}], "]"}], "\n",
+               "\t\t\t", "]"}], "]"}], "]"}], ",", " ", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "\[Pi]"}], ",", " ", "\[Pi]"}], "}"}]}], "]"}], 
+         "]"}], " ", "&"}], ")"}]}], ",", "\n", "\t\t", 
+     RowBox[{"PlotRange", "\[Rule]", "All"}], ",", "\n", "\t\t", 
+     RowBox[{"Filling", "\[Rule]", "Axis"}]}], "\n", "\t", "]"}]}]}]], "Code",
+ CellChangeTimes->{{3.7074750663714423`*^9, 3.7074751262466383`*^9}, {
+  3.7074752197589245`*^9, 3.7074752275938973`*^9}, {3.7074752577765927`*^9, 
+  3.707475261108852*^9}, {3.707475426848287*^9, 3.7074754543616223`*^9}, {
+  3.7074754883117113`*^9, 3.70747549039604*^9}, {3.707475790659305*^9, 
+  3.707475869165737*^9}},ExpressionUUID->"1841d196-e28d-4a56-b188-\
+39eb0dcba15a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"eigenfunctions", "[", 
+   RowBox[{"[", "1", "]"}], "]"}], "[", 
+  RowBox[{"[", "1", "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.707475511892858*^9, 
+  3.7074755146580534`*^9}},ExpressionUUID->"03cfc09e-1fe5-489b-b91a-\
+fd99eb83de45"],
+
+Cell[BoxData[
+ RowBox[{"-", "1.193740495118373`*^-18"}]], "Output",
+ CellChangeTimes->{
+  3.7074755162572813`*^9},ExpressionUUID->"a7172520-08d0-4c7b-b2f4-\
+1ce1b14badda"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"plotDiscrete\[Psi]", "[", 
+  RowBox[{
+   RowBox[{"eigenfunctions", "[", 
+    RowBox[{"[", "1", "]"}], "]"}], ",", " ", "grid"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7074752336072483`*^9, 
+  3.7074752424071364`*^9}},ExpressionUUID->"e8fa8ca3-6427-4d63-93e6-\
+a350b38ef476"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, GraphicsComplexBox[CompressedData["
+1:eJyFmHtMVmUcx19uKvIqXliTGl5aNpeXSnF5eXmfIzfbvJDa0kSny4mapiJh
+prN5oxJTTJSJ80YijnnJZaVg+ZzWWtm0UJylmYIgiaIiIqIipuf7+/FsZ/vV
+7x/47D3P57zvOc/znN/39Hhn3tjpgR6PZ1eAx/P0LyrC5v9OnnhanVt4S+7T
+MpzilOEBThlGGYavk8tnGD7D8BlGGYavo8tnGD7D8BlGGYavg8tnGD7D8BlG
+uceHu4437JzuRHuX3zDKMHztXD7D8HldPsMow/CFuXyG4Wvr8hlGGYYv1OUz
+DF8bl88wyrCjy23t8hnG/Wrl8hlGGYYvxJ6xIS4x4dD3PvhC7Pc3xed0zv7T
+h+8XbB/bsefIzfI7PviC7YaIYd/tTQ+PgSXY/iR8a/LEt3rFwBdk/xA1IajN
+rNgY+ILs9GnTLi/zJcfAF2g/9/Ol7smH0mLgC7T7nH4pfuLFNeQLtGMzk5fN
+TNxFvgA7a/Ks0nWdiskXYDcuqewT5z9FPo/dOzI76vNRVeTz2EcyiwZnDGwi
+n8c+eCH/vb9TO/r7O+Mf6xeHdLs7LLKnH8c367KTOiW0fpB/s3O+R3rklZXl
+dX+N9MPfpH0pRwv2j5nqh65Jx86YeyHau4B8D3XFwtrDOatWku+BXmvXdI3K
+30i++/qL1H90zoTd5GvUtSHrR/lzviFfo94T6c17POEn8t3Tva8NDbyWf4Z8
+DTqs9siAYxkV5Lur9xU8s6OwXR356nVE8fpJU8Z5FHxPuGvtt3sveRV8d/Ti
+5TuLbt/rouCr0/1GpJ2Kjuqp4Lutt/ya4C1Kf1XBV6vP31ydcsbnI98TDn6t
+14g3E9VMZ/xNfcg75NTr8WPUL87xNfrduZNS20dNVK8457uuJ6/uFz4uaRr5
+q/WDIU0bo27MJt9VXZF+sH2iTiNflfatzZqRkLSEfJX6w4XJWQs+WEG+Cr3/
+o9Ckhtmfkq9c52Ykjh6+KYt8Zdp3Nvby0sZsVeKMv6Bj468kLf9qs1rvHH9O
+R6Qc3hdwcZua6pzvrC4PCwnwFuaRv1Q3js5tHjMnn3wlumDo9UWZXfaoZc74
+4/oPf4/stMxC1d05/ke9O2/bkqPb99LnRfrRhql94wbuJy7UZ+fX6TeiDyhe
+Z821ZSusNU/Y2RAK1Wn63MZ4dYvGW/CrteTfifOrY3R++n5qHX0/HF+qSun7
+z8fvU8X0+zD+nCqZjt9P10e1outD10+F0fXD8eUqga7vIFx/NYeuP8ZXquF0
+f+j+qbrPcP/o/qqv6f7CV60O0P2H77p6geYHfDUqiuYPzS+1lOYXzT+VR/MP
+x9eqnTQ/t2L+qqU0fzG+TgXQ/I7G/FdDaf7T+lAlUVgf8NWrW0VYP/DdVato
+fcHXoCpvYf3Bd0/VVWN90vpVqbR+4WtUBbS+4buvptD6h++BWkj7A3wP1Rza
+P2h/UW+nYH+Br0ndpv0HvkeqfxX2J/ia1ZrfsX/B91h9HIf9jaafVXUF+x+O
+91hfbsP++Bv2T6tfX+yfGB9gDV6B/RXPrwDr+CLsv7Q/W7szsD/DF2hF1mD/
+hi/QGv9smbO/wxdk3bmB/R++IOtlP54P9Pywnh+73Xl+wBdsVSdazvMFvmDr
+fLd9zvMHvhCruHm883yCL8SaN3ix8/yi55vF6w4+w/AZhq91C8NnGNXG5TNM
+z2+XL7SFcb8Mo9q6fIapv3D5wlw+wyivy2eY+h+Xr53LZxjV3uUzTP2Zyxfu
+8hlGdXAdb5j6xxam/rKFcb8Mozq6fIapv3X5DMNnGNXJ5TOM32+Y+nOXzzCq
+s8tnGD7DlB9cPsOoiBbmfk1i7t8k5n5OYu7vJEbJzP2fxNwPSsz9ocTcL0qM
+kpn7SYm5v5SY+02Juf+UmEpk7k8l5n5VYu5fJeZ+VmKUzNzvSsz9r8TcD0vM
+/bHEKJm5f5aY+2mJub+WmPttiVEycz8uMffnEnO/LjH37xKjZOb+XmLu9yXm
+/l9izgMSo66KzHlBYs4PEnOekJjzhcSoMpE5f0jMeURizicSc16RmM4qMucZ
+iTnfSMx557+5UOT/LcpHEnNekpjzk8ScpyRGlYjMeUtizl8Scx6TmPOZxKgy
+kTm/Scx5TmLOdxJz3pMYdVVkzoMScz6UmPOixJwfJUbVisz5UmLOmxJz/pSY
+86jEqHqROa9KzPlVYs6zEnO+lRjVKDLnX4k5D0vM+VhizssSo5pE5jwtMedr
+iTlvS8z5W2IqS2LO5xJzXpeY87vEnOclRgWKzHlfYs7/EvP7AIn5/YDEqGCR
++f2BxPw+QWJ+vyAxv2+Q+F/DUSXx
+    "], {{{
+       {GrayLevel[0.5], EdgeForm[None], 
+        GraphicsGroupBox[{PolygonBox[{{46, 202, 47}, {155, 419, 156}}], 
+          PolygonBox[CompressedData["
+1:eJwt1Pmbj2UUx/FzhLJGmz2NtChlmdUyRmPIkmTPUnYaY2aMJcuQdZphLEWM
+GSr6d6KFQlHRRlnKTkren+vcP7yu6zP385x7Oc8934zZ5ePKGpnZIjTGu5ji
+ZlOxgtwfZ/EzBqAvvsZRZKIXPsdh9E5jx/ANspCNEziJHOThB/yIfumdb3E8
+vat3vsP3yE1O4XSq1RpH8AX6JF/iq7Q3zfkTzqS9a8+/4FcMTH7D78jHYFzC
+ZbySxs7hPAalsb/wNwrRgEP05jPsJw/BNVxHEYbiFm5jGF7FXfyL4WmOK7ia
+alVzAzdTrWru4J9Uqz38gT9RkOb4D/cwAtPwNHvpjunk19GM3BxjyKPwALkx
+XrPQhNwUo8mT0IHcEZMtalqQW+IN8lg8TG6DcRbakh/BeAuPkh/DBAuPk5/A
+RIs1HiQ/5LE3jbUjt/dYW2t2InfGm+lM/8P4e6TFmZ4hP4u3yFPQlfyU7qiF
+DHI3j15oji7kJz3e1RxObuTRC83xHPl5vE2erTtE7os5FmM9yC9gBnkmXiK/
+jFkWepF7e9TqnRfJPT3e1Te6gIvpbmnOTJ5lYa5FT1uRW3v0tkT3gFzk8T/4
+HorJC7GOvFB3kFzo8W6p7gV5OMrIi9Vj9RYV5HJ9c31rj2eao0RzY73FGkPJ
+wzzm0hwj1GuP2gUYQB6Idyzkkweh2EIBebDH3rTmGN0VLCGvUk/UC6wmr1TP
+1WuPZ8v1zfWtPX5r9M4s9RKVFnss1dmwgbxWe9JePHqjd+aol1hjseZY3U0s
+tTBedxHLLEzUXfNYWzXzyPM95tYa5eoVNpJ34UPyLuxWxk7yBx7PtqOaXIMd
+5CqsIK/E+xZzVKgX2GQxtkq9QLXF2FLtDZvJNTqjzoYt5K3ak/aCWu0VueQ8
+7dlijkqd3aNWNev0bT1qVbNJc2ObxW/4NPJ0j2+hNZer9x571xm2qBY7LdSq
+Vme26MFu8kdiMbZdZ/fojcb2kPdij8WaVeqFR6/2op7cgDryPnxM/gT1Fmfq
+R+7vcfc0Rx15n0etavaTD3jUquZT8kGP32L9T2WTczx6dR8Px7r8
+           "]]}]}}}, {{}, {}, {
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        0.01388888888888889], AbsoluteThickness[1.6], 
+        LineBox[{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 
+         18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 
+         35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 
+         52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 
+         69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 
+         86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 
+         102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115,
+          116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 
+         129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+          143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 
+         156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169,
+          170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 
+         183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196,
+          197, 198, 199, 200, 201},
+         VertexColors->Automatic]}}}},
+    VertexColors->{
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend["Rainbow", Rational[1, 2] + Rational[1, 2] Pi^(-1) Arg[List]], 
+      Blend[
+      "Rainbow", Rational[1, 2] + 
+       Rational[1, 2] Pi^(-1) Arg[List]]}], {}, {}, {{}, {}}, {{}, {}}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->{True, True},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  DisplayFunction->Identity,
+  Frame->{{False, False}, {False, False}},
+  FrameLabel->{{None, None}, {None, None}},
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{None, None},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImagePadding->All,
+  Method->{"CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        (Identity[#]& )[
+         Part[#, 1]], 
+        (Identity[#]& )[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        (Identity[#]& )[
+         Part[#, 1]], 
+        (Identity[#]& )[
+         Part[#, 2]]}& )}},
+  PlotRange->{{-5., 5.}, {0, 0.059656158424759895`}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.02], 
+     Scaled[0.02]}, {
+     Scaled[0.02], 
+     Scaled[0.05]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellChangeTimes->{{3.707475242723274*^9, 3.7074752646136675`*^9}, 
+   3.707475497043228*^9, 
+   3.7074758481476574`*^9},ExpressionUUID->"fd86df38-90b5-4cd4-9972-\
+0412653d6919"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"x", "[", 
+     RowBox[{"i", "-", "1"}], "]"}], " ", "\[Rule]", " ", 
+    RowBox[{"x0", " ", "+", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"x1", "-", "x0"}], ")"}], " ", 
+      RowBox[{"i", " ", "/", " ", "\[CapitalDelta]x"}]}]}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"i", " ", "\[Rule]", " ", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"x", "[", 
+        RowBox[{"i", "-", "1"}], "]"}], " ", "-", " ", "x0"}], ")"}], " ", 
+     RowBox[{"\[CapitalDelta]x", " ", "/", " ", 
+      RowBox[{"(", 
+       RowBox[{"x1", "-", "x0"}], ")"}]}]}]}], " ", "*)"}]}]], "Input",
+ CellChangeTimes->{{3.7074756312492905`*^9, 3.70747565883018*^9}, {
+  3.7074757193715496`*^9, 3.7074757376549196`*^9}, {3.7074758602167883`*^9, 
+  3.7074758605017834`*^9}},ExpressionUUID->"73020dce-7f59-4b62-bba6-\
+c78ca2956207"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.7074756601612406`*^9, 3.7074756606925077`*^9}, {
+   3.707475731665855*^9, 3.7074757769734497`*^9}, 
+   3.7074758592628984`*^9},ExpressionUUID->"7d2c6643-9d00-4441-97f7-\
+742825c6e39d"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{972, 988},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 198, 3, 166, "Title", "ExpressionUUID" -> \
+"82d16c13-a4eb-4dff-88b1-256f342d7961"],
+Cell[CellGroupData[{
+Cell[803, 29, 163, 3, 70, "Section", "ExpressionUUID" -> \
+"84fa818c-6a8a-4d1c-be9c-f9313f98a286"],
+Cell[CellGroupData[{
+Cell[991, 36, 222, 4, 41, "Subsubsection", "ExpressionUUID" -> \
+"3ab1ff59-7003-4472-9341-9a085843069e"],
+Cell[1216, 42, 177, 4, 50, "Code", "ExpressionUUID" -> \
+"7d33919b-3482-4426-ba8e-615f4ccc7d13"],
+Cell[1396, 48, 736, 18, 105, "Code", "ExpressionUUID" -> \
+"3b9864b8-9385-42c2-a2a9-10c61c6f1a20"],
+Cell[2135, 68, 5159, 112, 550, "Code", "ExpressionUUID" -> \
+"066a10eb-3f4e-4c54-a46d-a500ffccb5de"],
+Cell[7297, 182, 3732, 107, 275, "Code", "ExpressionUUID" -> \
+"5dd005ea-8b4e-43e4-bdcd-5df5a9f08893"],
+Cell[11032, 291, 536, 16, 86, "Code", "ExpressionUUID" -> \
+"900c5e8a-0ddd-4543-aad4-84b680824e1e"],
+Cell[11571, 309, 980, 25, 141, "Code", "ExpressionUUID" -> \
+"57ee9451-b6fa-452a-9e18-7aae929f07cc"],
+Cell[12554, 336, 1142, 28, 129, "Code", "ExpressionUUID" -> \
+"3b1b7e88-46ae-4660-86ca-c57dc82dd91f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13733, 369, 179, 3, 49, "Subsection", "ExpressionUUID" -> \
+"3ef3124c-860a-41af-806b-7fa3a81052dc"],
+Cell[13915, 374, 175, 3, 30, "Input", "ExpressionUUID" -> \
+"503dda52-a66d-4d93-8f98-e271bcb7525e"]
+}, Open  ]]
+}, Open  ]],
+Cell[14117, 381, 147, 3, 70, "Section", "ExpressionUUID" -> \
+"8135c2d1-014e-4cbc-bbe8-11e8350b6fbd"],
+Cell[CellGroupData[{
+Cell[14289, 388, 153, 3, 56, "Section", "ExpressionUUID" -> \
+"44a491ca-d668-4cc9-a7dd-b131f90ad04f"],
+Cell[14445, 393, 154, 3, 30, "Input", "ExpressionUUID" -> \
+"ad3733f1-cd27-4603-8357-ad3da8c8893f"],
+Cell[14602, 398, 175, 3, 30, "Text", "ExpressionUUID" -> \
+"2b98c28b-7615-488a-ba94-3b9524947653"],
+Cell[14780, 403, 1580, 38, 213, "Code", "ExpressionUUID" -> \
+"455e9eca-7dfe-40cf-84c4-7fd30829121a"],
+Cell[CellGroupData[{
+Cell[16385, 445, 201, 4, 30, "Input", "ExpressionUUID" -> \
+"d5bad8b6-cc79-4be7-9a75-ddd04b883ad1"],
+Cell[16589, 451, 3046, 65, 245, "Output", "ExpressionUUID" -> \
+"b5d3e0b1-5aae-4e16-8f8a-cf3a3a0cf9fa"]
+}, Open  ]],
+Cell[19650, 519, 391, 10, 30, "Input", "ExpressionUUID" -> \
+"85e04be3-2b5a-4e50-9ea1-15282ef089a3"],
+Cell[20044, 531, 153, 3, 30, "Input", "ExpressionUUID" -> \
+"4e81da0a-1de2-430c-bbf2-2c2cad457f57"],
+Cell[20200, 536, 3537, 93, 277, "Input", "ExpressionUUID" -> \
+"2cbf5f0f-905f-4106-862c-69446173f0f1"],
+Cell[CellGroupData[{
+Cell[23762, 633, 156, 3, 30, "Input", "ExpressionUUID" -> \
+"f7e1b266-e96b-4afc-8ebf-37c370a1667c"],
+Cell[23921, 638, 185, 4, 44, "Output", "ExpressionUUID" -> \
+"854c80a0-170c-45c4-a77d-6215241469bd"]
+}, Open  ]],
+Cell[24121, 645, 1663, 37, 88, "Input", "ExpressionUUID" -> \
+"0af39ea0-e06b-4f1c-92ab-6d50baa5676b"],
+Cell[CellGroupData[{
+Cell[25809, 686, 338, 8, 30, "Input", "ExpressionUUID" -> \
+"9c783e36-e00f-4993-ba09-93dd2d83124d"],
+Cell[26150, 696, 482, 10, 30, "Output", "ExpressionUUID" -> \
+"83bfd594-6d74-4835-91d1-8a25bcf584c0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26669, 711, 1958, 41, 202, "Input", "ExpressionUUID" -> \
+"e132853f-6a64-488e-ab92-22becaa84a74"],
+Cell[28630, 754, 1848, 37, 334, "Output", "ExpressionUUID" -> \
+"708d4b17-7d83-4967-9c62-7d0747d90424"]
+}, Open  ]],
+Cell[30493, 794, 2734, 68, 275, "Code", "ExpressionUUID" -> \
+"1841d196-e28d-4a56-b188-39eb0dcba15a"],
+Cell[CellGroupData[{
+Cell[33252, 866, 270, 7, 30, "Input", "ExpressionUUID" -> \
+"03cfc09e-1fe5-489b-b91a-fd99eb83de45"],
+Cell[33525, 875, 171, 4, 30, "Output", "ExpressionUUID" -> \
+"a7172520-08d0-4c7b-b2f4-1ce1b14badda"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33733, 884, 299, 7, 30, "Input", "ExpressionUUID" -> \
+"e8fa8ca3-6427-4d63-93e6-a350b38ef476"],
+Cell[34035, 893, 37929, 535, 249, "Output", "ExpressionUUID" -> \
+"fd86df38-90b5-4cd4-9972-0412653d6919"]
+}, Open  ]],
+Cell[71979, 1431, 936, 25, 50, "Input", "ExpressionUUID" -> \
+"73020dce-7f59-4b62-bba6-c78ca2956207"],
+Cell[72918, 1458, 233, 4, 30, "Input", "ExpressionUUID" -> \
+"7d2c6643-9d00-4441-97f7-742825c6e39d"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

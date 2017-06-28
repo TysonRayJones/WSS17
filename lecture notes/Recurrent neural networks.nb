@@ -1,0 +1,143 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      4340,        135]
+NotebookOptionsPosition[      3317,        105]
+NotebookOutlinePosition[      3659,        120]
+CellTagsIndexPosition[      3616,        117]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Recurrent Neural networks", "Title",
+ CellChangeTimes->{{3.707564993922675*^9, 
+  3.7075649966460547`*^9}},ExpressionUUID->"60a8fa88-693a-4c82-8952-\
+743444d799e5"],
+
+Cell[BoxData[
+ TagBox[
+  ButtonBox[
+   PaneSelectorBox[{False->"\<\"Understanding RNNs\"\>", True->
+    StyleBox["\<\"Understanding RNNs\"\>", "HyperlinkActive"]}, Dynamic[
+     CurrentValue["MouseOver"]],
+    BaseStyle->{"Hyperlink"},
+    FrameMargins->0,
+    ImageSize->Automatic],
+   BaseStyle->"Hyperlink",
+   ButtonData->{
+     URL["http://colah.github.io/posts/2015-08-Understanding-LSTMs/"], None},
+   ButtonNote->"http://colah.github.io/posts/2015-08-Understanding-LSTMs/"],
+  Annotation[#, "http://colah.github.io/posts/2015-08-Understanding-LSTMs/", 
+   "Hyperlink"]& ]], "Output",
+ CellChangeTimes->{
+  3.7075663207658434`*^9},ExpressionUUID->"aa55a712-989e-4e31-aef6-\
+1a8136324115"],
+
+Cell["\<\
+Time series data is hard to predict traditionally. RNNs feed output back in\
+\>", "Text",
+ CellChangeTimes->{{3.707565053245318*^9, 3.7075650631132107`*^9}, {
+  3.7075654003993382`*^9, 
+  3.7075654083775625`*^9}},ExpressionUUID->"b1650a55-edbc-4e7d-96de-\
+bb8d67670605"],
+
+Cell["\<\
+Applications:
+- speech recognition
+- speech synthesis
+- language translation
+- image caption generation\
+\>", "Text",
+ CellChangeTimes->{{3.707565143451246*^9, 
+  3.7075652101282253`*^9}},ExpressionUUID->"524e1db6-bd13-41aa-a8d8-\
+c4cb40b9fcd3"],
+
+Cell[TextData[{
+ StyleBox["Universal approximation Theorem:",
+  FontWeight->"Bold"],
+ "\ncan approximate any continuous function (on a compact subset of ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["R", "n"], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "901e4b4c-fa6b-4dd8-a152-54338bf8c8ca"],
+ " arbitrarily well with a finite number of neurons"
+}], "Text",
+ CellChangeTimes->{{3.707565338030687*^9, 
+  3.7075653666160803`*^9}},ExpressionUUID->"fb3a636e-2f39-437d-a753-\
+f6c552444d8b"],
+
+Cell[TextData[{
+ StyleBox["Theorem",
+  FontWeight->"Bold"],
+ ":\nRNNs are turing complete!"
+}], "Text",
+ CellChangeTimes->{{3.7075662569710984`*^9, 
+  3.7075662638408985`*^9}},ExpressionUUID->"5a91ebfb-cdc5-4809-816f-\
+bcfa951ffaa4"],
+
+Cell["\<\
+RNNs are very deep feed-forward networks.
+Exploding/vanishing gradients meant training was very hard\
+\>", "Text",
+ CellChangeTimes->{{3.7075657464181547`*^9, 3.7075657917985163`*^9}, {
+  3.707565842485509*^9, 
+  3.7075658557853637`*^9}},ExpressionUUID->"52e38cc9-af69-4187-a8ae-\
+eb72d96d5b18"],
+
+Cell["LSTM = LongShortTermMemory layers solve this problem.", "Text",
+ CellChangeTimes->{{3.7075659056876945`*^9, 3.707565916966956*^9}, {
+  3.707565962787594*^9, 
+  3.7075659757540774`*^9}},ExpressionUUID->"6d5df031-6650-4f9d-aac0-\
+24ffe14b3f49"]
+}, Open  ]]
+},
+WindowSize->{958, 988},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 170, 3, 101, "Title", "ExpressionUUID" -> \
+"60a8fa88-693a-4c82-8952-743444d799e5"],
+Cell[753, 27, 695, 17, 30, "Output", "ExpressionUUID" -> \
+"aa55a712-989e-4e31-aef6-1a8136324115"],
+Cell[1451, 46, 280, 6, 30, "Text", "ExpressionUUID" -> \
+"b1650a55-edbc-4e7d-96de-bb8d67670605"],
+Cell[1734, 54, 255, 9, 106, "Text", "ExpressionUUID" -> \
+"524e1db6-bd13-41aa-a8d8-c4cb40b9fcd3"],
+Cell[1992, 65, 514, 13, 49, "Text", "ExpressionUUID" -> \
+"fb3a636e-2f39-437d-a753-f6c552444d8b"],
+Cell[2509, 80, 233, 7, 49, "Text", "ExpressionUUID" -> \
+"5a91ebfb-cdc5-4809-816f-bcfa951ffaa4"],
+Cell[2745, 89, 305, 7, 49, "Text", "ExpressionUUID" -> \
+"52e38cc9-af69-4187-a8ae-eb72d96d5b18"],
+Cell[3053, 98, 248, 4, 30, "Text", "ExpressionUUID" -> \
+"6d5df031-6650-4f9d-aac0-24ffe14b3f49"]
+}, Open  ]]
+}
+]
+*)
+

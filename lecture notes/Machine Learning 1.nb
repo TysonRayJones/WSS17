@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     16884,        505]
-NotebookOptionsPosition[     12004,        385]
-NotebookOutlinePosition[     12347,        400]
-CellTagsIndexPosition[     12304,        397]
+NotebookDataLength[     17153,        512]
+NotebookOptionsPosition[     12172,        390]
+NotebookOutlinePosition[     12514,        405]
+CellTagsIndexPosition[     12471,        402]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -381,10 +381,15 @@ size of tree will grow with more training data (no fixed parameters)\
 8d0fa1909619"]
 }, Open  ]]
 }, Open  ]]
-}, Open  ]]
+}, Open  ]],
+
+Cell["Machine Learning 3", "Title",
+ CellChangeTimes->{{3.7075761565384035`*^9, 
+  3.7075761585117006`*^9}},ExpressionUUID->"54c04f8e-a411-4143-bd95-\
+ba8a27d86b80"]
 },
-WindowSize->{958, 465},
-WindowMargins->{{Automatic, 28}, {34, Automatic}},
+WindowSize->{958, 988},
+WindowMargins->{{Automatic, -7}, {Automatic, 0}},
 FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
 StyleDefinitions->"Default.nb"
 ]
@@ -506,7 +511,9 @@ Cell[11744, 375, 220, 5, 30, "Text", "ExpressionUUID" -> \
 "bba07397-573e-4480-928a-8d0fa1909619"]
 }, Open  ]]
 }, Open  ]]
-}, Open  ]]
+}, Open  ]],
+Cell[12003, 385, 165, 3, 101, "Title", "ExpressionUUID" -> \
+"54c04f8e-a411-4143-bd95-ba8a27d86b80"]
 }
 ]
 *)

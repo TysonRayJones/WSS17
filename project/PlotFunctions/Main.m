@@ -2,15 +2,24 @@
 
 Package["PlotFunctions`"]
 
-(* PlotRange not exported *)
+
+(* symbol exports *)
+
 PackageExport[Labels]
 PackageExport[ShowBar]
 PackageExport[Potential]
 PackageExport[PotentialFilling]
 PackageExport[PotentialTransform]
+(* PlotRange not exported *)
+
+
+(* function exports *)
 
 PackageExport[PlotWavefunction]
 PackageExport[ColorBar]
+
+
+(* public functions *)
 
 PlotWavefunction::usage = 
 	"PlotWavefunction[psi, domain] plots a discrete/continuous, list/functional/interpolated/symbolic wavefunction"
@@ -19,6 +28,8 @@ ColorBar::usage =
 	"ColorBar[title] returns a colorbar which can be legended outside plots. Avoid embedding!"
 
 
+(* function definitions *)
+
 ColorBar[title_:"Arg[\[Psi]]"] :=
 	BarLegend[
 		{"Rainbow", {-\[Pi], \[Pi]}}, 
@@ -26,6 +37,7 @@ ColorBar[title_:"Arg[\[Psi]]"] :=
 		"Ticks" -> N[{-\[Pi]+.01, -\[Pi]/2, 0, \[Pi]/2, \[Pi]-.01}],
 		"TickLabels" -> {"-\[Pi]", "-\[Pi]/2", "0", "\[Pi]/2", "\[Pi]"}
 	]
+
 
 
 PlotWavefunction[psi_, domain_, args___] :=

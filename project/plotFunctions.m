@@ -37,31 +37,34 @@ plotWavefunction[psi_, domain_, args___] :=
 	]
 	
 	
-plotContinuousWavefunction[psi_, domain_, range_:{0,1}, labels_:{"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]/2\[Pi]"}, showbar_:True] :=
+plotContinuousWavefunction[psi_, domain_, range_:{0,1}, showbar_:True, labels_:{"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"}] :=
 	
-	(* allow independent outline and filling colour *)
-	ReplaceAll[
-		Plot[
-		
-			(* plot probability density *)
-			Abs[psi[x]]^2, 
-			{x, domain[[1]], domain[[-1]]},   (* will hide grid error *)
-			PlotRange -> range,
-			AxesLabel -> labels[[{1,2}]],
+	Legended[
+		ReplaceAll[
+			Plot[
 			
-			(* fill colour based on complex phase *)
-			ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
-			ColorFunctionScaling -> False,
-			Filling -> Axis,
+				(* plot probability density *)
+				Abs[psi[x]]^2, 
+				{x, domain[[1]], domain[[-1]]},   (* will hide grid error *)
+				PlotRange -> range,
+				AxesLabel -> labels[[{1,2}]],
+				
+				(* fill colour based on complex phase *)
+				ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
+				ColorFunctionScaling -> False,
+				Filling -> Axis
+			],
 			
-			(* color bar is laggy; only to be used statically. bug forces normalisation here *)
-			PlotLegends -> If[
-				showbar,
-				BarLegend["Rainbow", LegendLabel -> labels[[3]]],
-				None
-			]
+			(* allow independent outline and filling colour *)
+			Line[pts_, _] :> {Black, Line[pts]}
 		],
-		Line[pts_, _] :> {Black, Line[pts]}
+		
+		(* show colorbar only when static plotting (else it's super laggy) *)
+		If[
+			showbar, 
+			colorBar[labels[[3]]], 
+			None
+		]
 	]
 			
 			

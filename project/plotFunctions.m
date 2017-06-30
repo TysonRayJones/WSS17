@@ -97,22 +97,53 @@ plotDiscreteWavefunction[psi_, domain_, args___] :=
 	]
 	
 
-plotSymbolicWavefunction[psi_, domain_, args___] :=
+plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 	
 	(* convert to a pure function and plot as continuous *)
 	plotContinuousWavefunction[
-		(psi /. domain[[1]] -> #)&,
+	
+		(*
+		(psi /. domain[[1]] \[Rule] #)&,
+		*)
+		Function @@ {x, psi},
 		
 		(* assume first domain element is independent var... *)
+		(*
 		domain[[2;;]],
+		*)
+		{xL, xR},
 		
 		(* ...and remove it from potential, replacing with pure function *)
+		(*
 		args /. {
-			(potential -> symb_) :> 
-			(potential -> ((symb /. domain[[1]] :> #)&))
+			(potential \[Rule] symb_) \[RuleDelayed] 
+			(potential \[Rule] (Evaluate[symb /. domain[[1]] \[RuleDelayed] #]&))
 		}
+		*)
+		(*
+		{args} /. {
+			(potential \[Rule] symb_) \[RuleDelayed] (potential \[Rule] Function @@ {x, symb})
+		}
+		*)
+		Sequence @@ Echo[ReplaceAll[
+			Echo@{args},
+			(potential -> symb_) :> (potential -> Function @@ {x, symb})
+		]]
 	]
 	
+	Print[Context[potential]]
+
+(*
+plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
+	(* convert to a pure function and plot as continuous *)
+	plotContinuousWavefunction[
+		Function @@ {x, psi},
+		{xL, xR},
+		{args} /. {
+			(potential \[Rule] symb_) \[RuleDelayed] (potential \[Rule] Function @@ {x, symb})
+		}
+	]
+*)
 	
 processPotential[potential_] :=
 	potential

@@ -10,14 +10,24 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[       776,         34]
-NotebookOptionsPosition[       561,         21]
-NotebookOutlinePosition[       916,         37]
-CellTagsIndexPosition[       873,         34]
+NotebookDataLength[      1230,         46]
+NotebookOptionsPosition[       918,         31]
+NotebookOutlinePosition[      1273,         47]
+CellTagsIndexPosition[      1230,         44]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"PacletDirectoryAdd", "[", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", " ", "\"\<../\>\""}], 
+     "}"}], "]"}], "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"<<", "Project`"}]}], "Input",ExpressionUUID->"9db71961-3c71-4f0c-\
+a849-2465c484e389"]
 },
 WindowSize->{808, 756},
 WindowMargins->{{12, Automatic}, {Automatic, 24}},
@@ -36,9 +46,9 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
+Cell[558, 20, 356, 9, 54, "Input", "ExpressionUUID" -> \
+"9db71961-3c71-4f0c-a849-2465c484e389"]
 }
 ]
 *)
-
-(* End of internal cache information *)
 

@@ -3,9 +3,11 @@
 Package["PlotFunctions`"]
 
 (* PlotRange not exported *)
-PackageExport[ShowBar]
 PackageExport[Labels]
+PackageExport[ShowBar]
 PackageExport[Potential]
+PackageExport[PotentialFilling]
+PackageExport[PotentialTransform]
 
 PackageExport[PlotWavefunction]
 PackageExport[ColorBar]
@@ -41,48 +43,85 @@ PlotWavefunction[psi_, domain_, args___] :=
 	
 
 Options[plotContinuousWavefunction] = {
-	"PlotRange" -> {0,1},   (* not exported *)
+
+	(* exported *)
 	"ShowBar" -> True,
 	"Labels" -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
-	"Potential" -> 0
+	"Potential" -> None,
+	"PotentialFilling" -> True,
+	"PotentialTransform" -> (#&),
+	
+	(* not exported *)
+	"PlotRange" -> {0,1} 
 }	
 
-plotContinuousWavefunction[psi_, domain_, OptionsPattern[]] :=
+plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
+
+	(* add elements to plot, one by one *)
+	Module[
+		{plot}, 
 		
-	Legended[
-		Show[
-			ReplaceAll[
-				Plot[
-				
-					(* plot probability density *)
-					Abs[psi[x]]^2, 
-					{x, domain[[1]], domain[[-1]]},   (* will hide grid error *)
-					PlotRange -> OptionValue["PlotRange"],
-					AxesLabel -> OptionValue["Labels"][[{1,2}]],
-					
-					(* fill colour based on complex phase *)
-					ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
-					ColorFunctionScaling -> False,
-					Filling -> Axis
-				],
-				
-				(* allow independent outline and filling colour *)
-				Line[pts_, _] :> {Black, Line[pts]}
-			],
+		(* plot probability density *)
+		plot = ReplaceAll[
 			Plot[
-				processPotential[OptionValue["Potential"]][x],
-				{x, domain[[1]], domain[[-1]]},
-				PlotStyle -> {Thick, Red}
-			]
-		],
+				Abs[psi[x]]^2, 
+				{x, xL, xR},   
+				PlotRange -> OptionValue["PlotRange"],
+				AxesLabel -> OptionValue["Labels"][[{1,2}]],
+				
+				(* fill colour based on complex phase *)
+				ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
+				ColorFunctionScaling -> False,
+				Filling -> Axis
+			],		
+			(* allow independent outline and filling colour *)
+			Line[pts_, _] :> {Black, Line[pts]}
+		];
+		
+		(* optionally show potential *)
+		plot = If[
+			OptionValue["Potential"] === None,
+			plot,
 			
-		(* show colorbar only when static plotting (else it's super laggy) *)
-		If[
-			OptionValue["ShowBar"], 
-			ColorBar[OptionValue["Labels"][[3]]], 
-			None
-		]
+			(* ensure potential is a function, and optionally transform *)
+			Show[
+				plot,
+				With[
+					{processedPotential = 
+						processPotential[
+							OptionValue["Potential"], 
+							OptionValue["PotentialTransform"],
+							{xL, xR}
+						]
+					},
+				
+					(* plot transformed potential *)
+					Plot[
+						processedPotential[x],
+						{x, xL, xR},
+						PlotRange -> OptionValue["PlotRange"],
+						Exclusions -> None,
+						Filling -> If[OptionValue["PotentialFilling"], Axis, None],
+						PlotStyle -> {Thick, Red}
+					]
+				]
+			]
+		];
+		
+		(* optionally show colorbar (should only be used in static plot) *)
+		plot = If[
+			OptionValue["ShowBar"],
+			Legended[
+				plot,
+				ColorBar[OptionValue["Labels"][[3]]]
+			],
+			plot
+		];
+		
+		(* return *)
+		plot
 	]
+	
 			
 			
 plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, args___] :=
@@ -107,11 +146,30 @@ plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 		
 		(* convert symbolic potential to pure *)
 		Sequence @@ ReplaceAll[
-			Echo@{args},
-			(Potential -> symb_) :> (Potential -> Function @@ {x, symb})
+			{args},
+			(Potential -> symb:Except[_List|_Function|_InterpolatingFunction]) :> 
+			(Potential -> Function @@ {x, symb})
 		]
 	]
 	
 	
-processPotential[potential_] :=
-	potential
+processPotential[potential_, transform_, domain_] :=
+	
+	(* potential and psi format can be uncorrelated (unless symbolic) *)
+	Which[		
+	
+		(* transform existing functions *)
+		Head[potential] === InterpolatingFunction || Head[potential] === Function,
+		Composition[transform, potential],
+		
+		(* interpolate list to function then transform *)
+		Head[potential] === List,
+		Composition[
+			transform, 
+			ListInterpolation[
+				potential,
+				{domain}
+			]
+		]
+	]
+	

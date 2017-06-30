@@ -1,0 +1,820 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     32016,        812]
+NotebookOptionsPosition[     30091,        758]
+NotebookOutlinePosition[     30433,        773]
+CellTagsIndexPosition[     30390,        770]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Wick simming the RIGHT way", "Title",
+ CellChangeTimes->{{3.7076985021456814`*^9, 
+  3.707698508654297*^9}},ExpressionUUID->"43e2ef15-03b3-4907-a4c1-\
+9b010d6c0319"],
+
+Cell[CellGroupData[{
+
+Cell["Digging into the state", "Section",
+ CellChangeTimes->{{3.7076999771563487`*^9, 
+  3.7076999793749046`*^9}},ExpressionUUID->"9d785bee-5384-4e74-8030-\
+1d962902bf1b"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"initialWavefunction", "::", "usage"}], " ", "=", "\n", "\t", 
+    "\"\<Returns a flat, analytic, initial wavefunction for wick relaxation\>\
+\""}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"initialWavefunction", "[", 
+    RowBox[{"{", 
+     RowBox[{"x_", ",", " ", "xL_", ",", " ", "xR_"}], "}"}], "]"}], " ", ":=",
+    "\n", "\t", 
+   RowBox[{"normaliseWavefunction", "[", "\n", "\t\t", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"UnitStep", "[", 
+       RowBox[{"x", " ", "-", " ", 
+        RowBox[{"(", 
+         RowBox[{"xL", "+", "0.01"}], ")"}]}], "]"}], " ", "-", " ", 
+      RowBox[{"UnitStep", "[", 
+       RowBox[{"x", " ", "-", " ", 
+        RowBox[{"(", 
+         RowBox[{"xR", "-", "0.01"}], ")"}]}], "]"}]}], ",", "\n", "\t\t", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", " ", "xL", ",", " ", "xR"}], "}"}]}], "\n", "\t", 
+    "]"}]}], "\n", "\t"}], "\n", 
+ RowBox[{
+  RowBox[{"normaliseWavefunction", "[", 
+   RowBox[{"psi_", ",", " ", 
+    RowBox[{"domain_:", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", " ", 
+       RowBox[{"-", "\[Infinity]"}], ",", " ", "\[Infinity]"}], "}"}]}]}], 
+   "]"}], " ", ":=", "\n", "\t", 
+  RowBox[{"psi", " ", "/", " ", 
+   RowBox[{"Sqrt", "[", 
+    RowBox[{"NIntegrate", "[", "\n", "\t\t", 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"Abs", "[", "psi", "]"}], "2"], ",", "\n", "\t\t", "domain", 
+      ",", "\n", "\t\t", 
+      RowBox[{"Method", " ", "\[Rule]", " ", 
+       RowBox[{"{", 
+        RowBox[{"Automatic", ",", " ", 
+         RowBox[{"\"\<SymbolicProcessing\>\"", " ", "\[Rule]", " ", "0"}]}], 
+        "}"}]}]}], "\n", "\t", "]"}], "]"}]}]}]}], "Code",
+ CellChangeTimes->{{3.7077014915622663`*^9, 
+  3.707701524584464*^9}},ExpressionUUID->"9ae6f55e-c1ae-4b75-9611-\
+105647e06693"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"hamiltonian", "[", 
+    RowBox[{"psi_", ",", " ", "potential_", ",", " ", 
+     RowBox[{"r_:", "x"}]}], "]"}], " ", ":=", " ", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", 
+      FractionBox["1", "2"]}], 
+     RowBox[{"D", "[", 
+      RowBox[{"psi", ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"r", ",", "2"}], "}"}]}], "]"}]}], " ", "+", " ", 
+    RowBox[{"potential", " ", "psi"}]}]}], "\n", "\t"}], "\n", 
+ RowBox[{
+  StyleBox[
+   RowBox[{"expectedEnergy", "[", 
+    RowBox[{"psi_", ",", " ", "potential_", ",", "  ", 
+     RowBox[{"domain_:", 
+      RowBox[{"{", 
+       RowBox[{"x", ",", " ", 
+        RowBox[{"-", "\[Infinity]"}], ",", " ", "\[Infinity]"}], "}"}]}]}], 
+    "]"}], "Code"], 
+  StyleBox[" ", "Code"], 
+  StyleBox[":=", "Code"], 
+  StyleBox["\n", "Code"], "\t", 
+  RowBox[{"With", "[", "\n", "\t\t", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"r", " ", "=", " ", 
+      RowBox[{"domain", "[", 
+       RowBox[{"[", "1", "]"}], "]"}]}], "}"}], ",", 
+    StyleBox["\[IndentingNewLine]", "Code"], 
+    StyleBox[
+     RowBox[{
+      StyleBox["\t", "Code"], "\t"}]], 
+    RowBox[{
+     StyleBox["NIntegrate", "Code"], 
+     StyleBox["[", "Code"], 
+     StyleBox["\[IndentingNewLine]", "Code"], 
+     StyleBox[
+      RowBox[{
+       StyleBox["\t\t", "Code"], "\t"}]], 
+     RowBox[{
+      StyleBox[
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"Conjugate", "[", "psi", "]"}], " ", "/.", " ", 
+          RowBox[{
+           RowBox[{"Conjugate", "[", "r", "]"}], " ", "\[Rule]", " ", "r"}]}],
+          ")"}], "\[IndentingNewLine]", "\t\t\t", 
+        RowBox[{"(", 
+         RowBox[{"hamiltonian", "[", 
+          RowBox[{"psi", ",", " ", "potential", ",", " ", "r"}], "]"}], 
+         ")"}]}], "Code"], 
+      StyleBox[",", "Code"], 
+      StyleBox["\[IndentingNewLine]", "Code"], 
+      StyleBox[
+       RowBox[{
+        StyleBox["\t\t", "Code"], "\t"}]], 
+      StyleBox["domain", "Code"], 
+      StyleBox[",", "Code"], 
+      StyleBox["\n", "Code"], 
+      StyleBox[
+       RowBox[{
+        StyleBox["\t\t", "Code"], "\t"}]], 
+      RowBox[{
+       StyleBox["Method", "Code"], 
+       StyleBox["\[Rule]", "Code"], 
+       RowBox[{
+        StyleBox["{", "Code"], 
+        RowBox[{
+         StyleBox["Automatic", "Code"], 
+         StyleBox[",", "Code"], 
+         StyleBox[" ", "Code"], 
+         RowBox[{
+          StyleBox["\"\<SymbolicProcessing\>\"", "Code"], 
+          StyleBox[" ", "Code"], 
+          StyleBox["\[Rule]", "Code"], "0"}]}], "}"}]}]}], 
+     StyleBox["\[IndentingNewLine]", "Code"], 
+     StyleBox[
+      RowBox[{
+       StyleBox["\t", "Code"], "\t"}]], 
+     StyleBox["]", "Code"]}]}], 
+   StyleBox["\n", "Code"], "\t", "]"}]}]}], "Code",
+ CellChangeTimes->{
+  3.7077015271368747`*^9},ExpressionUUID->"a7aa7fd5-7789-43e3-a605-\
+63c292738805"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"getEquations", "[", 
+    RowBox[{"potential_", ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"x_", ",", " ", "xL_", ",", " ", "xR_"}], "}"}], ",", " ", 
+     RowBox[{"\[Psi]_:", "\[Psi]"}], ",", " ", 
+     RowBox[{"t_:", "t"}]}], "]"}], " ", ":=", "\n", "\t", 
+   RowBox[{"{", "\n", "\t\t", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"-", 
+       RowBox[{
+        SuperscriptBox["\[Psi]", 
+         TagBox[
+          RowBox[{"(", 
+           RowBox[{"0", ",", "1"}], ")"}],
+          Derivative],
+         MultilineFunction->None], "[", 
+        RowBox[{"x", ",", "t"}], "]"}]}], " ", "\[Equal]", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["1", "2"]}], " ", 
+        RowBox[{
+         SuperscriptBox["\[Psi]", 
+          TagBox[
+           RowBox[{"(", 
+            RowBox[{"2", ",", "0"}], ")"}],
+           Derivative],
+          MultilineFunction->None], "[", 
+         RowBox[{"x", ",", "t"}], "]"}]}], " ", "+", " ", 
+       RowBox[{"potential", " ", 
+        RowBox[{"\[Psi]", "[", 
+         RowBox[{"x", ",", "t"}], "]"}]}]}]}], ",", "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"\[Psi]", "[", 
+       RowBox[{"x", ",", " ", "0"}], "]"}], " ", "\[Equal]", " ", 
+      RowBox[{
+       RowBox[{"UnitStep", "[", 
+        RowBox[{"x", " ", "-", " ", 
+         RowBox[{"(", 
+          RowBox[{"xL", "+", "0.01"}], ")"}]}], "]"}], " ", "-", " ", 
+       RowBox[{"UnitStep", "[", 
+        RowBox[{"x", " ", "-", " ", 
+         RowBox[{"(", 
+          RowBox[{"xR", "-", "0.01"}], ")"}]}], "]"}]}]}], ",", "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"\[Psi]", "[", 
+       RowBox[{"xL", ",", "t"}], "]"}], " ", "\[Equal]", " ", "0"}], ",", 
+     "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"\[Psi]", "[", 
+       RowBox[{"xR", ",", "t"}], "]"}], " ", "\[Equal]", " ", "0"}]}], "\n", 
+    "\t", "}"}]}], ",", "\t", "\n", "\n", 
+  RowBox[{
+   RowBox[{"getGroundstate", "[", 
+    RowBox[{"potential_", ",", " ", 
+     RowBox[{"domain_:", 
+      RowBox[{"{", 
+       RowBox[{"x", ",", 
+        RowBox[{"-", "5"}], ",", "5"}], "}"}]}], ",", " ", 
+     RowBox[{"timestep_:", "0.1"}], ",", " ", 
+     RowBox[{"threshold_:", "0.01"}]}], "]"}], " ", ":=", "\n", "\t", 
+   RowBox[{"Module", "[", "\n", "\t\t", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "x", ",", " ", "t", ",", " ", "psi", ",", " ", "\[Psi]term", ",", " ", 
+       "state", ",", " ", "init\[Psi]", ",", " ", "prevE", ",", " ", "curE"}],
+       "}"}], ",", "\n", "\t\t", 
+     RowBox[{
+      RowBox[{"x", " ", "=", " ", 
+       RowBox[{"domain", "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}], ";", "\n", "\t\t", 
+      RowBox[{"psi", " ", "=", " ", 
+       RowBox[{"initialWavefunction", "[", "domain", "]"}]}], ";", "\n", 
+      "\t\t", 
+      RowBox[{"prevE", " ", "=", " ", 
+       RowBox[{"expectedEnergy", "[", 
+        RowBox[{"init\[Psi]", ",", " ", "potential", ",", " ", "domain"}], 
+        "]"}]}], ";", "\n", "\t\t", 
+      RowBox[{"curE", " ", "=", " ", 
+       RowBox[{
+        RowBox[{"Abs", "[", "prevE", "]"}], " ", "+", " ", 
+        RowBox[{"1000", " ", "threshold"}]}]}], ";", "\n", "\t\t", "\n", 
+      "\t\t", 
+      RowBox[{"state", " ", "=", " ", 
+       RowBox[{"NDSolve`ProcessEquations", "[", "\n", "\t\t\t", 
+        RowBox[{
+         RowBox[{"getEquations", "[", 
+          RowBox[{
+          "potential", ",", " ", "domain", ",", " ", "\[Psi]term", ",", " ", 
+           "t"}], "]"}], ",", "\n", "\t\t\t", "\[Psi]term", ",", " ", 
+         "domain", ",", " ", "t", ",", " ", 
+         RowBox[{
+         "Method", " ", "\[Rule]", " ", "\"\<ExplicitRungeKutta\>\""}]}], 
+        "]"}]}], ";", "\n", "\t\t", "\n", "\t\t", 
+      RowBox[{"While", "[", "\n", "\t\t\t", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"Abs", "[", 
+          FractionBox[
+           RowBox[{"curE", " ", "-", " ", "prevE"}], 
+           RowBox[{"curE", " ", "timestep"}]], "]"}], " ", ">", " ", 
+         "threshold"}], ",", "\n", "\t\t\t", 
+        RowBox[{
+         RowBox[{"prevE", " ", "=", " ", "curE"}], ";", "\n", "\t\t\t", "\n", 
+         "\t\t\t", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"NDSolve`Iterate", "[", 
+            RowBox[{"state", ",", " ", "timestep"}], "]"}], "\n", "\t\t\t", 
+           "psi"}], " ", "=", " ", 
+          RowBox[{
+           RowBox[{"NDSolve`ProcessSolutions", "[", 
+            RowBox[{"state", ",", " ", "\"\<Forward\>\""}], "]"}], "[", 
+           RowBox[{"[", 
+            RowBox[{"1", ",", " ", "2"}], "]"}], "]"}], "\n", "\t\t\t", "\n", 
+          "\t\t\t", "\n", "\t\t\t", 
+          RowBox[{"(*", " ", 
+           RowBox[{
+           "WAIT", " ", "HOW", " ", "DO", " ", "i", " ", "NORMALISE", " ", 
+            RowBox[{"STATE", "?"}]}], " ", "*)"}], "\n", "\t\t", "\n", 
+          "\t\t"}]}]}]}]}]}]}]}]}]], "Code",
+ CellChangeTimes->{{3.707701434466199*^9, 3.7077014815759745`*^9}, {
+  3.7077015433008623`*^9, 3.7077016250498753`*^9}, {3.707701780685295*^9, 
+  3.7077019412908835`*^9}, {3.7077019797114735`*^9, 3.7077020918378053`*^9}, {
+  3.7077021302857847`*^9, 3.707702359282674*^9}, {3.707702399587615*^9, 
+  3.707702445060421*^9}, {3.707702491056776*^9, 
+  3.7077024986560464`*^9}},ExpressionUUID->"279b58ae-08c6-4603-91aa-\
+1c9896f99b76"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\n", "\n", 
+  RowBox[{
+   RowBox[{"state", " ", "=", "\n", "\t", 
+    RowBox[{"First", "[", "\n", "\t\t", 
+     RowBox[{"NDSolve`ProcessEquations", "[", "\n", "\t\t\t", 
+      RowBox[{
+       RowBox[{"{", "\n", "\t\t\t", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", 
+           RowBox[{
+            SuperscriptBox["\[Psi]", 
+             TagBox[
+              RowBox[{"(", 
+               RowBox[{"0", ",", "1"}], ")"}],
+              Derivative],
+             MultilineFunction->None], "[", 
+            RowBox[{"x", ",", "t"}], "]"}]}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            FractionBox["1", "2"], " ", 
+            SuperscriptBox["x", "2"], " ", 
+            RowBox[{"\[Psi]", "[", 
+             RowBox[{"x", ",", "t"}], "]"}]}], "-", 
+           RowBox[{
+            FractionBox["1", "2"], " ", 
+            RowBox[{
+             SuperscriptBox["\[Psi]", 
+              TagBox[
+               RowBox[{"(", 
+                RowBox[{"2", ",", "0"}], ")"}],
+               Derivative],
+              MultilineFunction->None], "[", 
+             RowBox[{"x", ",", "t"}], "]"}]}]}]}], ",", "\n", "\t\t\t", 
+         RowBox[{
+          RowBox[{"\[Psi]", "[", 
+           RowBox[{"x", ",", " ", "0"}], "]"}], " ", "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{"UnitStep", "[", 
+            RowBox[{"x", " ", "-", " ", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"-", "5"}], "+", "0.01"}], ")"}]}], "]"}], " ", "-", 
+           " ", 
+           RowBox[{"UnitStep", "[", 
+            RowBox[{"x", " ", "-", " ", 
+             RowBox[{"(", 
+              RowBox[{"5", "-", "0.01"}], ")"}]}], "]"}]}]}], ",", "\n", 
+         "\t\t\t", 
+         RowBox[{
+          RowBox[{"\[Psi]", "[", 
+           RowBox[{
+            RowBox[{"-", "5"}], ",", "t"}], "]"}], " ", "\[Equal]", " ", 
+          "0"}], ",", "\n", "\t\t\t", 
+         RowBox[{
+          RowBox[{"\[Psi]", "[", 
+           RowBox[{"5", ",", "t"}], "]"}], " ", "\[Equal]", " ", "0"}]}], 
+        "\n", "\t\t\t", "}"}], ",", "\n", "\t\t\t", "\[Psi]", ",", "\n", 
+       "\t\t\t", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", " ", 
+         RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\n", "\t\t\t", "t",
+        ",", "\n", "\t\t\t", 
+       RowBox[{
+       "Method", " ", "\[Rule]", " ", "\"\<ExplicitRungeKutta\>\""}]}], 
+      "     ", 
+      RowBox[{"(*", " ", 
+       RowBox[{
+       "effective", " ", "for", " ", "algs", " ", "that", " ", 
+        "\"\<stop\>\""}], " ", "*)"}], "\n", "\t\t", "]"}], "\n", "\t", 
+     "]"}]}], "\n", "\t\t\t"}]}]], "Code",
+ CellChangeTimes->{{3.707699993700694*^9, 3.7077000433571863`*^9}, {
+  3.707700643899864*^9, 3.7077006996991606`*^9}, {3.707700762468296*^9, 
+  3.7077008913074017`*^9}, {3.7077009871297956`*^9, 3.707701007964759*^9}, {
+  3.707701393076535*^9, 
+  3.7077013932414193`*^9}},ExpressionUUID->"400cfbb0-d35f-44e8-af4a-\
+3c0152582ddd"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"NDSolve`StateData", "[", 
+   RowBox[{
+    StyleBox["\<\"<\"\>",
+     ShowStringCharacters->False], "\[InvisibleSpace]", "0.`", 
+    "\[InvisibleSpace]", 
+    StyleBox["\<\">\"\>",
+     ShowStringCharacters->False]}], "]"}],
+  False,
+  Editable->False,
+  SelectWithContents->True]], "Output",
+ CellChangeTimes->{{3.7077006600230627`*^9, 3.7077006754431124`*^9}, {
+  3.7077007719651966`*^9, 3.707700775966356*^9}, {3.707700807540483*^9, 
+  3.707700891591938*^9}},ExpressionUUID->"09fd91e9-3319-4eaa-926c-\
+1f2a16438755"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"NDSolve`Iterate", "[", 
+  RowBox[{"state", ",", " ", "1"}], "]"}]], "Input",
+ CellChangeTimes->{{3.707700926578848*^9, 
+  3.7077009321478868`*^9}},ExpressionUUID->"de16b3f0-d79b-402e-a3e3-\
+9f8f3ba34cf2"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["state"], "Input",
+ CellChangeTimes->{{3.7077009385650215`*^9, 
+  3.707700939605477*^9}},ExpressionUUID->"ece86f7a-7e58-45bd-9e38-\
+99f50f9d4c4b"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"NDSolve`StateData", "[", 
+   RowBox[{
+    StyleBox["\<\"<\"\>",
+     ShowStringCharacters->False], "\[InvisibleSpace]", 
+    RowBox[{"0.`", "\[InvisibleSpace]", 
+     StyleBox["\<\",\"\>",
+      StripOnInput->False,
+      ShowStringCharacters->False], "\[InvisibleSpace]", "1.`"}], 
+    "\[InvisibleSpace]", 
+    StyleBox["\<\">\"\>",
+     ShowStringCharacters->False]}], "]"}],
+  False,
+  Editable->False,
+  SelectWithContents->True]], "Output",
+ CellChangeTimes->{
+  3.7077009398556614`*^9},ExpressionUUID->"15fb532a-711c-4995-bcb4-\
+c7a1dfbd1191"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"NDSolve`Iterate", "[", 
+  RowBox[{"state", ",", " ", "5"}], "]"}]], "Input",
+ CellChangeTimes->{{3.707700943777583*^9, 
+  3.707700948327881*^9}},ExpressionUUID->"2312cbef-e16e-4454-a121-\
+190f12fa90de"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["state"], "Input",
+ CellChangeTimes->{{3.707700951200872*^9, 
+  3.707700951567543*^9}},ExpressionUUID->"1eae6af4-c523-4a7a-b73a-\
+2298ac0e05b4"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"NDSolve`StateData", "[", 
+   RowBox[{
+    StyleBox["\<\"<\"\>",
+     ShowStringCharacters->False], "\[InvisibleSpace]", 
+    RowBox[{"0.`", "\[InvisibleSpace]", 
+     StyleBox["\<\",\"\>",
+      StripOnInput->False,
+      ShowStringCharacters->False], "\[InvisibleSpace]", "5.`"}], 
+    "\[InvisibleSpace]", 
+    StyleBox["\<\">\"\>",
+     ShowStringCharacters->False]}], "]"}],
+  False,
+  Editable->False,
+  SelectWithContents->True]], "Output",
+ CellChangeTimes->{
+  3.707700951775745*^9},ExpressionUUID->"e904baf0-1272-4206-b35a-\
+2aec0a28075f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"NDSolve`ProcessSolutions", "[", 
+   RowBox[{"state", ",", " ", "\"\<Forward\>\""}], "]"}], "[", 
+  RowBox[{"[", 
+   RowBox[{"1", ",", " ", "2"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.70770102363548*^9, 3.7077010323374605`*^9}, {
+  3.707701109787055*^9, 
+  3.7077011521062393`*^9}},ExpressionUUID->"12e8d69e-9ff4-4843-81f8-\
+7e8eac4aab3d"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   TemplateBox[{RowBox[{
+       StyleBox[
+        TagBox["InterpolatingFunction", "SummaryHead"], 
+        "NonInterpretableSummary"], 
+       StyleBox["[", "NonInterpretableSummary"], 
+       DynamicModuleBox[{Typeset`open$$ = False}, 
+        PanelBox[
+         PaneSelectorBox[{False -> GridBox[{{
+               PaneBox[
+                ButtonBox[
+                 DynamicBox[
+                  FEPrivate`FrontEndResource[
+                  "FEBitmaps", "SquarePlusIconMedium"]], 
+                 ButtonFunction :> (Typeset`open$$ = True), Appearance -> 
+                 None, Evaluator -> Automatic, Method -> "Preemptive"], 
+                Alignment -> {Center, Center}, ImageSize -> 
+                Dynamic[{
+                  Automatic, 3.5 CurrentValue["FontCapHeight"]/
+                   AbsoluteCurrentValue[Magnification]}]], 
+               GraphicsBox[{{{{}, {}, 
+                   TagBox[{
+                    Directive[
+                    Opacity[1.], 
+                    RGBColor[0.368417, 0.506779, 0.709798], 
+                    AbsoluteThickness[1]], 
+                    LineBox[CompressedData["
+1:eJwB0QMu/CFib1JlAgAAADwAAAACAAAAYyig9P//E8AAAPza48awPV30seMR
+WRPAuEY+qlZE3D7xespDGaQSwIl5f3xXLdg+2et4wh77EcD8zL8ZBP7WPoKM
+jdB0VRHAs1rmcgrL4z7G56hPwKEQwHQECGd4qvU+u1q02hP0D8CiZXTAWVEF
+Px1bJPiRiA7AfAbNF7QLFT8Bu2A0sSMNwPyyKUZ2ISQ/je/IrczWC8A3to54
+jvQxP02ZPgnTbQrAfjoGb4lLQD+1F+Ch1RwJwIZLjdA/pks/n/VNWXnSB8BL
+B9NmF6xWP7xIyfIHbAbACiZZdrHBYj+CcHDJkh0FwPF9ZUdlPW0/ew0lggiz
+A8Ca5EjIj/h2P/UJplkfTwLAUrH9/+tUgT8Y21JuMgMBwBxEzYo0yog/3UIa
+ymA2/79Qr54A2LuRP9t45jFVlvy/3fZr+DYXmD8/mc1dH775vxdvgzeISqA/
+pnhNxyvz9r9SQRB9+UClP14BJaswWPS/rIEZe5N8qj99dBdTC4Xxv2jBukGH
+VLA/2iHD6rzD7b/TRhPA9UyzP8DYiKrnl+i/rcrEC7Qktj9zZITyvfviv5FK
+TJKi9bg/kIVeXgp/279XaNF1RiW7P9XrH+jvJdC/8Yw9zArWvD+YOBGheQe0
+v5fY1Osmr70/FKniuESJtT8keB0Nbqu9PxX5SbQpp9A/3YyxMB/HvD+hovxQ
+ICzbP9+672tfNLs/ECim+wa+4j/2FAQoKRK5PwMqmEZSVug/88bOhZtHtj9U
+2dqcrI7tPwyEgn64arM/7Nlzta2b8T95teuuLjuwP92dIqIMQPQ/3oDth2Sv
+qj/LojhRKdf2P4KKSVR3dqU/Ur0zPHCm+T/WbGR8iXGgP4gu16y+Rfw/djgH
+E3HymD9XtV9ZNx3/PxawkwZx8pE/kb4n5LbzAEDs8XKE9jCJP8/Nc97VQAJA
+lOn52ymcgT/ZZ7L2CaoDQId6W0kNOHc/Oy3F0UH7BED0z62rg49uPxuTC47Y
+RQZArgW/hEfBYz/Ig0RohKwHQF6rEARu9Vc/zJ9RBTT7CEBQxpSEPBxNP51G
+UcD4ZQpA59PmcFKAQD/tjYRcHMoLQBM6E7FvWDI/lACMu0MWDUD4zcQ3UZ4k
+Pwj+hTiAfg5AzEaV7qVvFT/TJlR4wM4PQNsm6iiT5wY/NW0K64qdEEC4xSCW
+EA72PkGXhAplUBFASiaSAVU65D741mgLQfcRQHmoGG6tJNc+FVxGmyesEkCn
+rrD3u3zYPt/2jQwQVRNA3FAb8kNg3D5jKKD0//8TQH46vOrjxrA960DR2Q==
+
+                    "]]}, 
+                    Annotation[#, 
+                    "Charting`Private`Tag$3736#1"]& ]}}, {}, {}}, {
+                DisplayFunction -> Identity, Ticks -> {Automatic, Automatic}, 
+                 AxesOrigin -> {0, 0}, FrameTicks -> {{{}, {}}, {{}, {}}}, 
+                 GridLines -> {None, None}, DisplayFunction -> Identity, 
+                 PlotRangePadding -> {{
+                    Scaled[0.1], 
+                    Scaled[0.1]}, {
+                    Scaled[0.1], 
+                    Scaled[0.1]}}, PlotRangeClipping -> True, ImagePadding -> 
+                 All, DisplayFunction -> Identity, AspectRatio -> 1, 
+                 Axes -> {False, False}, AxesLabel -> {None, None}, 
+                 AxesOrigin -> {0, 0}, DisplayFunction :> Identity, 
+                 Frame -> {{True, True}, {True, True}}, 
+                 FrameLabel -> {{None, None}, {None, None}}, FrameStyle -> 
+                 Directive[
+                   Opacity[0.5], 
+                   Thickness[Tiny], 
+                   RGBColor[0.368417, 0.506779, 0.709798]], 
+                 FrameTicks -> {{None, None}, {None, None}}, 
+                 GridLines -> {None, None}, GridLinesStyle -> Directive[
+                   GrayLevel[0.5, 0.4]], ImageSize -> 
+                 Dynamic[{
+                   Automatic, 3.5 CurrentValue["FontCapHeight"]/
+                    AbsoluteCurrentValue[Magnification]}], 
+                 Method -> {
+                  "DefaultBoundaryStyle" -> Automatic, "DefaultMeshStyle" -> 
+                   AbsolutePointSize[6], "ScalingFunctions" -> None, 
+                   "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+                    (Identity[#]& )[
+                    Part[#, 1]], 
+                    (Identity[#]& )[
+                    Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+                    (Identity[#]& )[
+                    Part[#, 1]], 
+                    (Identity[#]& )[
+                    Part[#, 2]]}& )}}, 
+                 PlotRange -> {{-5., 5.}, {0., 0.11595385797122258`}}, 
+                 PlotRangeClipping -> True, PlotRangePadding -> {{
+                    Scaled[0.1], 
+                    Scaled[0.1]}, {
+                    Scaled[0.1], 
+                    Scaled[0.1]}}, Ticks -> {Automatic, Automatic}}], 
+               GridBox[{{
+                  RowBox[{
+                    TagBox["\"Domain: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox[
+                    RowBox[{"{", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"-", "5.`"}], ",", "5.`"}], "}"}], "}"}], 
+                    "SummaryItem"]}]}, {
+                  RowBox[{
+                    TagBox["\"Output: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox["\"scalar\"", "SummaryItem"]}]}}, 
+                GridBoxAlignment -> {
+                 "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+                False, GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                GridBoxSpacings -> {
+                 "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                BaseStyle -> {
+                 ShowStringCharacters -> False, NumberMarks -> False, 
+                  PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+             GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+             GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             BaselinePosition -> {1, 1}], True -> GridBox[{{
+               PaneBox[
+                ButtonBox[
+                 DynamicBox[
+                  FEPrivate`FrontEndResource[
+                  "FEBitmaps", "SquareMinusIconMedium"]], 
+                 ButtonFunction :> (Typeset`open$$ = False), Appearance -> 
+                 None, Evaluator -> Automatic, Method -> "Preemptive"], 
+                Alignment -> {Center, Center}, ImageSize -> 
+                Dynamic[{
+                  Automatic, 3.5 CurrentValue["FontCapHeight"]/
+                   AbsoluteCurrentValue[Magnification]}]], 
+               GraphicsBox[{{{{}, {}, 
+                   TagBox[{
+                    Directive[
+                    Opacity[1.], 
+                    RGBColor[0.368417, 0.506779, 0.709798], 
+                    AbsoluteThickness[1]], 
+                    LineBox[CompressedData["
+1:eJwB0QMu/CFib1JlAgAAADwAAAACAAAAYyig9P//E8AAAPza48awPV30seMR
+WRPAuEY+qlZE3D7xespDGaQSwIl5f3xXLdg+2et4wh77EcD8zL8ZBP7WPoKM
+jdB0VRHAs1rmcgrL4z7G56hPwKEQwHQECGd4qvU+u1q02hP0D8CiZXTAWVEF
+Px1bJPiRiA7AfAbNF7QLFT8Bu2A0sSMNwPyyKUZ2ISQ/je/IrczWC8A3to54
+jvQxP02ZPgnTbQrAfjoGb4lLQD+1F+Ch1RwJwIZLjdA/pks/n/VNWXnSB8BL
+B9NmF6xWP7xIyfIHbAbACiZZdrHBYj+CcHDJkh0FwPF9ZUdlPW0/ew0lggiz
+A8Ca5EjIj/h2P/UJplkfTwLAUrH9/+tUgT8Y21JuMgMBwBxEzYo0yog/3UIa
+ymA2/79Qr54A2LuRP9t45jFVlvy/3fZr+DYXmD8/mc1dH775vxdvgzeISqA/
+pnhNxyvz9r9SQRB9+UClP14BJaswWPS/rIEZe5N8qj99dBdTC4Xxv2jBukGH
+VLA/2iHD6rzD7b/TRhPA9UyzP8DYiKrnl+i/rcrEC7Qktj9zZITyvfviv5FK
+TJKi9bg/kIVeXgp/279XaNF1RiW7P9XrH+jvJdC/8Yw9zArWvD+YOBGheQe0
+v5fY1Osmr70/FKniuESJtT8keB0Nbqu9PxX5SbQpp9A/3YyxMB/HvD+hovxQ
+ICzbP9+672tfNLs/ECim+wa+4j/2FAQoKRK5PwMqmEZSVug/88bOhZtHtj9U
+2dqcrI7tPwyEgn64arM/7Nlzta2b8T95teuuLjuwP92dIqIMQPQ/3oDth2Sv
+qj/LojhRKdf2P4KKSVR3dqU/Ur0zPHCm+T/WbGR8iXGgP4gu16y+Rfw/djgH
+E3HymD9XtV9ZNx3/PxawkwZx8pE/kb4n5LbzAEDs8XKE9jCJP8/Nc97VQAJA
+lOn52ymcgT/ZZ7L2CaoDQId6W0kNOHc/Oy3F0UH7BED0z62rg49uPxuTC47Y
+RQZArgW/hEfBYz/Ig0RohKwHQF6rEARu9Vc/zJ9RBTT7CEBQxpSEPBxNP51G
+UcD4ZQpA59PmcFKAQD/tjYRcHMoLQBM6E7FvWDI/lACMu0MWDUD4zcQ3UZ4k
+Pwj+hTiAfg5AzEaV7qVvFT/TJlR4wM4PQNsm6iiT5wY/NW0K64qdEEC4xSCW
+EA72PkGXhAplUBFASiaSAVU65D741mgLQfcRQHmoGG6tJNc+FVxGmyesEkCn
+rrD3u3zYPt/2jQwQVRNA3FAb8kNg3D5jKKD0//8TQH46vOrjxrA960DR2Q==
+
+                    "]]}, 
+                    Annotation[#, 
+                    "Charting`Private`Tag$3736#1"]& ]}}, {}, {}}, {
+                DisplayFunction -> Identity, Ticks -> {Automatic, Automatic}, 
+                 AxesOrigin -> {0, 0}, FrameTicks -> {{{}, {}}, {{}, {}}}, 
+                 GridLines -> {None, None}, DisplayFunction -> Identity, 
+                 PlotRangePadding -> {{
+                    Scaled[0.1], 
+                    Scaled[0.1]}, {
+                    Scaled[0.1], 
+                    Scaled[0.1]}}, PlotRangeClipping -> True, ImagePadding -> 
+                 All, DisplayFunction -> Identity, AspectRatio -> 1, 
+                 Axes -> {False, False}, AxesLabel -> {None, None}, 
+                 AxesOrigin -> {0, 0}, DisplayFunction :> Identity, 
+                 Frame -> {{True, True}, {True, True}}, 
+                 FrameLabel -> {{None, None}, {None, None}}, FrameStyle -> 
+                 Directive[
+                   Opacity[0.5], 
+                   Thickness[Tiny], 
+                   RGBColor[0.368417, 0.506779, 0.709798]], 
+                 FrameTicks -> {{None, None}, {None, None}}, 
+                 GridLines -> {None, None}, GridLinesStyle -> Directive[
+                   GrayLevel[0.5, 0.4]], ImageSize -> 
+                 Dynamic[{
+                   Automatic, 3.5 CurrentValue["FontCapHeight"]/
+                    AbsoluteCurrentValue[Magnification]}], 
+                 Method -> {
+                  "DefaultBoundaryStyle" -> Automatic, "DefaultMeshStyle" -> 
+                   AbsolutePointSize[6], "ScalingFunctions" -> None, 
+                   "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+                    (Identity[#]& )[
+                    Part[#, 1]], 
+                    (Identity[#]& )[
+                    Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+                    (Identity[#]& )[
+                    Part[#, 1]], 
+                    (Identity[#]& )[
+                    Part[#, 2]]}& )}}, 
+                 PlotRange -> {{-5., 5.}, {0., 0.11595385797122258`}}, 
+                 PlotRangeClipping -> True, PlotRangePadding -> {{
+                    Scaled[0.1], 
+                    Scaled[0.1]}, {
+                    Scaled[0.1], 
+                    Scaled[0.1]}}, Ticks -> {Automatic, Automatic}}], 
+               GridBox[{{
+                  RowBox[{
+                    TagBox["\"Domain: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox[
+                    RowBox[{"{", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"-", "5.`"}], ",", "5.`"}], "}"}], "}"}], 
+                    "SummaryItem"]}]}, {
+                  RowBox[{
+                    TagBox["\"Output: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox["\"scalar\"", "SummaryItem"]}]}, {
+                  RowBox[{
+                    TagBox["\"Order: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox["5", "SummaryItem"]}]}, {
+                  RowBox[{
+                    TagBox["\"Method: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox["\"Hermite\"", "SummaryItem"]}]}, {
+                  RowBox[{
+                    TagBox["\"Periodic: \"", "SummaryItemAnnotation"], 
+                    "\[InvisibleSpace]", 
+                    TagBox["False", "SummaryItem"]}]}}, 
+                GridBoxAlignment -> {
+                 "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+                False, GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+                GridBoxSpacings -> {
+                 "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+                BaseStyle -> {
+                 ShowStringCharacters -> False, NumberMarks -> False, 
+                  PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+             GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+             GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             BaselinePosition -> {1, 1}]}, 
+          Dynamic[Typeset`open$$], ImageSize -> Automatic], BaselinePosition -> 
+         Baseline], DynamicModuleValues :> {}], 
+       StyleBox["]", "NonInterpretableSummary"]}]},
+    "CopyTag",
+    DisplayFunction->(#& ),
+    InterpretationFunction->("InterpolatingFunction[{{-5., 5.}}, <>]"& )],
+   False,
+   Editable->False,
+   SelectWithContents->True,
+   Selectable->False], "[", "x", "]"}]], "Output",
+ CellChangeTimes->{
+  3.707701032653254*^9, {3.7077011125339966`*^9, 
+   3.7077011531425595`*^9}},ExpressionUUID->"7b00306b-1d8b-492f-b06c-\
+fec178004648"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{958, 988},
+WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 171, 3, 101, "Title", "ExpressionUUID" -> \
+"43e2ef15-03b3-4907-a4c1-9b010d6c0319"],
+Cell[CellGroupData[{
+Cell[776, 29, 171, 3, 70, "Section", "ExpressionUUID" -> \
+"9d785bee-5384-4e74-8030-1d962902bf1b"],
+Cell[950, 34, 1823, 49, 309, "Code", "ExpressionUUID" -> \
+"9ae6f55e-c1ae-4b75-9611-105647e06693"],
+Cell[2776, 85, 2893, 90, 285, "Code", "ExpressionUUID" -> \
+"a7aa7fd5-7789-43e3-a605-63c292738805"],
+Cell[5672, 177, 5263, 132, 669, "Code", "ExpressionUUID" -> \
+"279b58ae-08c6-4603-91aa-1c9896f99b76"],
+Cell[CellGroupData[{
+Cell[10960, 313, 2954, 77, 435, "Code", "ExpressionUUID" -> \
+"400cfbb0-d35f-44e8-af4a-3c0152582ddd"],
+Cell[13917, 392, 552, 15, 30, "Output", "ExpressionUUID" -> \
+"09fd91e9-3319-4eaa-926c-1f2a16438755"]
+}, Open  ]],
+Cell[14484, 410, 228, 5, 30, "Input", "ExpressionUUID" -> \
+"de16b3f0-d79b-402e-a3e3-9f8f3ba34cf2"],
+Cell[CellGroupData[{
+Cell[14737, 419, 159, 3, 30, "Input", "ExpressionUUID" -> \
+"ece86f7a-7e58-45bd-9e38-99f50f9d4c4b"],
+Cell[14899, 424, 584, 18, 30, "Output", "ExpressionUUID" -> \
+"15fb532a-711c-4995-bcb4-c7a1dfbd1191"]
+}, Open  ]],
+Cell[15498, 445, 226, 5, 30, "Input", "ExpressionUUID" -> \
+"2312cbef-e16e-4454-a121-190f12fa90de"],
+Cell[CellGroupData[{
+Cell[15749, 454, 157, 3, 30, "Input", "ExpressionUUID" -> \
+"1eae6af4-c523-4a7a-b73a-2298ac0e05b4"],
+Cell[15909, 459, 582, 18, 30, "Output", "ExpressionUUID" -> \
+"e904baf0-1272-4206-b35a-2aec0a28075f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16528, 482, 382, 9, 30, "Input", "ExpressionUUID" -> \
+"12e8d69e-9ff4-4843-81f8-7e8eac4aab3d"],
+Cell[16913, 493, 13138, 260, 72, "Output", "ExpressionUUID" -> \
+"7b00306b-1d8b-492f-b06c-fec178004648"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

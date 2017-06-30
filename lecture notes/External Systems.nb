@@ -1,0 +1,306 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      9858,        298]
+NotebookOptionsPosition[      6700,        216]
+NotebookOutlinePosition[      7043,        231]
+CellTagsIndexPosition[      7000,        228]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Interfacing with External Systems", "Title",
+ CellChangeTimes->{{3.7077554461290445`*^9, 
+  3.707755451030238*^9}},ExpressionUUID->"263f101a-ca0d-4e2c-b2da-\
+00ffb84c19ab"],
+
+Cell[CellGroupData[{
+
+Cell["ProcessLink", "Section",
+ CellChangeTimes->{{3.7077555592516193`*^9, 
+  3.707755560804237*^9}},ExpressionUUID->"60f1be00-fef3-4824-8bf3-\
+67e81e48b9ff"],
+
+Cell["synchronously run process", "Text",
+ CellChangeTimes->{{3.707755562821595*^9, 
+  3.707755566384327*^9}},ExpressionUUID->"85a807b7-f25c-4073-acaf-\
+14e6257de450"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"RunProcess", "[", 
+  RowBox[{"{", "\"\<dir\>\"", "}"}], "]"}]], "Input",
+ CellChangeTimes->{{3.7077555669436483`*^9, 
+  3.707755609426936*^9}},ExpressionUUID->"7a5cf09f-9cba-441f-81c5-\
+ae7cd59feda1"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "RunProcess","pnfd",
+   "\"Program \\!\\(\\*RowBox[{\\\"\\\\\\\"dir\\\\\\\"\\\"}]\\) not found.  \
+Check Environment[\\\"PATH\\\"].\"",2,5,5,32567817453117866685,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{{3.7077555774405203`*^9, 
+  3.7077556096479616`*^9}},ExpressionUUID->"e3eede83-d1fc-4596-983c-\
+bbcb42f7d9b8"],
+
+Cell[BoxData["$Failed"], "Output",
+ CellChangeTimes->{{3.7077555976229944`*^9, 
+  3.707755609670963*^9}},ExpressionUUID->"a452c581-d5c2-4651-986a-\
+4a2c6b462d83"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"shell", " ", "=", " ", 
+  RowBox[{"StartProcess", "[", "$SystemShell", "]"}]}]], "Input",
+ CellChangeTimes->{{3.707755615730459*^9, 
+  3.7077556260432816`*^9}},ExpressionUUID->"b6f5a259-aa0a-4381-ad58-\
+c18bc94718e6"],
+
+Cell[BoxData[
+ RowBox[{"ProcessObject", "[", "0", "]"}]], "Output",
+ CellChangeTimes->{
+  3.7077556265990067`*^9},ExpressionUUID->"ff2ed930-9e99-4703-aa42-\
+e7e06c5c271a"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["WolframScript", "Section",
+ CellChangeTimes->{{3.70775591071455*^9, 
+  3.707755913059298*^9}},ExpressionUUID->"f2d6af23-f0b5-4e6a-a74b-\
+2bcc3cbae81a"],
+
+Cell["\<\
+cmd inerface for running MMA to be used in another client (amazing)!\
+\>", "Text",
+ CellChangeTimes->{{3.7077559147140427`*^9, 
+  3.7077559301998463`*^9}},ExpressionUUID->"0c091d7d-58bf-44b6-a608-\
+bf22e03fd628"],
+
+Cell["in cmd:", "Text",
+ CellChangeTimes->{{3.7077559399156446`*^9, 
+  3.7077560035200386`*^9}},ExpressionUUID->"bb9ac9c1-7528-4341-b3fd-\
+7683d8c445b7"],
+
+Cell[BoxData[
+ RowBox[{"wolframscript", " ", "-", 
+  RowBox[{
+   RowBox[{"code", " ", "'"}], 
+   RowBox[{
+    RowBox[{"Print", "[", "$OperatingSystem", "]"}], "'"}]}]}]], "Code",
+ CellChangeTimes->{{3.7077559854703627`*^9, 
+  3.70775599658315*^9}},ExpressionUUID->"c767b738-484d-44e8-97b2-\
+c9bab0075cba"],
+
+Cell["must add wolframscript to path environments first", "Text",
+ CellChangeTimes->{{3.7077560056348963`*^9, 3.7077560108595605`*^9}},
+ Background->RGBColor[
+  1, 0.85, 0.85],ExpressionUUID->"5d64b5f4-2105-42aa-bba6-0d70cb32c54c"],
+
+Cell["can also run it on the cloud!", "Text",
+ CellChangeTimes->{{3.70775602554862*^9, 
+  3.7077560287999554`*^9}},ExpressionUUID->"5527270d-eaae-4868-a1e2-\
+dc63ee92b989"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"wolframscript", " ", "-", "cloud", " ", "-", "code"}], " ", 
+  "..."}]], "Code",
+ CellChangeTimes->{{3.7077560529274874`*^9, 
+  3.7077560589257*^9}},ExpressionUUID->"db5900ee-10bb-49b1-96b6-88eeeda204fe"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["ChannelFramework", "Section",
+ CellChangeTimes->{{3.7077568509400544`*^9, 
+  3.707756852625287*^9}},ExpressionUUID->"7e7ac58a-c863-4d47-855b-\
+1eae62070c96"],
+
+Cell["used to live stream data into/out of Wolfram systems", "Text",
+ CellChangeTimes->{{3.707756853906989*^9, 
+  3.7077568645143337`*^9}},ExpressionUUID->"f50b8893-d371-4e68-bd16-\
+f66471aadbfe"],
+
+Cell[BoxData[
+ RowBox[{"chan", " ", "=", " ", 
+  RowBox[{"CreateChannel", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.7077568658775835`*^9, 
+  3.707756871093349*^9}},ExpressionUUID->"47ebc095-ffdd-410c-a92e-\
+ca697bfe9d36"],
+
+Cell[BoxData[
+ RowBox[{"ChannelListen", "[", 
+  RowBox[{"chan", ",", " ", "Print"}], "]"}]], "Input",
+ CellChangeTimes->{{3.707756872958082*^9, 
+  3.7077568776017704`*^9}},ExpressionUUID->"172f9c5f-7fab-410a-9683-\
+ab6e4e61ce04"],
+
+Cell[BoxData[
+ RowBox[{"ChannelSend", "[", 
+  RowBox[{"chan", ",", " ", "\"\<Hello\>\""}], "]"}]], "Input",
+ CellChangeTimes->{{3.7077568820696526`*^9, 
+  3.7077568894075975`*^9}},ExpressionUUID->"7c5cd8fb-c39d-4fea-bdd0-\
+31049b8edf50"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"url", " ", "=", " ", "\"\<https://wolfr.am/mMQaFvKx\>\""}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.7077570537962494`*^9, 
+  3.7077570552644715`*^9}},ExpressionUUID->"76a75240-e5bd-45ca-9039-\
+ce9ea241f6df"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"chan", " ", "=", " ", 
+  RowBox[{"CreateChannel", "[", "url", "]"}]}]], "Input",
+ CellChangeTimes->{{3.7077570584127336`*^9, 
+  3.707757061408182*^9}},ExpressionUUID->"d43c4442-93fc-410e-bd28-\
+c1eb19ded953"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "CreateChannel","exst",
+   "\"Channel \
+\\!\\(\\*RowBox[{\\\"\\\\\\\"https://channelbroker.wolframcloud.com:443/users/\
+ijohnson@wolfram.com/pos\\\\\\\"\\\"}]\\) already exists. If you want to \
+change its options, use SetOptions.\"",2,8,6,32567817453117866685,"Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellChangeTimes->{
+  3.707757068369937*^9},ExpressionUUID->"6b09bd88-ac04-416d-9e52-\
+c56b6c75fe23"],
+
+Cell[BoxData[
+ RowBox[{"ChannelObject", 
+  "[", "\<\"https://channelbroker.wolframcloud.com/users/ijohnson@wolfram.com/\
+pos\"\>", "]"}]], "Output",
+ CellChangeTimes->{
+  3.7077570683709373`*^9},ExpressionUUID->"d3013503-f016-494f-be36-\
+14246d7b9340"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["GPUs", "Section",
+ CellChangeTimes->{{3.707757606594968*^9, 
+  3.707757609106803*^9}},ExpressionUUID->"c2872ca4-7929-4073-a91c-\
+e4530a46d3e0"],
+
+Cell["", "Text",ExpressionUUID->"d1583fbd-2313-4daa-b102-25ed70cc0844"],
+
+Cell["CUDALink (abstract CUDA use. Can also use CUDA)", "Text",
+ CellChangeTimes->{{3.7077583605344243`*^9, 
+  3.7077583712769427`*^9}},ExpressionUUID->"0892569b-babb-4874-9cb2-\
+4c3909d72788"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{759, 833},
+WindowMargins->{{Automatic, 24}, {Automatic, 34}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 178, 3, 101, "Title", "ExpressionUUID" -> \
+"263f101a-ca0d-4e2c-b2da-00ffb84c19ab"],
+Cell[CellGroupData[{
+Cell[783, 29, 158, 3, 70, "Section", "ExpressionUUID" -> \
+"60f1be00-fef3-4824-8bf3-67e81e48b9ff"],
+Cell[944, 34, 167, 3, 30, "Text", "ExpressionUUID" -> \
+"85a807b7-f25c-4073-acaf-14e6257de450"],
+Cell[CellGroupData[{
+Cell[1136, 41, 224, 5, 30, "Input", "ExpressionUUID" -> \
+"7a5cf09f-9cba-441f-81c5-ae7cd59feda1"],
+Cell[1363, 48, 373, 8, 21, "Message", "ExpressionUUID" -> \
+"e3eede83-d1fc-4596-983c-bbcb42f7d9b8"],
+Cell[1739, 58, 162, 3, 30, "Output", "ExpressionUUID" -> \
+"a452c581-d5c2-4651-986a-4a2c6b462d83"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1938, 66, 241, 5, 33, "Input", "ExpressionUUID" -> \
+"b6f5a259-aa0a-4381-ad58-c18bc94718e6"],
+Cell[2182, 73, 171, 4, 30, "Output", "ExpressionUUID" -> \
+"ff2ed930-9e99-4703-aa42-e7e06c5c271a"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2402, 83, 157, 3, 70, "Section", "ExpressionUUID" -> \
+"f2d6af23-f0b5-4e6a-a74b-2bcc3cbae81a"],
+Cell[2562, 88, 222, 5, 30, "Text", "ExpressionUUID" -> \
+"0c091d7d-58bf-44b6-a608-bf22e03fd628"],
+Cell[2787, 95, 153, 3, 30, "Text", "ExpressionUUID" -> \
+"bb9ac9c1-7528-4341-b3fd-7683d8c445b7"],
+Cell[2943, 100, 305, 8, 50, "Code", "ExpressionUUID" -> \
+"c767b738-484d-44e8-97b2-c9bab0075cba"],
+Cell[3251, 110, 231, 3, 46, "Text", "ExpressionUUID" -> \
+"5d64b5f4-2105-42aa-bba6-0d70cb32c54c"],
+Cell[3485, 115, 172, 3, 30, "Text", "ExpressionUUID" -> \
+"5527270d-eaae-4868-a1e2-dc63ee92b989"],
+Cell[3660, 120, 239, 5, 50, "Code", "ExpressionUUID" -> \
+"db5900ee-10bb-49b1-96b6-88eeeda204fe"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3936, 130, 163, 3, 70, "Section", "ExpressionUUID" -> \
+"7e7ac58a-c863-4d47-855b-1eae62070c96"],
+Cell[4102, 135, 196, 3, 30, "Text", "ExpressionUUID" -> \
+"f50b8893-d371-4e68-bd16-f66471aadbfe"],
+Cell[4301, 140, 225, 5, 30, "Input", "ExpressionUUID" -> \
+"47ebc095-ffdd-410c-a92e-ca697bfe9d36"],
+Cell[4529, 147, 229, 5, 30, "Input", "ExpressionUUID" -> \
+"172f9c5f-7fab-410a-9683-ab6e4e61ce04"],
+Cell[4761, 154, 237, 5, 30, "Input", "ExpressionUUID" -> \
+"7c5cd8fb-c39d-4fea-bdd0-31049b8edf50"],
+Cell[5001, 161, 244, 6, 30, "Input", "ExpressionUUID" -> \
+"76a75240-e5bd-45ca-9039-ce9ea241f6df"],
+Cell[CellGroupData[{
+Cell[5270, 171, 232, 5, 30, "Input", "ExpressionUUID" -> \
+"d43c4442-93fc-410e-bd28-c1eb19ded953"],
+Cell[5505, 178, 444, 10, 39, "Message", "ExpressionUUID" -> \
+"6b09bd88-ac04-416d-9e52-c56b6c75fe23"],
+Cell[5952, 190, 252, 6, 30, "Output", "ExpressionUUID" -> \
+"d3013503-f016-494f-be36-14246d7b9340"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6253, 202, 149, 3, 70, "Section", "ExpressionUUID" -> \
+"c2872ca4-7929-4073-a91c-e4530a46d3e0"],
+Cell[6405, 207, 71, 0, 30, "Text", "ExpressionUUID" -> \
+"d1583fbd-2313-4daa-b102-25ed70cc0844"],
+Cell[6479, 209, 193, 3, 30, "Text", "ExpressionUUID" -> \
+"0892569b-babb-4874-9cb2-4c3909d72788"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

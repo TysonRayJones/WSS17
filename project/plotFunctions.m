@@ -127,11 +127,10 @@ plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 		*)
 		Sequence @@ Echo[ReplaceAll[
 			Echo@{args},
-			(potential -> symb_) :> (potential -> Function @@ {x, symb})
+			("potential" -> symb_) :> ("potential" -> Function @@ {x, symb})
 		]]
 	]
 	
-	Print[Context[potential]]
 
 (*
 plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=

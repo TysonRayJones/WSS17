@@ -1,7 +1,6 @@
-(* ::Package:: *)
+Package["Project`"]
 
-BeginPackage["plotFunctions`"]
-
+PackageExport[plotWavefunction]
 
 plotWavefunction::usage = 
 	"plotWavefunction[psi, domain] plots a discrete/continuous, list/functional/interpolated/symbolic wavefunction"
@@ -9,9 +8,6 @@ plotWavefunction::usage =
 
 colorBar::usage =
 	"colorBar[title] returns a colorbar which can be legended outside plots. Avoid embedding!"
-
-
-Begin["`Private`"]
 
 
 colorBar[title_:"Arg[\[Psi]]"] :=
@@ -131,7 +127,6 @@ plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 		]]
 	]
 	
-	Print[Context[potential]]
 
 (*
 plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
@@ -147,10 +142,3 @@ plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 	
 processPotential[potential_] :=
 	potential
-	
-
-End[]
-EndPackage[]
-
-
-

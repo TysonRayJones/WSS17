@@ -1,4 +1,4 @@
-Package["Project`"]
+Package["PlotFunctions`"]
 
 PackageExport[plotWavefunction]
 

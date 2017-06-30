@@ -1,4 +1,4 @@
-BeginPackage["Project`"]
+BeginPackage["PlotFunctions`"]
 EndPackage[]
 
 (* All loading of the paclet's Wolfram Language code should go through this file. *)
@@ -9,15 +9,15 @@ EndPackage[]
 
 Map[
     (Unprotect[#];ClearAll[#]) &, {
-        "Project`*",
-        "Project`*`*",
-        "Project`*`*`*"
+        "PlotFunctions`*",
+        "PlotFunctions`*`*",
+        "PlotFunctions`*`*`*"
     }
 ]
 
 PacletManager`Package`loadWolframLanguageCode[
-    "Project", 
-    "Project`", 
+    "PlotFunctions", 
+    "PlotFunctions`", 
     DirectoryName[$InputFileName], 
     "Main.m",
     "AutoUpdate" -> True,

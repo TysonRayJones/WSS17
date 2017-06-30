@@ -1,16 +1,23 @@
+(* ::Package:: *)
+
 Package["PlotFunctions`"]
 
-PackageExport[plotWavefunction]
+(* PlotRange not exported *)
+PackageExport[ShowBar]
+PackageExport[Labels]
+PackageExport[Potential]
 
-plotWavefunction::usage = 
-	"plotWavefunction[psi, domain] plots a discrete/continuous, list/functional/interpolated/symbolic wavefunction"
-	
+PackageExport[PlotWavefunction]
+PackageExport[ColorBar]
 
-colorBar::usage =
-	"colorBar[title] returns a colorbar which can be legended outside plots. Avoid embedding!"
+PlotWavefunction::usage = 
+	"PlotWavefunction[psi, domain] plots a discrete/continuous, list/functional/interpolated/symbolic wavefunction"
+
+ColorBar::usage =
+	"ColorBar[title] returns a colorbar which can be legended outside plots. Avoid embedding!"
 
 
-colorBar[title_:"Arg[\[Psi]]"] :=
+ColorBar[title_:"Arg[\[Psi]]"] :=
 	BarLegend[
 		{"Rainbow", {-\[Pi], \[Pi]}}, 
 		LegendLabel -> title,
@@ -19,7 +26,7 @@ colorBar[title_:"Arg[\[Psi]]"] :=
 	]
 
 
-plotWavefunction[psi_, domain_, args___] :=
+PlotWavefunction[psi_, domain_, args___] :=
 
 	Which[		
 		Head[psi] === InterpolatingFunction || Head[psi] === Function,
@@ -34,10 +41,10 @@ plotWavefunction[psi_, domain_, args___] :=
 	
 
 Options[plotContinuousWavefunction] = {
-	"plotRange" -> {0,1}, 
-	"showBar" -> True,
-	"labels" -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
-	"potential" -> 0
+	"PlotRange" -> {0,1},   (* not exported *)
+	"ShowBar" -> True,
+	"Labels" -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
+	"Potential" -> 0
 }	
 
 plotContinuousWavefunction[psi_, domain_, OptionsPattern[]] :=
@@ -50,8 +57,8 @@ plotContinuousWavefunction[psi_, domain_, OptionsPattern[]] :=
 					(* plot probability density *)
 					Abs[psi[x]]^2, 
 					{x, domain[[1]], domain[[-1]]},   (* will hide grid error *)
-					PlotRange -> OptionValue["plotRange"],
-					AxesLabel -> OptionValue["labels"][[{1,2}]],
+					PlotRange -> OptionValue["PlotRange"],
+					AxesLabel -> OptionValue["Labels"][[{1,2}]],
 					
 					(* fill colour based on complex phase *)
 					ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
@@ -63,7 +70,7 @@ plotContinuousWavefunction[psi_, domain_, OptionsPattern[]] :=
 				Line[pts_, _] :> {Black, Line[pts]}
 			],
 			Plot[
-				processPotential[OptionValue["potential"]][x],
+				processPotential[OptionValue["Potential"]][x],
 				{x, domain[[1]], domain[[-1]]},
 				PlotStyle -> {Thick, Red}
 			]
@@ -71,24 +78,22 @@ plotContinuousWavefunction[psi_, domain_, OptionsPattern[]] :=
 			
 		(* show colorbar only when static plotting (else it's super laggy) *)
 		If[
-			OptionValue["showBar"], 
-			colorBar[OptionValue["labels"][[3]]], 
+			OptionValue["ShowBar"], 
+			ColorBar[OptionValue["Labels"][[3]]], 
 			None
 		]
 	]
 			
 			
-plotDiscreteWavefunction[psi_, domain_, args___] :=
+plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, args___] :=
 	
 	(* interpolate and plot as continuous *)
 	plotContinuousWavefunction[
 		ListInterpolation[
 			psi, 
-			{{domain[[1]], domain[[-1]]}}
+			{{xL, xR}}
 		],
-		
-		(* continuous plot will consult only end-points *)
-		domain,    
+		{xL, xR},    
 		args 
 	]
 	
@@ -97,48 +102,16 @@ plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 	
 	(* convert to a pure function and plot as continuous *)
 	plotContinuousWavefunction[
-	
-		(*
-		(psi /. domain[[1]] \[Rule] #)&,
-		*)
 		Function @@ {x, psi},
-		
-		(* assume first domain element is independent var... *)
-		(*
-		domain[[2;;]],
-		*)
 		{xL, xR},
 		
-		(* ...and remove it from potential, replacing with pure function *)
-		(*
-		args /. {
-			(potential \[Rule] symb_) \[RuleDelayed] 
-			(potential \[Rule] (Evaluate[symb /. domain[[1]] \[RuleDelayed] #]&))
-		}
-		*)
-		(*
-		{args} /. {
-			(potential \[Rule] symb_) \[RuleDelayed] (potential \[Rule] Function @@ {x, symb})
-		}
-		*)
-		Sequence @@ Echo[ReplaceAll[
+		(* convert symbolic potential to pure *)
+		Sequence @@ ReplaceAll[
 			Echo@{args},
-			(potential -> symb_) :> (potential -> Function @@ {x, symb})
-		]]
+			(Potential -> symb_) :> (Potential -> Function @@ {x, symb})
+		]
 	]
 	
-
-(*
-plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
-	(* convert to a pure function and plot as continuous *)
-	plotContinuousWavefunction[
-		Function @@ {x, psi},
-		{xL, xR},
-		{args} /. {
-			(potential \[Rule] symb_) \[RuleDelayed] (potential \[Rule] Function @@ {x, symb})
-		}
-	]
-*)
 	
 processPotential[potential_] :=
 	potential

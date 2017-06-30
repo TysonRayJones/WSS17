@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 Paclet[
 	Name -> "PlotFunctions",
 	Version -> "0.0.1",

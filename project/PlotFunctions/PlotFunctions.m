@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["PlotFunctions`"]
 EndPackage[]
 

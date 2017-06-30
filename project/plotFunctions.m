@@ -36,33 +36,47 @@ plotWavefunction[psi_, domain_, args___] :=
 		plotSymbolicWavefunction[psi, domain, args]
 	]
 	
-	
-plotContinuousWavefunction[psi_, domain_, range_:{0,1}, showbar_:True, labels_:{"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"}] :=
-	
-	Legended[
-		ReplaceAll[
-			Plot[
-			
-				(* plot probability density *)
-				Abs[psi[x]]^2, 
-				{x, domain[[1]], domain[[-1]]},   (* will hide grid error *)
-				PlotRange -> range,
-				AxesLabel -> labels[[{1,2}]],
-				
-				(* fill colour based on complex phase *)
-				ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
-				ColorFunctionScaling -> False,
-				Filling -> Axis
-			],
-			
-			(* allow independent outline and filling colour *)
-			Line[pts_, _] :> {Black, Line[pts]}
-		],
+
+Options[plotContinuousWavefunction] = {
+	"plotRange" -> {0,1}, 
+	"showBar" -> True,
+	"labels" -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
+	"potential" -> 0
+}	
+
+plotContinuousWavefunction[psi_, domain_, OptionsPattern[]] :=
 		
+	Legended[
+		Show[
+			ReplaceAll[
+				Plot[
+				
+					(* plot probability density *)
+					Abs[psi[x]]^2, 
+					{x, domain[[1]], domain[[-1]]},   (* will hide grid error *)
+					PlotRange -> OptionValue["plotRange"],
+					AxesLabel -> OptionValue["labels"][[{1,2}]],
+					
+					(* fill colour based on complex phase *)
+					ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
+					ColorFunctionScaling -> False,
+					Filling -> Axis
+				],
+				
+				(* allow independent outline and filling colour *)
+				Line[pts_, _] :> {Black, Line[pts]}
+			],
+			Plot[
+				processPotential[OptionValue["potential"]][x],
+				{x, domain[[1]], domain[[-1]]},
+				PlotStyle -> {Thick, Red}
+			]
+		],
+			
 		(* show colorbar only when static plotting (else it's super laggy) *)
 		If[
-			showbar, 
-			colorBar[labels[[3]]], 
+			OptionValue["showBar"], 
+			colorBar[OptionValue["labels"][[3]]], 
 			None
 		]
 	]
@@ -76,8 +90,10 @@ plotDiscreteWavefunction[psi_, domain_, args___] :=
 			psi, 
 			{{domain[[1]], domain[[-1]]}}
 		],
-		domain,    (* continuous plot will consult end-points *)
-		args
+		
+		(* continuous plot will consult only end-points *)
+		domain,    
+		args 
 	]
 	
 
@@ -87,10 +103,19 @@ plotSymbolicWavefunction[psi_, domain_, args___] :=
 	plotContinuousWavefunction[
 		(psi /. domain[[1]] -> #)&,
 		
-		(* assume first domain element is independent var *)
+		(* assume first domain element is independent var... *)
 		domain[[2;;]],
-		args
+		
+		(* ...and remove it from potential, replacing with pure function *)
+		args /. {
+			(potential -> symb_) :> 
+			(potential -> ((symb /. domain[[1]] :> #)&))
+		}
 	]
+	
+	
+processPotential[potential_] :=
+	potential
 	
 
 End[]

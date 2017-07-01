@@ -142,15 +142,16 @@ processContinuousPotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 	(* apply function over grid *)
 	With[
 		{grid = Array[(#&), numPoints, {xL, xR}]},
-		{grid, potential @ grid}
+		{grid, potential /@ grid}
 	]
 	
 	
 processDiscretePotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 
-	With[
-		{grid = Array[#&, numPoints, {xL, xR}]},
-		potential =
+	Module[
+		{grid, gridV},
+		grid = Array[#&, numPoints, {xL, xR}];
+		gridV =
 			If[
 				(* skip if we've already got a numPoints array *)
 				Length[potential] === numPoints,
@@ -159,7 +160,7 @@ processDiscretePotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 				(* otherwise interpolate and resample list *)
 				ListInterpolation[potential, {{xL, xR}}] @ grid
 			];
-		{grid, potential}
+		{grid, gridV}
 	]
 	
 	
@@ -172,8 +173,6 @@ processSymbolicPotential[potential_, {x_, xL_, xR_}, numPoints_] :=
 		{xL, xR},
 		numPoints
 	]
-	
-	
 
 processSymbolicPotential[potential_, {xL_, xR_}, numPoints_] :=	
 

@@ -146,6 +146,13 @@ plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, args___] :=
 	]
 	
 
+
+plotSymbolicWavefunction[psi_, {xL_, xR_}, args___] :=
+
+	(* not passing a variable is valid if psi is a constant *)
+	plotSymbolicWavefunction[psi, {dummaryvar, xL, xR}, args]
+
+
 plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
 	
 	(* convert to a pure function and plot as continuous *)

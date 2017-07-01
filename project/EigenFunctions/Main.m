@@ -48,7 +48,8 @@ GetLaplacianMatrix[grid_] :=
 		},
 		SparseArray[
 			{
-				{i_,i_} :> -5/2,  (* https://mathematica.stackexchange.com/questions/114953/fast-eigensystem-calculation *)
+				(* 4th order accuracy of 1D finite difference 2nd-deriv *)
+				{i_,i_} :> -5/2,
 				{i_,j_} :> 4/3   /; Abs[i-j] == 1,
 				{i_,j_} :> -1/12 /; Abs[i-j] == 2
 			},
@@ -59,6 +60,7 @@ GetLaplacianMatrix[grid_] :=
 
 GetPotentialMatrix[potential_] :=
 
+	(* scalar potentials are diagonal *)
 	With[
 		{numPoints = Length[potential]},
 		SparseArray[
@@ -69,7 +71,9 @@ GetPotentialMatrix[potential_] :=
 	
 
 GetHamiltonianMatrix[potential_, grid_] :=
-	-(1/2) GetLaplacianMatrix[grid] + GetPotentialMatrix[potential]
+
+	(* single-particle, non-dimensional, inertial, kinetic energy + potential *)
+	-1/2 GetLaplacianMatrix[grid] + GetPotentialMatrix[potential]
 
 
 
@@ -100,10 +104,8 @@ GetEigenmodes[potential_, domain_, OptionsPattern[]] :=
 		H = GetHamiltonianMatrix[V, x];
 		
 		(* diagonalise the matrix *)
-		{\[Lambda], \[Phi]} = N[Eigensystem[H, -OptionValue["NumberOfModes"]]];
-		
-		Echo[\[Lambda]];
-		
+		{\[Lambda], \[Phi]} = Eigensystem[N[H], -OptionValue["NumberOfModes"]];
+
 		(* reorder eigenfunctions by increasing energy eigenvalue *)
 		{\[Lambda], \[Phi]} = {\[Lambda][[#]], \[Phi][[#]]}& @ Ordering[\[Lambda]];
 		
@@ -121,6 +123,8 @@ Options[Discretise] = {
 }
 
 Discretise[potential_, domain_, OptionsPattern[]] :=
+
+	(* method of discretisation depends on given potential and domain format *)
 	Which[
 		Head[potential] === InterpolatingFunction || Head[potential] === Function,
 		processContinuousPotential[potential, domain, OptionValue["NumberOfPoints"]],
@@ -157,7 +161,8 @@ processDiscretePotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 			];
 		{grid, potential}
 	]
-		
+	
+	
 		
 processSymbolicPotential[potential_, {x_, xL_, xR_}, numPoints_] :=
 
@@ -168,4 +173,11 @@ processSymbolicPotential[potential_, {x_, xL_, xR_}, numPoints_] :=
 		numPoints
 	]
 	
+	
+
+processSymbolicPotential[potential_, {xL_, xR_}, numPoints_] :=	
+
+	(* not supplying a var is valid, when potential is a constant *)
+	processSymbolicPotential[potential, {dummyvar, xL, xR}, numPoints]
+
 	

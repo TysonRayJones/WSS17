@@ -11,6 +11,7 @@ PackageExport[NumberOfPoints]
 
 (* function exports *)
 
+PackageExport[NormaliseDiscrete]
 PackageExport[GetLaplacianMatrix]
 PackageExport[GetPotentialMatrix]
 PackageExport[GetHamiltonianMatrix]
@@ -19,6 +20,9 @@ PackageExport[Discretise]
 
 
 (* public functions *)
+
+NormaliseDiscrete::usage =
+	"NormaliseDiscrete[psi, grid] L2 normalises list psi over grid"
 
 GetLaplacianMatrix::usage =
 	"GetLaplacianMatrix[grid] returns a 1D, finite-difference, Laplacian matrix with the dimensionality/spacing of grid"
@@ -37,6 +41,15 @@ Discretise::usage =
 
 
 (* function definitions *)
+
+
+
+NormaliseDiscrete[psi_, grid_] :=
+	With[
+		{gridSpace = grid[[2]] - grid[[1]]},
+		psi / Sqrt[gridSpace Total[ Abs[psi]^2 ]]
+	]
+
 
 
 GetLaplacianMatrix[grid_] :=
@@ -110,9 +123,7 @@ GetEigenmodes[potential_, domain_, OptionsPattern[]] :=
 		{\[Lambda], \[Phi]} = {\[Lambda][[#]], \[Phi][[#]]}& @ Ordering[\[Lambda]];
 		
 		(* normalise eigenfunction lists *)
-		(* TOOOODOOO *)
-		
-		{\[Lambda], \[Phi]}
+		{\[Lambda], \[Phi]} = {\[Lambda], NormaliseDiscrete[#, x]& /@ \[Phi]}
 	]
 	
 	

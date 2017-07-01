@@ -38,8 +38,6 @@ ColorBar[title_:"Arg[\[Psi]]"] :=
 		"TickLabels" -> {"-\[Pi]", "-\[Pi]/2", "0", "\[Pi]/2", "\[Pi]"}
 	]
 
-
-
 PlotWavefunction[psi_, domain_, args___] :=
 
 	Which[		
@@ -133,8 +131,7 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 		(* return *)
 		plot
 	]
-	
-			
+				
 			
 plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, args___] :=
 	

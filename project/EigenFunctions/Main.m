@@ -95,7 +95,7 @@ GetPotentialMatrix[potential_] :=
 			{numPoints, numPoints}
 		]
 	]
-	
+	(* shouldn't this function just be a call to Diagonal? *)
 
 GetHamiltonianMatrix[potential_, grid_] :=
 

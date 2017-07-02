@@ -55,14 +55,14 @@ PlotWavefunction[psi_, domain_, args___] :=
 Options[plotContinuousWavefunction] = {
 
 	(* exported *)
-	"ShowBar" -> True,
-	"Labels" -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
-	"Potential" -> None,
-	"PotentialFilling" -> True,
-	"PotentialTransform" -> (#&),
+	ShowBar -> True,
+	Labels -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
+	Potential -> None,
+	PotentialFilling -> True,
+	PotentialTransform -> (#&),
 	
 	(* not exported *)
-	"PlotRange" -> {0,1} 
+	PlotRange -> {0,1} 
 }	
 
 plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
@@ -76,8 +76,8 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 			Plot[
 				Abs[psi[x]]^2, 
 				{x, xL, xR},   
-				PlotRange -> OptionValue["PlotRange"],
-				AxesLabel -> OptionValue["Labels"][[{1,2}]],
+				PlotRange -> OptionValue[PlotRange],
+				AxesLabel -> OptionValue[Labels][[{1,2}]],
 				
 				(* fill colour based on complex phase *)
 				ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
@@ -99,8 +99,8 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 				With[
 					{processedPotential = 
 						processPotential[
-							OptionValue["Potential"], 
-							OptionValue["PotentialTransform"],
+							OptionValue[Potential], 
+							OptionValue[PotentialTransform],
 							{xL, xR}
 						]
 					},
@@ -109,9 +109,9 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 					Plot[
 						processedPotential[x],
 						{x, xL, xR},
-						PlotRange -> OptionValue["PlotRange"],
+						PlotRange -> OptionValue[PlotRange],
 						Exclusions -> None,
-						Filling -> If[OptionValue["PotentialFilling"], Axis, None],
+						Filling -> If[OptionValue[PotentialFilling], Axis, None],
 						PlotStyle -> {Thick, Red}
 					]
 				]
@@ -120,10 +120,10 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 		
 		(* optionally show colorbar (should only be used in static plot) *)
 		plot = If[
-			OptionValue["ShowBar"],
+			OptionValue[ShowBar],
 			Legended[
 				plot,
-				ColorBar[OptionValue["Labels"][[3]]]
+				ColorBar[OptionValue[Labels][[3]]]
 			],
 			plot
 		];

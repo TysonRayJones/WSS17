@@ -1,6 +1,10 @@
 (* ::Package:: *)
 
-Package["EigenFunctions`"]
+Package["EigenFunctions`", 
+	
+	(* needs (for ShowSpectrum) *)
+	{"PlotFunctions`"}
+]
 
 
 (* symbol exports *)
@@ -12,6 +16,7 @@ PackageExport[TimeSteps]
 
 (* function exports *)
 
+PackageExport[ShowSpectrum]
 PackageExport[NormaliseDiscrete]
 PackageExport[GetLaplacianMatrix]
 PackageExport[GetPotentialMatrix]
@@ -20,8 +25,10 @@ PackageExport[GetEigenmodes]
 PackageExport[Discretise]
 
 
-
 (* public functions *)
+
+ShowSpectrum::usage = 
+	"ShowSpectrum[potential, domain] finds and displays the eigenfunctions of the given potential"
 
 NormaliseDiscrete::usage =
 	"NormaliseDiscrete[psi, grid] L2 normalises list psi over grid"
@@ -63,6 +70,52 @@ NormaliseDiscrete[psi_, grid_] :=
 		psi / Sqrt[gridSpace Total[ Abs[psi]^2 ]]
 	]
 
+
+
+ShowSpectrum[potential_, domain_, args___] :=
+
+	DynamicModule[
+		{\[Lambda], \[Phi], eigArgs, plotArgs},
+		
+		(* distinguish options between eig and plot functions *)
+		eigArgs = Sequence[FilterRules[{args}, Options[GetEigenmodes]]];
+		plotArgs = FilterRules[{args}, Options[PlotWavefunction]];
+		plotArgs = Sequence[If[
+		
+			(* if plot options doesn't already specify a Potential ... *)
+			MemberQ[plotArgs, Potential -> _],
+			plotArgs,
+			Join[plotArgs, {Potential -> 
+				If[
+					(* set Potential to the passed non-symbolic potential *)
+					NumericQ[domain[[1]]],
+					potential,
+					
+					(* replace symbolic dependence with pure function *)
+					Function @@ {domain[[1]], potential}
+				]}
+			]
+		]];
+		
+		(* diagonalise ... *)
+		{\[Lambda], \[Phi]} = GetEigenmodes[potential, domain, eigArgs];
+		
+		(* and plot eigenmodes *)
+		Manipulate[
+			PlotWavefunction[
+				\[Phi][[n]],
+				
+				(* filtering out any variables in domain *)
+				If[
+					Length[domain] === 3,
+					{domain[[2]], domain[[3]]},
+					{domain[[1]], domain[[-1]]}
+				],
+				plotArgs
+			],
+			{n, 1, Length[\[Lambda]], 1}
+		]
+	]
 
 
 GetLaplacianMatrix[grid_] :=

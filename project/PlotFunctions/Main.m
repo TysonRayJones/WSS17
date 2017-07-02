@@ -37,22 +37,9 @@ ColorBar[title_:"Arg[\[Psi]]"] :=
 		"Ticks" -> N[{-\[Pi]+.01, -\[Pi]/2, 0, \[Pi]/2, \[Pi]-.01}],
 		"TickLabels" -> {"-\[Pi]", "-\[Pi]/2", "0", "\[Pi]/2", "\[Pi]"}
 	]
-
-PlotWavefunction[psi_, domain_, args___] :=
-
-	Which[		
-		Head[psi] === InterpolatingFunction || Head[psi] === Function,
-		plotContinuousWavefunction[psi, domain, args],
-		
-		Head[psi] === List,
-		plotDiscreteWavefunction[psi, domain, args],
-		
-		True,
-		plotSymbolicWavefunction[psi, domain, args]
-	]
 	
-
-Options[plotContinuousWavefunction] = {
+	
+Options[PlotWavefunction] = {
 
 	(* exported *)
 	ShowBar -> True,
@@ -63,9 +50,37 @@ Options[plotContinuousWavefunction] = {
 	
 	(* not exported *)
 	PlotRange -> {0,1} 
-}	
+}
 
-plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
+
+PlotWavefunction[psi_, domain_, OptionsPattern[]] :=
+
+	(* convert OptionValues to assocation *)
+	With[
+		{options = 
+			<|ReplaceAll[
+				Options[PlotWavefunction],
+				(option_ -> _) :> (option -> OptionValue[option])
+			]|>
+		},
+		
+		(* branch based on psi type *)
+		Which[		
+			Head[psi] === InterpolatingFunction || Head[psi] === Function,
+			plotContinuousWavefunction[psi, domain, options],
+			
+			Head[psi] === List,
+			plotDiscreteWavefunction[psi, domain, options],
+			
+			True,
+			plotSymbolicWavefunction[psi, domain, options]
+		]
+	]
+	
+
+	
+
+plotContinuousWavefunction[psi_, {xL_, ___, xR_}, options_] :=
 
 	(* add elements to plot, one by one *)
 	Module[
@@ -76,8 +91,8 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 			Plot[
 				Abs[psi[x]]^2, 
 				{x, xL, xR},   
-				PlotRange -> OptionValue[PlotRange],
-				AxesLabel -> OptionValue[Labels][[{1,2}]],
+				PlotRange -> options[PlotRange],
+				AxesLabel -> options[Labels][[{1,2}]],
 				
 				(* fill colour based on complex phase *)
 				ColorFunction -> (ColorData["Rainbow"][Rescale[Arg[psi[#]], {-\[Pi], \[Pi]}]]&),
@@ -90,7 +105,7 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 		
 		(* optionally show potential *)
 		plot = If[
-			OptionValue["Potential"] === None,
+			options[Potential] === None,
 			plot,
 			
 			(* ensure potential is a function, and optionally transform *)
@@ -99,8 +114,8 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 				With[
 					{processedPotential = 
 						processPotential[
-							OptionValue[Potential], 
-							OptionValue[PotentialTransform],
+							options[Potential], 
+							options[PotentialTransform],
 							{xL, xR}
 						]
 					},
@@ -109,9 +124,9 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 					Plot[
 						processedPotential[x],
 						{x, xL, xR},
-						PlotRange -> OptionValue[PlotRange],
+						PlotRange -> options[PlotRange],
 						Exclusions -> None,
-						Filling -> If[OptionValue[PotentialFilling], Axis, None],
+						Filling -> If[options[PotentialFilling], Axis, None],
 						PlotStyle -> {Thick, Red}
 					]
 				]
@@ -120,10 +135,10 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 		
 		(* optionally show colorbar (should only be used in static plot) *)
 		plot = If[
-			OptionValue[ShowBar],
+			options[ShowBar],
 			Legended[
 				plot,
-				ColorBar[OptionValue[Labels][[3]]]
+				ColorBar[options[Labels][[3]]]
 			],
 			plot
 		];
@@ -133,7 +148,7 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, OptionsPattern[]] :=
 	]
 				
 			
-plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, args___] :=
+plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, options_] :=
 	
 	(* interpolate and plot as continuous *)
 	plotContinuousWavefunction[
@@ -142,30 +157,31 @@ plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, args___] :=
 			{{xL, xR}}
 		],
 		{xL, xR},    
-		args 
+		options
 	]
 	
 
 
-plotSymbolicWavefunction[psi_, {xL_, xR_}, args___] :=
+plotSymbolicWavefunction[psi_, {xL_, xR_}, options_] :=
 
 	(* not passing a variable is valid if psi is a constant *)
-	plotSymbolicWavefunction[psi, {dummaryvar, xL, xR}, args]
+	plotSymbolicWavefunction[psi, {dummaryvar, xL, xR}, options]
 
 
-plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, args___] :=
+plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, options_] :=
 	
 	(* convert to a pure function and plot as continuous *)
 	plotContinuousWavefunction[
 		Function @@ {x, psi},
 		{xL, xR},
 		
-		(* convert symbolic potential to pure *)
-		Sequence @@ ReplaceAll[
-			{args},
+		(* convert symbolic potential to pure func by unwrapping assoc, updating rule, conv to assoc *)
+		<|ReplaceAll[
+			Normal[options],
 			(Potential -> symb:Except[_List|_Function|_InterpolatingFunction]) :> 
 			(Potential -> Function @@ {x, symb})
-		]
+		]|>
+		
 	]
 	
 	

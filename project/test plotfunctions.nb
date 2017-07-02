@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[    800261,      14044]
-NotebookOptionsPosition[    795465,      13916]
-NotebookOutlinePosition[    795807,      13931]
-CellTagsIndexPosition[    795764,      13928]
+NotebookDataLength[    800271,      14044]
+NotebookOptionsPosition[    795475,      13916]
+NotebookOutlinePosition[    795817,      13931]
+CellTagsIndexPosition[    795774,      13928]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -13867,7 +13867,7 @@ Cell[BoxData[
 Cell[BoxData[
  TagBox[
   StyleBox[
-   DynamicModuleBox[{$CellContext`t$$ = 0, Typeset`show$$ = True, 
+   DynamicModuleBox[{$CellContext`t$$ = 0.67, Typeset`show$$ = True, 
     Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
     "\"untitled\"", Typeset`specs$$ = {{
@@ -13883,9 +13883,9 @@ Cell[BoxData[
         Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
         Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
          Typeset`skipInitDone$$}, "Body" :> 
-      PlotFunctions`PlotWavefunction[(1/($CellContext`t$$/10 + 1)) 
-        Exp[-($CellContext`x - $CellContext`t$$)^2] 
-        Exp[I ($CellContext`x - $CellContext`t$$)] 
+      PlotFunctions`PlotWavefunction[(((1/($CellContext`t$$/10 + 1)) 
+          Exp[-($CellContext`x - $CellContext`t$$)^2]) 
+         Exp[I ($CellContext`x - $CellContext`t$$)]) 
         Exp[I $CellContext`t$$], {$CellContext`x, -2, 6}, 
         PlotFunctions`ShowBar -> False], 
       "Specifications" :> {{$CellContext`t$$, 0, 4}}, "Options" :> {}, 
@@ -14040,7 +14040,7 @@ Cell[790854, 13794, 157, 3, 70, "Section", "ExpressionUUID" -> \
 Cell[CellGroupData[{
 Cell[791036, 13801, 2136, 63, 218, "Input", "ExpressionUUID" -> \
 "53a8843a-cc38-45e8-a726-4826c7cb737c"],
-Cell[793175, 13866, 2238, 44, 364, "Output", "ExpressionUUID" -> \
+Cell[793175, 13866, 2248, 44, 364, "Output", "ExpressionUUID" -> \
 "2a6dbb84-5669-4800-aa7b-2f8af3bdb8e3"]
 }, Open  ]]
 }, Open  ]]

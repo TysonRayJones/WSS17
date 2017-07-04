@@ -10,6 +10,8 @@ PackageExport[ShowBar]
 PackageExport[Potential]
 PackageExport[PotentialFilling]
 PackageExport[PotentialTransform]
+PackageExport[PointsActivePassive]
+
 (* PlotRange not exported *)
 
 
@@ -50,6 +52,7 @@ Options[PlotWavefunction] = {
 	Potential -> None,
 	PotentialFilling -> True,
 	PotentialTransform -> (#&),
+	PointsActivePassive -> {20, 50},
 	
 	(* not exported *)
 	PlotRange -> {0,1} 
@@ -276,8 +279,7 @@ plotFunctionalWavefunction[psi_, {xL_, xR_}, {yL_, yR_}, options_] :=
 				ColorFunction-> Function[{x, y}, ColorData["Rainbow"][Rescale[Arg[psi[x,y]], {-\[Pi], \[Pi]}]]],
 				ColorFunctionScaling-> False,
 				
-				(*PerformanceGoal \[Rule] "Quality",*)
-				PlotPoints -> ControlActive[50,50]
+				PlotPoints -> Apply[ControlActive, options[PointsActivePassive]]
 			];
 			
 		(* optionally plot potential... *)

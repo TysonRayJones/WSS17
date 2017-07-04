@@ -11,10 +11,12 @@ Package["SimulationFunctions`"]
 
 (* function exports *)
 
-(* PackageExport[YOUR FUNCTION HERE] *)
+PackageExport[evolveFunctionalWavefunction]
 
 
 (* public functions *)
+
+evolveFunctionalWavefunction::usage = "evolveFunctionalWavefunction[psi, potential, domains, duration] = evolves"
 
 (*
 PlotWavefunction::usage = 
@@ -24,22 +26,26 @@ PlotWavefunction::usage =
 
 (* function definitions *)
 
-schrodEqu[V_, r__, t_] :=
-	 D[\[Psi][r, t], t] ==  - Laplacian[\[Psi][r, t], {r}] / 2 + \[Psi][r, t] V[r]
+getSchrodEqu[V_, r__, t_] :=
+	 I D[\[Psi][r, t], t] ==  - Laplacian[\[Psi][r, t], {r}] / 2 + \[Psi][r, t] V[r]
+
+getEvolveInitBoundaryEqus[psi_, V_, r__, t_] :=
+	{
+		getSchrodEqu[V, r, t],
+		\[Psi][r, 0] == psi[r],
+		DirichletCondition[\[Psi][r,t] == 0, True]
+	}
 
 
 
+(* r__: dummyvarx, dummyvary *)
+(* domains__: {dummaryvarx, -5, 5}, {dummyvary, -5, 5} *)
+
+evolveFunctionalWavefunction[psi_, potential_, r__Symbol, domains__List, duration:(_Real|_Integer)] :=
+	
 	NDSolveValue[
-		{
-			schrodEqu[1/2 #^2&, x, t],
-			\[Psi][x, 0] == Exp[-x^2] HermiteH[1, x],
-			\[Psi][-5, t] == 0,
-			\[Psi][5, t] == 0
-		},
-		\[Psi], 
-		{x, -5, 5},
-		{t, 0, 1}
+		getEvolveInitBoundaryEqus[psi, potential, r, t],
+		\[Psi], {t, 0, duration}, 
+		domains
 	]
-
-
-Laplacian[x^3 + x, {x}]
+	

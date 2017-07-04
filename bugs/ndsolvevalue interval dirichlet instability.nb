@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     63724,       1506]
-NotebookOptionsPosition[     60555,       1420]
-NotebookOutlinePosition[     60897,       1435]
-CellTagsIndexPosition[     60854,       1432]
+NotebookDataLength[     65425,       1557]
+NotebookOptionsPosition[     62256,       1471]
+NotebookOutlinePosition[     62598,       1486]
+CellTagsIndexPosition[     62555,       1483]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -86,23 +86,51 @@ Cell[BoxData[
           RowBox[{"-", 
            SuperscriptBox["x", "2"]}], "2"], "]"}], " ", 
         RowBox[{"HermiteH", "[", 
-         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", "\t\t\t", 
-      RowBox[{
-       RowBox[{"\[Psi]", "[", 
+         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", 
+      StyleBox["\t\t\t",
+       Background->RGBColor[0.88, 1, 0.88]], 
+      StyleBox[
+       RowBox[{
+        StyleBox[
+         RowBox[{
+          RowBox[{"\[Psi]", "[", 
+           RowBox[{
+            RowBox[{"-", "5"}], ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", 
+          "0"}],
+         Background->RGBColor[0.88, 1, 0.88]], 
+        StyleBox[",",
+         Background->RGBColor[0.88, 1, 0.88]], 
+        StyleBox["\n",
+         Background->RGBColor[0.88, 1, 0.88]], 
+        StyleBox["\t\t\t",
+         Background->RGBColor[0.88, 1, 0.88]], 
         RowBox[{
-         RowBox[{"-", "5"}], ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", 
-       "0"}], ",", "\n", "\t\t\t", 
-      RowBox[{
-       RowBox[{"\[Psi]", "[", " ", 
-        RowBox[{"5", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0"}]}], 
-     "    ", "\n", "\t\t", "}"}], ",", "\n", "\t\t", "\[Psi]", ",", " ", 
+         StyleBox[
+          RowBox[{"\[Psi]", "[", " ", 
+           RowBox[{"5", ",", " ", "t"}], "]"}],
+          Background->RGBColor[0.88, 1, 0.88]], 
+         StyleBox[" ",
+          Background->RGBColor[0.88, 1, 0.88]], 
+         StyleBox["\[Equal]",
+          Background->RGBColor[0.88, 1, 0.88]], 
+         StyleBox[" ",
+          Background->RGBColor[0.88, 1, 0.88]], 
+         StyleBox["0",
+          Background->RGBColor[0.88, 1, 0.88]], 
+         StyleBox["    ",
+          Background->RGBColor[0.88, 1, 0.88]], "\n"}]}],
+       Background->RGBColor[0.88, 1, 0.88]]}], "\t\t", "}"}], ",", "\n", 
+    "\t\t", "\[Psi]", ",", " ", 
     RowBox[{"{", 
      RowBox[{"t", ",", " ", "0", ",", " ", "10"}], "}"}], ",", 
-    "\[IndentingNewLine]", "\t\t", 
-    RowBox[{"{", 
-     RowBox[{"x", ",", " ", 
-      RowBox[{"-", "5"}], ",", " ", "5"}], "}"}]}], "\n", "\t", 
-   "]"}]}]], "Code",
+    "\[IndentingNewLine]", 
+    StyleBox["\t\t",
+     Background->RGBColor[0.88, 1, 0.88]], 
+    StyleBox[
+     RowBox[{"{", 
+      RowBox[{"x", ",", " ", 
+       RowBox[{"-", "5"}], ",", " ", "5"}], "}"}],
+     Background->RGBColor[0.88, 1, 0.88]]}], "\n", "\t", "]"}]}]], "Code",
  CellChangeTimes->{{3.7081931416779566`*^9, 
   3.708193244159546*^9}},ExpressionUUID->"5cdaa7ad-fefd-4dc6-934e-\
 56e9abb1a79d"],
@@ -431,21 +459,28 @@ Cell[BoxData[
           RowBox[{"-", 
            SuperscriptBox["x", "2"]}], "2"], "]"}], " ", 
         RowBox[{"HermiteH", "[", 
-         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", "\t\t\t", 
-      RowBox[{"DirichletCondition", "[", 
-       RowBox[{
+         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", 
+      StyleBox["\t\t\t",
+       Background->RGBColor[1, 0.85, 0.85]], 
+      StyleBox[
+       RowBox[{"DirichletCondition", "[", 
         RowBox[{
-         RowBox[{"\[Psi]", "[", 
-          RowBox[{"x", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0"}], 
-        ",", " ", "True"}], "]"}]}], "\n", "\t\t", "}"}], ",", "\n", "\t\t", 
-    "\[Psi]", ",", " ", 
+         RowBox[{
+          RowBox[{"\[Psi]", "[", 
+           RowBox[{"x", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0"}], 
+         ",", " ", "True"}], "]"}],
+       Background->RGBColor[1, 0.85, 0.85]]}], "\n", "\t\t", "}"}], ",", "\n",
+     "\t\t", "\[Psi]", ",", " ", 
     RowBox[{"{", 
      RowBox[{"t", ",", " ", "0", ",", " ", "10"}], "}"}], ",", 
-    "\[IndentingNewLine]", "\t\t", 
-    RowBox[{"{", 
-     RowBox[{"x", ",", " ", 
-      RowBox[{"-", "5"}], ",", " ", "5"}], "}"}]}], "\n", "\t", 
-   "]"}]}]], "Code",
+    "\[IndentingNewLine]", 
+    StyleBox["\t\t",
+     Background->RGBColor[0.88, 1, 0.88]], 
+    StyleBox[
+     RowBox[{"{", 
+      RowBox[{"x", ",", " ", 
+       RowBox[{"-", "5"}], ",", " ", "5"}], "}"}],
+     Background->RGBColor[0.88, 1, 0.88]]}], "\n", "\t", "]"}]}]], "Code",
  CellChangeTimes->{{3.7081931416779566`*^9, 3.708193244159546*^9}, {
   3.70819353878476*^9, 
   3.7081935574405637`*^9}},ExpressionUUID->"39b706a8-d680-4ad3-8b6c-\
@@ -777,25 +812,34 @@ Cell[BoxData[
           RowBox[{"-", 
            SuperscriptBox["x", "2"]}], "2"], "]"}], " ", 
         RowBox[{"HermiteH", "[", 
-         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", "\t\t\t", 
-      RowBox[{
-       RowBox[{"\[Psi]", "[", 
+         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", 
+      StyleBox["\t\t\t",
+       Background->RGBColor[0.88, 1, 0.88]], 
+      StyleBox[
+       RowBox[{
         RowBox[{
-         RowBox[{"-", "5"}], ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", 
-       "0"}], ",", "\n", "\t\t\t", 
-      RowBox[{
-       RowBox[{"\[Psi]", "[", " ", 
-        RowBox[{"5", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0"}]}], 
-     "  ", "\n", "\t\t", "}"}], ",", "\n", "\t\t", "\[Psi]", ",", " ", 
+         RowBox[{"\[Psi]", "[", 
+          RowBox[{
+           RowBox[{"-", "5"}], ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", 
+         "0"}], ",", "\n", "\t\t\t", 
+        RowBox[{
+         RowBox[{"\[Psi]", "[", " ", 
+          RowBox[{"5", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0", 
+         "  "}]}],
+       Background->RGBColor[0.88, 1, 0.88]]}], "\n", "\t\t", "}"}], ",", "\n",
+     "\t\t", "\[Psi]", ",", " ", 
     RowBox[{"{", 
      RowBox[{"t", ",", " ", "0", ",", " ", "10"}], "}"}], ",", 
-    "\[IndentingNewLine]", "\t\t", 
-    RowBox[{"x", " ", "\[Element]", " ", 
-     RowBox[{"Interval", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], "]"}]}]}], "\n", "\t", 
-   "]"}]}]], "Code",
+    "\[IndentingNewLine]", 
+    StyleBox["\t\t",
+     Background->RGBColor[1, 0.85, 0.85]], 
+    StyleBox[
+     RowBox[{"x", " ", "\[Element]", " ", 
+      RowBox[{"Interval", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], "]"}]}],
+     Background->RGBColor[1, 0.85, 0.85]]}], "\n", "\t", "]"}]}]], "Code",
  CellChangeTimes->{{3.7081931416779566`*^9, 3.708193244159546*^9}, {
   3.70819353878476*^9, 
   3.708193625817557*^9}},ExpressionUUID->"4463555b-cdbe-433c-a435-\
@@ -1129,23 +1173,30 @@ Cell[BoxData[
           RowBox[{"-", 
            SuperscriptBox["x", "2"]}], "2"], "]"}], " ", 
         RowBox[{"HermiteH", "[", 
-         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", "\t\t\t", 
-      RowBox[{"DirichletCondition", "[", 
-       RowBox[{
+         RowBox[{"1", ",", " ", "x"}], "]"}]}]}], ",", "\n", 
+      StyleBox["\t\t\t",
+       Background->RGBColor[1, 0.85, 0.85]], 
+      StyleBox[
+       RowBox[{"DirichletCondition", "[", 
         RowBox[{
-         RowBox[{"\[Psi]", "[", 
-          RowBox[{"x", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0"}], 
-        ",", " ", "True"}], "]"}]}], "\n", "\t\t", "}"}], ",", "\n", "\t\t", 
-    "\[Psi]", ",", " ", 
+         RowBox[{
+          RowBox[{"\[Psi]", "[", 
+           RowBox[{"x", ",", " ", "t"}], "]"}], " ", "\[Equal]", " ", "0"}], 
+         ",", " ", "True"}], "]"}],
+       Background->RGBColor[1, 0.85, 0.85]]}], "\n", "\t\t", "}"}], ",", "\n",
+     "\t\t", "\[Psi]", ",", " ", 
     RowBox[{"{", 
      RowBox[{"t", ",", " ", "0", ",", " ", "10"}], "}"}], ",", 
-    "\[IndentingNewLine]", "\t\t", 
-    RowBox[{"x", " ", "\[Element]", " ", 
-     RowBox[{"Interval", "[", 
-      RowBox[{"{", 
-       RowBox[{
-        RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], "]"}]}]}], "\n", "\t", 
-   "]"}]}]], "Code",
+    "\[IndentingNewLine]", 
+    StyleBox["\t\t",
+     Background->RGBColor[1, 0.85, 0.85]], 
+    StyleBox[
+     RowBox[{"x", " ", "\[Element]", " ", 
+      RowBox[{"Interval", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], "]"}]}],
+     Background->RGBColor[1, 0.85, 0.85]]}], "\n", "\t", "]"}]}]], "Code",
  CellChangeTimes->{{3.7081931416779566`*^9, 3.708193244159546*^9}, {
   3.70819353878476*^9, 3.7081935574405637`*^9}, {3.7081936875928354`*^9, 
   3.708193731014624*^9}},ExpressionUUID->"a8651566-8fa0-494c-8cc8-\
@@ -1440,71 +1491,71 @@ Cell[CellGroupData[{
 Cell[762, 28, 219, 4, 70, "Section", "ExpressionUUID" -> \
 "12cf603c-a6cd-4ffe-8320-31cdd3893c48"],
 Cell[CellGroupData[{
-Cell[1006, 36, 2484, 71, 317, "Code", "ExpressionUUID" -> \
+Cell[1006, 36, 3421, 99, 317, "Code", "ExpressionUUID" -> \
 "5cdaa7ad-fefd-4dc6-934e-56e9abb1a79d"],
-Cell[3493, 109, 9362, 193, 72, "Output", "ExpressionUUID" -> \
+Cell[4430, 137, 9362, 193, 72, "Output", "ExpressionUUID" -> \
 "04a97549-5fd4-444d-9020-b3d28c20ee65"]
 }, Open  ]],
-Cell[12870, 305, 171, 3, 30, "Text", "ExpressionUUID" -> \
+Cell[13807, 333, 171, 3, 30, "Text", "ExpressionUUID" -> \
 "837803e3-7888-40d2-bbae-dedd2ffb9724"],
 Cell[CellGroupData[{
-Cell[13066, 312, 709, 19, 168, "Code", "ExpressionUUID" -> \
+Cell[14003, 340, 709, 19, 168, "Code", "ExpressionUUID" -> \
 "0545973b-cb91-4f0e-a9d2-63401cdeea22"],
-Cell[13778, 333, 1728, 35, 338, "Output", "ExpressionUUID" -> \
+Cell[14715, 361, 1728, 35, 338, "Output", "ExpressionUUID" -> \
 "ee31c48e-625c-41a7-bc4f-54808ebe0d9f"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[15555, 374, 187, 3, 70, "Section", "ExpressionUUID" -> \
+Cell[16492, 402, 187, 3, 70, "Section", "ExpressionUUID" -> \
 "d2b019ad-7e89-4637-bcc9-13232fc19a26"],
 Cell[CellGroupData[{
-Cell[15767, 381, 2443, 70, 299, "Code", "ExpressionUUID" -> \
+Cell[16704, 409, 2684, 77, 299, "Code", "ExpressionUUID" -> \
 "39b706a8-d680-4ad3-8b6c-3ecd32cc3659"],
-Cell[18213, 453, 9390, 193, 72, "Output", "ExpressionUUID" -> \
+Cell[19391, 488, 9390, 193, 72, "Output", "ExpressionUUID" -> \
 "35b0b817-2def-4900-a2db-50b694ed0b70"]
 }, Open  ]],
-Cell[27618, 649, 171, 3, 30, "Text", "ExpressionUUID" -> \
+Cell[28796, 684, 171, 3, 30, "Text", "ExpressionUUID" -> \
 "221adf75-94f5-4da3-a19d-99cc74e09f0c"],
 Cell[CellGroupData[{
-Cell[27814, 656, 757, 19, 168, "Code", "ExpressionUUID" -> \
+Cell[28992, 691, 757, 19, 168, "Code", "ExpressionUUID" -> \
 "457b69f4-9a41-44c2-a88a-a49f75e8f5d1"],
-Cell[28574, 677, 1730, 36, 338, "Output", "ExpressionUUID" -> \
+Cell[29752, 712, 1730, 36, 338, "Output", "ExpressionUUID" -> \
 "f6e752d4-fef9-49cd-b835-d90713972a42"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[30353, 719, 265, 4, 70, "Section", "ExpressionUUID" -> \
+Cell[31531, 754, 265, 4, 70, "Section", "ExpressionUUID" -> \
 "6587e72e-b14d-46aa-b26c-37555d8dad13"],
 Cell[CellGroupData[{
-Cell[30643, 727, 2601, 74, 317, "Code", "ExpressionUUID" -> \
+Cell[31821, 762, 2881, 83, 317, "Code", "ExpressionUUID" -> \
 "4463555b-cdbe-433c-a435-c1559fe2c362"],
-Cell[33247, 803, 9415, 194, 72, "Output", "ExpressionUUID" -> \
+Cell[34705, 847, 9415, 194, 72, "Output", "ExpressionUUID" -> \
 "d5655f45-77ca-4781-9603-bace653c1e28"]
 }, Open  ]],
-Cell[42677, 1000, 171, 3, 30, "Text", "ExpressionUUID" -> \
+Cell[44135, 1044, 171, 3, 30, "Text", "ExpressionUUID" -> \
 "d69d784b-3e40-4b12-9b55-bc4eb6cfc228"],
 Cell[CellGroupData[{
-Cell[42873, 1007, 810, 20, 168, "Code", "ExpressionUUID" -> \
+Cell[44331, 1051, 810, 20, 168, "Code", "ExpressionUUID" -> \
 "5026b389-e84e-4892-8a18-5cb73848e7cd"],
-Cell[43686, 1029, 1756, 36, 338, "Output", "ExpressionUUID" -> \
+Cell[45144, 1073, 1756, 36, 338, "Output", "ExpressionUUID" -> \
 "0d4ff8b6-2981-4bce-b409-1b6ca5fc43ee"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[45491, 1071, 251, 4, 70, "Section", "ExpressionUUID" -> \
+Cell[46949, 1115, 251, 4, 70, "Section", "ExpressionUUID" -> \
 "6417df70-997f-4cc7-b655-f50b62823772"],
 Cell[CellGroupData[{
-Cell[45767, 1079, 2562, 72, 299, "Code", "ExpressionUUID" -> \
+Cell[47225, 1123, 2805, 79, 299, "Code", "ExpressionUUID" -> \
 "a8651566-8fa0-494c-8cc8-ecbeb55e92ec"],
-Cell[48332, 1153, 9418, 194, 72, "Output", "ExpressionUUID" -> \
+Cell[50033, 1204, 9418, 194, 72, "Output", "ExpressionUUID" -> \
 "239061ba-2028-4e29-839f-ca8a24fb7517"]
 }, Open  ]],
-Cell[57765, 1350, 171, 3, 30, "Text", "ExpressionUUID" -> \
+Cell[59466, 1401, 171, 3, 30, "Text", "ExpressionUUID" -> \
 "d41677f8-a6df-409f-a7c4-602ad91a22d5"],
 Cell[CellGroupData[{
-Cell[57961, 1357, 806, 20, 168, "Code", "ExpressionUUID" -> \
+Cell[59662, 1408, 806, 20, 168, "Code", "ExpressionUUID" -> \
 "ba5a9570-1870-4e54-9d14-a99216420831"],
-Cell[58770, 1379, 1757, 37, 338, "Output", "ExpressionUUID" -> \
+Cell[60471, 1430, 1757, 37, 338, "Output", "ExpressionUUID" -> \
 "86ae8714-e9b1-422b-856a-433886f0feee"]
 }, Open  ]]
 }, Open  ]]

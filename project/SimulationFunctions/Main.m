@@ -29,11 +29,6 @@ schrodEqu[V_, r__, t_] :=
 
 
 
-(* TESTING *)
-
-schrodEqu[1/2 #^2&, x, y, z, t]
-
-
 	NDSolveValue[
 		{
 			schrodEqu[1/2 #^2&, x, t],

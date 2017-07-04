@@ -274,7 +274,10 @@ plotFunctionalWavefunction[psi_, {xL_, xR_}, {yL_, yR_}, options_] :=
 				Mesh -> None,
 				Exclusions -> None,
 				ColorFunction-> Function[{x, y}, ColorData["Rainbow"][Rescale[Arg[psi[x,y]], {-\[Pi], \[Pi]}]]],
-				ColorFunctionScaling-> False
+				ColorFunctionScaling-> False,
+				
+				(*PerformanceGoal \[Rule] "Quality",*)
+				PlotPoints -> ControlActive[50,50]
 			];
 			
 		(* optionally plot potential... *)
@@ -318,7 +321,9 @@ plotFunctionalPotential[potential_, {xL_, xR_}, {yL_, yR_}, options_] :=
 		PlotRange -> options[PlotRange],
 		PlotStyle -> {{Opacity[0.3], Red}},
 		Mesh -> 5,
-		MeshStyle -> {{Red}}
+		MeshStyle -> {{Red}},
+		
+		PerformanceGoal -> "Quality"
 	]
 
 

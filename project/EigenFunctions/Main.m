@@ -17,7 +17,7 @@ PackageExport[TimeSteps]
 (* function exports *)
 
 PackageExport[ShowSpectrum]
-PackageExport[NormaliseDiscrete]
+PackageExport[NormaliseWavefunction]
 PackageExport[GetLaplacianMatrix]
 PackageExport[GetPotentialMatrix]
 PackageExport[GetHamiltonianMatrix]
@@ -30,15 +30,18 @@ PackageExport[Discretise]
 ShowSpectrum::usage = 
 	"ShowSpectrum[potential, domain] finds and displays the eigenfunctions of the given potential"
 
-NormaliseDiscrete::usage =
-	"NormaliseDiscrete[psi, grid] L2 normalises list psi over grid"
+NormaliseWavefunction::usage =
+	"NormaliseWavefunction[psi, grid] L2 normalises list psi over grid"
+	
+NormaliseWavefunction::usage =
+	"NormaliseWavefunction[psi, {xL, xR}] L2 normalises list psi over domain x \[Element] [xL, xR]"
 
 GetLaplacianMatrix::usage =
 	"GetLaplacianMatrix[grid] returns a 1D, finite-difference, Laplacian matrix with the dimensionality/spacing of grid"
 
 GetPotentialMatrix::usage =
 	"GetPotentialMatrix[potential] restructures a discretised potential list into a diagonal matrix"
-	
+			
 GetHamiltonianMatrix::usage =
 	"GetHamiltonianMatrix[potential, grid] returns potential's corresponding Hamiltonian matrix, on grid"
 
@@ -64,12 +67,17 @@ EchoTiming[expr_, label_:"Timing"] :=
 
 
 
-NormaliseDiscrete[psi_, grid_] :=
+NormaliseWavefunction[psi_List, grid_] :=
 	With[
 		{gridSpace = grid[[2]] - grid[[1]]},
 		psi / Sqrt[gridSpace Total[ Abs[psi]^2 ]]
 	]
-
+	
+NormaliseWavefunction[psi_List, {xL_, xR_}] :=
+	With[
+		{gridSpace = (xR - xL)/(Length[psi]-1)},
+		psi / Sqrt[gridSpace Total[ Abs[psi]^2 ]]
+	]
 
 
 ShowSpectrum[potential_, domain_, args___] :=
@@ -202,7 +210,7 @@ GetEigenmodes[potential_, domain_, OptionsPattern[]] :=
 		
 		(* normalise eigenfunction lists *)
 		{\[Lambda], \[Phi]} = EchoTiming[
-			{\[Lambda], NormaliseDiscrete[#, x]& /@ \[Phi]},
+			{\[Lambda], NormaliseWavefunction[#, x]& /@ \[Phi]},
 			"normalising eigenfunctions"];
 		
 		(* disable timing and printing *)
@@ -224,17 +232,17 @@ Discretise[potential_, domain_, OptionsPattern[]] :=
 	(* method of discretisation depends on given potential and domain format *)
 	Which[
 		Head[potential] === InterpolatingFunction || Head[potential] === Function,
-		processContinuousPotential[potential, domain, OptionValue["NumberOfPoints"]],
+		processFunctionalPotential[potential, domain, OptionValue["NumberOfPoints"]],
 			
 		Head[potential] === List,
-		processDiscretePotential[potential, domain, OptionValue["NumberOfPoints"]],
+		processListPotential[potential, domain, OptionValue["NumberOfPoints"]],
 				
 		True,
 		processSymbolicPotential[potential, domain, OptionValue["NumberOfPoints"]]
 	]
 
 		
-processContinuousPotential[potential_, {xL_, ___, xR_}, numPoints_] :=
+processFunctionalPotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 
 	(* apply function over grid *)
 	With[
@@ -243,7 +251,7 @@ processContinuousPotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 	]
 	
 	
-processDiscretePotential[potential_, {xL_, ___, xR_}, numPoints_] :=
+processListPotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 
 	Module[
 		{grid, gridV},
@@ -265,7 +273,7 @@ processDiscretePotential[potential_, {xL_, ___, xR_}, numPoints_] :=
 processSymbolicPotential[potential_, {x_, xL_, xR_}, numPoints_] :=
 
 	(* change symbol into function *)
-	processContinuousPotential[
+	processFunctionalPotential[
 		Function @@ {x, potential},
 		{xL, xR},
 		numPoints

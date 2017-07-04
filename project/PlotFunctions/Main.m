@@ -22,7 +22,10 @@ PackageExport[ColorBar]
 (* public functions *)
 
 PlotWavefunction::usage = 
-	"PlotWavefunction[psi, domain] plots a discrete/continuous, list/functional/interpolated/symbolic wavefunction"
+	"PlotWavefunction[psi, domain] plots a 1D discrete/continuous, list/functional/interpolated/symbolic wavefunction"
+	
+PlotWavefunction::usage = 
+	"PlotWavefunction[psi, xdomain, ydomain] plots a 2D discrete/continuous, list/functional/interpolated/symbolic wavefunction"
 
 ColorBar::usage =
 	"ColorBar[title] returns a colorbar which can be legended outside plots. Avoid embedding!"
@@ -43,7 +46,7 @@ Options[PlotWavefunction] = {
 
 	(* exported *)
 	ShowBar -> True,
-	Labels -> {"x", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
+	Labels -> {"x", "y", "Abs[\[Psi][x]\!\(\*SuperscriptBox[\(]\), \(2\)]\)", "Arg[\[Psi][x]]"},
 	Potential -> None,
 	PotentialFilling -> True,
 	PotentialTransform -> (#&),
@@ -53,24 +56,38 @@ Options[PlotWavefunction] = {
 }
 
 
+
+
+(* --------------- 1D plots --------------- *)
+
+
 PlotWavefunction[psi_, domain_, OptionsPattern[]] :=
 
-	(* convert OptionValues to assocation *)
-	With[
-		{options = 
+	Module[
+		{options},
+		
+		(* convert OptionValues to assocation *)
+		options = 
 			<|ReplaceAll[
 				Options[PlotWavefunction],
 				(option_ -> _) :> (option -> OptionValue[option])
-			]|>
-		},
+			]|>;
+			
+		(* adjust default labels for 1D plot *)
+		options[Labels] =
+			If[
+				OptionValue[Labels] === Lookup[Options[PlotWavefunction], Labels],
+				OptionValue[Labels][[{1, 3, 4}]],
+				OptionValue[Labels]
+			];
 		
 		(* branch based on psi type *)
 		Which[		
 			Head[psi] === InterpolatingFunction || Head[psi] === Function,
-			plotContinuousWavefunction[psi, domain, options],
+			plotFunctionalWavefunction[psi, domain, options],
 			
 			Head[psi] === List,
-			plotDiscreteWavefunction[psi, domain, options],
+			plotListWavefunction[psi, domain, options],
 			
 			True,
 			plotSymbolicWavefunction[psi, domain, options]
@@ -80,7 +97,7 @@ PlotWavefunction[psi_, domain_, OptionsPattern[]] :=
 
 	
 
-plotContinuousWavefunction[psi_, {xL_, ___, xR_}, options_] :=
+plotFunctionalWavefunction[psi_, {xL_, ___, xR_}, options_] :=
 
 	(* add elements to plot, one by one *)
 	Module[
@@ -117,7 +134,7 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, options_] :=
 							options[Potential], 
 							options[PotentialTransform],
 							{xL, xR}
-						]
+						]                            (* this should really be done in first-gen functions!!! *)
 					},
 				
 					(* plot transformed potential *)
@@ -148,10 +165,10 @@ plotContinuousWavefunction[psi_, {xL_, ___, xR_}, options_] :=
 	]
 				
 			
-plotDiscreteWavefunction[psi_, {xL_, ___, xR_}, options_] :=
+plotListWavefunction[psi_, {xL_, ___, xR_}, options_] :=
 	
-	(* interpolate and plot as continuous *)
-	plotContinuousWavefunction[
+	(* interpolate and plot as functional *)
+	plotFunctionalWavefunction[
 		ListInterpolation[
 			psi, 
 			{{xL, xR}}
@@ -170,8 +187,8 @@ plotSymbolicWavefunction[psi_, {xL_, xR_}, options_] :=
 
 plotSymbolicWavefunction[psi_, {x_, xL_, xR_}, options_] :=
 	
-	(* convert to a pure function and plot as continuous *)
-	plotContinuousWavefunction[
+	(* convert to a pure function and plot as functional *)
+	plotFunctionalWavefunction[
 		Function @@ {x, psi},
 		{xL, xR},
 		
@@ -205,3 +222,103 @@ processPotential[potential_, transform_, domain_] :=
 		]
 	]
 	
+
+
+
+
+(* --------------- 2D plots --------------- *)
+
+
+PlotWavefunction[psi_, xDomain_, yDomain_, OptionsPattern[]] :=
+	
+	With[
+	
+		(* convert OptionValues to assocation *)
+		{options = 
+			<|ReplaceAll[
+				Options[PlotWavefunction],
+				(option_ -> _) :> (option -> OptionValue[option])
+			]|>},
+		
+		(* branch based on psi type *)
+		Which[
+			Head[psi] === InterpolatingFunction || Head[psi] === Function,
+			plotFunctionalWavefunction[psi, xDomain, yDomain, options],
+			
+			(* TODO *)
+			Head[psi] === List,
+			None,  
+			
+			(* TODO *)
+			True,
+			None
+		]
+	]
+		
+(* PASS WAVEFUNCTION AND POTENTIAL BEFORE CALLING THIS *)
+
+(* options is an Association of every possible optional param (between PlotPotential and PlotWavefnuction) *)
+
+plotFunctionalWavefunction[psi_, {xL_, xR_}, {yL_, yR_}, options_] :=
+
+	Module[
+		{plot},
+	
+		(* plot probability density *)
+		plot =
+			Plot3D[
+				Abs[psi[x, y]]^2, {x, xL, xR}, {y, yL, yR},
+				PlotRange-> options[PlotRange],
+				AxesLabel-> options[Labels][[;;3]],
+				
+				Mesh -> None,
+				Exclusions -> None,
+				ColorFunction-> Function[{x, y}, ColorData["Rainbow"][Rescale[Arg[psi[x,y]], {-\[Pi], \[Pi]}]]],
+				ColorFunctionScaling-> False
+			];
+			
+		(* optionally plot potential... *)
+		plot = If[
+			options[Potential] === None,
+			plot,
+			Show[
+				plot,
+				plotFunctionalPotential[
+					options[Potential], 
+					{xL, xR}, {yL, yR}, 
+					options
+				]
+			]	
+		];
+		
+		(* optionally show colorbar (should only be used in static plots) *)
+		plot = If[
+			options[ShowBar],
+			Legended[
+				plot,
+				ColorBar[options[Labels][[4]]]
+			],
+			plot
+		];
+		
+		(* return *)
+		plot
+	]
+	
+	
+(* only recognises exlucisvely PlotWavefunction optional params. Params for PlotPotential will be adjusted prior claling *) 
+	
+plotFunctionalPotential[potential_, {xL_, xR_}, {yL_, yR_}, options_] :=
+	Plot3D[
+		Composition[options[PotentialTransform], potential][x, y],
+		{x, xL, xR}, {y, yL, yR},
+		ClippingStyle -> None,
+		Exclusions -> None,
+		
+		PlotRange -> options[PlotRange],
+		PlotStyle -> {{Opacity[0.3], Red}},
+		Mesh -> 5,
+		MeshStyle -> {{Red}}
+	]
+
+

@@ -118,12 +118,17 @@ ShowSpectrum[potential_, domain_, args___] :=
 				(* filtering out any variables in domain *)
 				If[
 					Length[domain] === 3,
-					{domain[[2]], domain[[3]]},
+					{domain[[2]], domain[[3]]},     (*{-4, 0},*)
 					{domain[[1]], domain[[-1]]}
 				],
 				plotArgs
 			],
-			{{n,1,"mode"}, 1, Length[\[Lambda]], 1}
+			{{n,1,"mode"}, 1, Length[\[Lambda]], 1},
+			
+			(* REMOVE *)
+			SaveDefinitions->True
+			
+			
 		]
 	]
 

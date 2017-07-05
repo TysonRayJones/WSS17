@@ -1,10 +1,12 @@
 (* ::Package:: *)
 
-Package["EigenFunctions`", 
-	
-	(* needs (for ShowSpectrum) *)
-	{"PlotFunctions`"}
-]
+Package["EigenFunctions`"]
+
+
+
+(* private imports *)
+
+PackageImport["PlotFunctions`"]  (* needed for ShowSpectrum *)
 
 
 (* symbol exports *)
@@ -121,7 +123,7 @@ ShowSpectrum[potential_, domain_, args___] :=
 				],
 				plotArgs
 			],
-			{n, 1, Length[\[Lambda]], 1}
+			{{n,1,"mode"}, 1, Length[\[Lambda]], 1}
 		]
 	]
 

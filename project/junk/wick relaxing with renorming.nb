@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     32016,        812]
-NotebookOptionsPosition[     30091,        758]
-NotebookOutlinePosition[     30433,        773]
-CellTagsIndexPosition[     30390,        770]
+NotebookDataLength[     32162,        817]
+NotebookOptionsPosition[     30236,        763]
+NotebookOutlinePosition[     30578,        778]
+CellTagsIndexPosition[     30535,        775]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,8 +28,9 @@ Cell["Wick simming the RIGHT way", "Title",
 Cell[CellGroupData[{
 
 Cell["Digging into the state", "Section",
- CellChangeTimes->{{3.7076999771563487`*^9, 
-  3.7076999793749046`*^9}},ExpressionUUID->"9d785bee-5384-4e74-8030-\
+ CellChangeTimes->{{3.7076999771563487`*^9, 3.7076999793749046`*^9}, {
+  3.7082082624771776`*^9, 
+  3.7082082715286055`*^9}},ExpressionUUID->"9d785bee-5384-4e74-8030-\
 1d962902bf1b"],
 
 Cell[BoxData[{
@@ -511,8 +512,9 @@ Cell[BoxData[
                  None, Evaluator -> Automatic, Method -> "Preemptive"], 
                 Alignment -> {Center, Center}, ImageSize -> 
                 Dynamic[{
-                  Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                   AbsoluteCurrentValue[Magnification]}]], 
+                  Automatic, 
+                   3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
                GraphicsBox[{{{{}, {}, 
                    TagBox[{
                     Directive[
@@ -567,8 +569,9 @@ rrD3u3zYPt/2jQwQVRNA3FAb8kNg3D5jKKD0//8TQH46vOrjxrA960DR2Q==
                  GridLines -> {None, None}, GridLinesStyle -> Directive[
                    GrayLevel[0.5, 0.4]], ImageSize -> 
                  Dynamic[{
-                   Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                    AbsoluteCurrentValue[Magnification]}], 
+                   Automatic, 
+                    3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}], 
                  Method -> {
                   "DefaultBoundaryStyle" -> Automatic, "DefaultMeshStyle" -> 
                    AbsolutePointSize[6], "ScalingFunctions" -> None, 
@@ -623,8 +626,9 @@ rrD3u3zYPt/2jQwQVRNA3FAb8kNg3D5jKKD0//8TQH46vOrjxrA960DR2Q==
                  None, Evaluator -> Automatic, Method -> "Preemptive"], 
                 Alignment -> {Center, Center}, ImageSize -> 
                 Dynamic[{
-                  Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                   AbsoluteCurrentValue[Magnification]}]], 
+                  Automatic, 
+                   3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}]], 
                GraphicsBox[{{{{}, {}, 
                    TagBox[{
                     Directive[
@@ -679,8 +683,9 @@ rrD3u3zYPt/2jQwQVRNA3FAb8kNg3D5jKKD0//8TQH46vOrjxrA960DR2Q==
                  GridLines -> {None, None}, GridLinesStyle -> Directive[
                    GrayLevel[0.5, 0.4]], ImageSize -> 
                  Dynamic[{
-                   Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                    AbsoluteCurrentValue[Magnification]}], 
+                   Automatic, 
+                    3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                    Magnification])}], 
                  Method -> {
                   "DefaultBoundaryStyle" -> Automatic, "DefaultMeshStyle" -> 
                    AbsolutePointSize[6], "ScalingFunctions" -> None, 
@@ -776,40 +781,40 @@ Cell[CellGroupData[{
 Cell[580, 22, 171, 3, 101, "Title", "ExpressionUUID" -> \
 "43e2ef15-03b3-4907-a4c1-9b010d6c0319"],
 Cell[CellGroupData[{
-Cell[776, 29, 171, 3, 70, "Section", "ExpressionUUID" -> \
+Cell[776, 29, 224, 4, 70, "Section", "ExpressionUUID" -> \
 "9d785bee-5384-4e74-8030-1d962902bf1b"],
-Cell[950, 34, 1823, 49, 309, "Code", "ExpressionUUID" -> \
+Cell[1003, 35, 1823, 49, 309, "Code", "ExpressionUUID" -> \
 "9ae6f55e-c1ae-4b75-9611-105647e06693"],
-Cell[2776, 85, 2893, 90, 285, "Code", "ExpressionUUID" -> \
+Cell[2829, 86, 2893, 90, 285, "Code", "ExpressionUUID" -> \
 "a7aa7fd5-7789-43e3-a605-63c292738805"],
-Cell[5672, 177, 5263, 132, 669, "Code", "ExpressionUUID" -> \
+Cell[5725, 178, 5263, 132, 669, "Code", "ExpressionUUID" -> \
 "279b58ae-08c6-4603-91aa-1c9896f99b76"],
 Cell[CellGroupData[{
-Cell[10960, 313, 2954, 77, 435, "Code", "ExpressionUUID" -> \
+Cell[11013, 314, 2954, 77, 435, "Code", "ExpressionUUID" -> \
 "400cfbb0-d35f-44e8-af4a-3c0152582ddd"],
-Cell[13917, 392, 552, 15, 30, "Output", "ExpressionUUID" -> \
+Cell[13970, 393, 552, 15, 30, "Output", "ExpressionUUID" -> \
 "09fd91e9-3319-4eaa-926c-1f2a16438755"]
 }, Open  ]],
-Cell[14484, 410, 228, 5, 30, "Input", "ExpressionUUID" -> \
+Cell[14537, 411, 228, 5, 30, "Input", "ExpressionUUID" -> \
 "de16b3f0-d79b-402e-a3e3-9f8f3ba34cf2"],
 Cell[CellGroupData[{
-Cell[14737, 419, 159, 3, 30, "Input", "ExpressionUUID" -> \
+Cell[14790, 420, 159, 3, 30, "Input", "ExpressionUUID" -> \
 "ece86f7a-7e58-45bd-9e38-99f50f9d4c4b"],
-Cell[14899, 424, 584, 18, 30, "Output", "ExpressionUUID" -> \
+Cell[14952, 425, 584, 18, 30, "Output", "ExpressionUUID" -> \
 "15fb532a-711c-4995-bcb4-c7a1dfbd1191"]
 }, Open  ]],
-Cell[15498, 445, 226, 5, 30, "Input", "ExpressionUUID" -> \
+Cell[15551, 446, 226, 5, 30, "Input", "ExpressionUUID" -> \
 "2312cbef-e16e-4454-a121-190f12fa90de"],
 Cell[CellGroupData[{
-Cell[15749, 454, 157, 3, 30, "Input", "ExpressionUUID" -> \
+Cell[15802, 455, 157, 3, 30, "Input", "ExpressionUUID" -> \
 "1eae6af4-c523-4a7a-b73a-2298ac0e05b4"],
-Cell[15909, 459, 582, 18, 30, "Output", "ExpressionUUID" -> \
+Cell[15962, 460, 582, 18, 30, "Output", "ExpressionUUID" -> \
 "e904baf0-1272-4206-b35a-2aec0a28075f"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[16528, 482, 382, 9, 30, "Input", "ExpressionUUID" -> \
+Cell[16581, 483, 382, 9, 30, "Input", "ExpressionUUID" -> \
 "12e8d69e-9ff4-4843-81f8-7e8eac4aab3d"],
-Cell[16913, 493, 13138, 260, 72, "Output", "ExpressionUUID" -> \
+Cell[16966, 494, 13230, 264, 72, "Output", "ExpressionUUID" -> \
 "7b00306b-1d8b-492f-b06c-fec178004648"]
 }, Open  ]]
 }, Open  ]]

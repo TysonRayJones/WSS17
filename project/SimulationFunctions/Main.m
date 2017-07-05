@@ -11,8 +11,7 @@ PackageImport["PlotFunctions`"]  (* needed for ShowEvolution *)
 
 (* symbol exports *)
 
-(* PackageExport[YOUR SYMBOL HERE] *)
-
+PackageExport[PlotDomain]
 
 
 (* function exports *)
@@ -106,24 +105,53 @@ evolveFunctionalWavefunction[psi_, potential_, r__Symbol, domains__List, duratio
 	]
 	
 
-ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer)] :=
-	DynamicModule[
-		{wavef},
-		wavef = EvolveWavefunction[psi, potential, domains, duration];
-
-		(* ADD LEGEND *)
+	
 		
-		Manipulate[
-			PlotWavefunction[
-				If[
-					Length[{domains}] === 2,
-					(wavef[#1, #2, t] &),
-					(wavef[#1, t] &)
+(*
+Options[finner] = {a \[Rule] 1};	
+Options[fouter] = {b \[Rule] 9};
+fouter[opts:OptionsPattern[]] :=
+	OptionValue[{fouter, finner}, {opts}, {b}]
+fouter[b \[Rule] 4, a \[Rule] 2]
+*)
+
+Options[ShowEvolution] := {
+	PlotDomain -> None
+}
+
+
+ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), options:OptionsPattern[]] :=
+	DynamicModule[
+		{wavef, plotdoms},
+		
+		(* simulate wavefunction *)
+		wavef = EvolveWavefunction[psi, potential, domains, duration];
+	
+		(* decide on using simulation or plot domain *)
+		plotdoms = OptionValue[{ShowEvolution, PlotWavefunction}, {options}, PlotDomain];
+		plotdoms = If[
+			plotdoms === None,
+			{domains}, 
+			{plotdoms}
+		];
+
+		Legended[
+			Manipulate[
+				PlotWavefunction[
+					If[
+						Length[{domains}] === 2,
+						(wavef[#1, #2, t] &),
+						(wavef[#1, t] &)
+					],
+					Sequence @@ Partition[Flatten[plotdoms],2],
+					Potential -> potential,
+					ShowBar -> False,
+					Sequence[FilterRules[{options}, Options[PlotWavefunction]]]
 				],
-				domains,
-				Potential -> potential,
-				ShowBar -> False
+				
+				(* avoid t=0 state; ambiguous phases *)
+				{{t, duration/100, "time"}, 0, duration}
 			],
-			{{t,0,"time"}, 0, duration}
+			ColorBar[]
 		]
 	]

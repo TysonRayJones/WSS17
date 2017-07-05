@@ -52,7 +52,7 @@ Options[PlotWavefunction] = {
 	Potential -> None,
 	PotentialFilling -> True,
 	PotentialTransform -> (#&),
-	PointsActivePassive -> {20, 50},
+	PointsActivePassive -> {10, 50},
 	
 	(* not exported *)
 	PlotRange -> {0,1} 

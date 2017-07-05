@@ -39,6 +39,13 @@ ShowEvolution::usage =
 (* function definitions *)
 
 
+
+
+
+(* disable initial-cond and boundary-cond disagreement alerts *)
+Off[NDSolveValue::ibcinc]
+
+
 NormaliseWavefunction[psi:(_Function|_InterpolatingFunction), {xL_:-\[Infinity], xR_:\[Infinity]}] :=
 	Function[{x}, psi[x]/Sqrt[NIntegrate[Abs[psi[r]]^2, {r, xL, xR}, Method -> {Automatic, "SymbolicProcessing" -> 0}]]]
 	

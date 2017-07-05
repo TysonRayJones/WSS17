@@ -10,12 +10,13 @@ PackageExport[ShowBar]
 PackageExport[Potential]
 PackageExport[PotentialFilling]
 PackageExport[PotentialTransform]
-
-PackageExport[PlotOptions]
-
 PackageExport[PointsActivePassive]
 
 (* PlotRange not exported *)
+
+(* ViewAngle not exported *)
+(* ViewPoint not exported *)
+(* ViewVertical not exported *)
 
 
 (* function exports *)
@@ -57,10 +58,12 @@ Options[PlotWavefunction] = {
 	PotentialTransform -> (#&),
 	PointsActivePassive -> {10, 50},
 	
-	PlotOptions -> {},
-	
 	(* not exported *)
-	PlotRange -> {0,1} 
+	PlotRange -> {0,1},
+	
+	ViewAngle -> 60 Degree,    (* only relevant for Plot3D *)
+	ViewPoint -> {1, 1, 1},
+	ViewVertical -> {0, 0, 1}
 }
 
 
@@ -279,12 +282,19 @@ plotFunctionalWavefunction[psi_, {xL_, xR_}, {yL_, yR_}, options_] :=
 				PlotRange-> options[PlotRange],
 				AxesLabel-> options[Labels][[;;3]],
 				
+				(* colour based on complex phase *)
 				Mesh -> None,
 				Exclusions -> None,
 				ColorFunction-> Function[{x, y}, ColorData["Rainbow"][Rescale[Arg[psi[x,y]], {-\[Pi], \[Pi]}]]],
 				ColorFunctionScaling-> False,
 				
-				PlotPoints -> Apply[ControlActive, options[PointsActivePassive]]
+				(* set resolution for static and dynamic plotting *)
+				PlotPoints -> Apply[ControlActive, options[PointsActivePassive]],
+				
+				(* explicitly set angle vars for consistency when ListAnimating cache *)
+				ViewAngle -> options[ViewAngle],
+				ViewPoint -> options[ViewPoint],
+				ViewVertical -> options[ViewVertical]
 			];
 			
 		(* optionally plot potential... *)

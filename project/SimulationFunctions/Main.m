@@ -13,14 +13,14 @@ PackageImport["PlotFunctions`"]  (* needed for ShowEvolution *)
 
 PackageExport[PlotDomain]
 PackageExport[TimeSteps]
-PackageExport[CacheFrames]
 
 
 (* function exports *)
 
 PackageExport[NormaliseWavefunction]
 PackageExport[EvolveWavefunction]
-PackageExport[ShowEvolution]
+PackageExport[ShowRawEvolution]
+PackageExport[ShowCachedEvolution]
 
 
 (* public functions *)
@@ -34,8 +34,11 @@ NormaliseWavefunction::usage =
 EvolveWavefunction::usage = 
 	"EvolveWavefunction[psi, potential, domains, duration] evolves a given 1D or 2D initial wavefunction in a given potential over duration"
 
-ShowEvolution::usage = 
-	"ShowEvolution[psi, potential, domains, duration] simulates and plots a given 1D or 2D wavefunction's evolution over duration"
+ShowRawEvolution::usage = 
+	"ShowRawEvolution[psi, potential, domains, duration] simulates and plots a given 1D or 2D wavefunction's evolution over duration"
+	
+ShowCachedEvolution::usage = 
+	"ShowCachedEvolution[psi, potential, domains, duration] simulates, caches and efficiently plots a given 1D or 2D wavefunction's evolution over duration"
 
 
 (* function definitions *)
@@ -130,28 +133,20 @@ evolveFunctionalWavefunction[psi_, potential_, r__Symbol, domains__List, duratio
 	
 
 	
-		
-(*
-Options[finner] = {a \[Rule] 1};	
-Options[fouter] = {b \[Rule] 9};
-fouter[opts:OptionsPattern[]] :=
-	OptionValue[{fouter, finner}, {opts}, {b}]
-fouter[b \[Rule] 4, a \[Rule] 2]
-*)
 
-Options[ShowEvolution] := {
+Options[ShowRawEvolution] := {
 	PlotDomain -> None,
-	TimeSteps -> False,
-	CacheFrames -> True
+	TimeSteps -> False
 }
 
 
-ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), options:OptionsPattern[]] :=
+ShowRawEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), options:OptionsPattern[]] :=
+
 	DynamicModule[
 		{wavef, plotdoms},
 		
 		(* re-instate timing and printing (if true) *)
-		TimeEigFlag = OptionValue[{ShowEvolution, PlotWavefunction}, {options}, "TimeSteps"];
+		TimeEigFlag = OptionValue[{ShowRawEvolution, PlotWavefunction}, {options}, "TimeSteps"];
 		
 		(* simulate wavefunction *)
 		wavef = EchoTiming[
@@ -160,7 +155,7 @@ ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), option
 		];
 	
 		(* decide on using simulation or plot domain *)
-		plotdoms = OptionValue[{ShowEvolution, PlotWavefunction}, {options}, PlotDomain];
+		plotdoms = OptionValue[{ShowRawEvolution, PlotWavefunction}, {options}, PlotDomain];
 		plotdoms = If[
 			plotdoms === None,
 			{domains}, 
@@ -192,3 +187,79 @@ ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), option
 			"animating"
 		]
 	]
+	
+
+Options[ShowCachedEvolution] := {
+	PlotDomain -> None,
+	TimeSteps -> False
+}
+	
+(* CACHED VERSION *)
+ShowCachedEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), options:OptionsPattern[]] :=
+
+	DynamicModule[
+		{wavef, plotdoms, frames, va, vp, vv},
+		
+		(* re-instate timing and printing (if true) *)
+		TimeEigFlag = OptionValue[{ShowCachedEvolution, PlotWavefunction}, {options}, "TimeSteps"];
+		
+		(* simulate wavefunction *)
+		wavef = EchoTiming[
+			EvolveWavefunction[psi, potential, domains, duration],
+			"simulating"
+		];
+	
+		(* decide on using simulation or plot domain *)
+		plotdoms = OptionValue[{ShowCachedEvolution, PlotWavefunction}, {options}, PlotDomain];
+		plotdoms = If[
+			plotdoms === None,
+			{domains}, 
+			{plotdoms}
+		];
+		
+		(* enable mid-animation rotation of graph by dynamic view params *)
+		va = 60 Degree;
+		vp = {1, 1, 1};
+		vv = {0, 0, 2.0};
+
+		(* cache frames *)
+		frames = 
+			EchoTiming[
+				Table[
+					PlotWavefunction[
+						If[
+							Length[{domains}] === 2,
+							(wavef[#1, #2, t] &),
+							(wavef[#1, t] &)
+						],
+						Sequence @@ Partition[Flatten[plotdoms],2],
+						Potential -> potential,
+						ShowBar -> False,
+						
+						(* PointsActivePassive \[Rule] {50, 50}, *)
+						ViewAngle -> Dynamic@va,
+						ViewPoint -> Dynamic@vp,
+						ViewVertical -> Dynamic@vv,
+						
+						Sequence[FilterRules[{options}, Options[PlotWavefunction]]]
+					],
+					{t, 0, duration, duration/10}   (* time increments *)
+				],
+				"caching frames"
+			];
+			
+		(* animate frames *)
+		EchoTiming[
+			Legended[			
+				ListAnimate[
+					frames, 
+					10,      (* fps *)
+					Initialization :> (vp = {1,1,1}; vv = {0,0, 2.0};)
+				],
+				ColorBar[]
+			], 
+			"animating"
+		]
+	]
+		
+		

@@ -12,6 +12,8 @@ PackageImport["PlotFunctions`"]  (* needed for ShowEvolution *)
 (* symbol exports *)
 
 PackageExport[PlotDomain]
+PackageExport[TimeSteps]
+PackageExport[CacheFrames]
 
 
 (* function exports *)
@@ -44,6 +46,21 @@ ShowEvolution::usage =
 
 (* disable initial-cond and boundary-cond disagreement alerts *)
 Off[NDSolveValue::ibcinc]
+
+
+
+
+(* times and prints an expression's evaluation *)
+TimeEigFlag = False;
+SetAttributes[EchoTiming, HoldFirst]
+EchoTiming[expr_, label_:"Timing"] := 
+	If[
+		TimeEigFlag,
+		Last @ Echo[AbsoluteTiming @ expr, label <> " ", First],
+		expr
+	]
+	
+	
 
 
 NormaliseWavefunction[psi:(_Function|_InterpolatingFunction), {xL_:-\[Infinity], xR_:\[Infinity]}] :=
@@ -123,7 +140,9 @@ fouter[b \[Rule] 4, a \[Rule] 2]
 *)
 
 Options[ShowEvolution] := {
-	PlotDomain -> None
+	PlotDomain -> None,
+	TimeSteps -> False,
+	CacheFrames -> True
 }
 
 
@@ -131,8 +150,14 @@ ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), option
 	DynamicModule[
 		{wavef, plotdoms},
 		
+		(* re-instate timing and printing (if true) *)
+		TimeEigFlag = OptionValue[{ShowEvolution, PlotWavefunction}, {options}, "TimeSteps"];
+		
 		(* simulate wavefunction *)
-		wavef = EvolveWavefunction[psi, potential, domains, duration];
+		wavef = EchoTiming[
+			EvolveWavefunction[psi, potential, domains, duration],
+			"simulating"
+		];
 	
 		(* decide on using simulation or plot domain *)
 		plotdoms = OptionValue[{ShowEvolution, PlotWavefunction}, {options}, PlotDomain];
@@ -141,24 +166,29 @@ ShowEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), option
 			{domains}, 
 			{plotdoms}
 		];
+		
+		(* CONSULT OPTIONS; CACHE RESULTS! *)
 
-		Legended[
-			Manipulate[
-				PlotWavefunction[
-					If[
-						Length[{domains}] === 2,
-						(wavef[#1, #2, t] &),
-						(wavef[#1, t] &)
+		EchoTiming[
+			Legended[
+				Manipulate[
+					PlotWavefunction[
+						If[
+							Length[{domains}] === 2,
+							(wavef[#1, #2, t] &),
+							(wavef[#1, t] &)
+						],
+						Sequence @@ Partition[Flatten[plotdoms],2],
+						Potential -> potential,
+						ShowBar -> False,
+						Sequence[FilterRules[{options}, Options[PlotWavefunction]]]
 					],
-					Sequence @@ Partition[Flatten[plotdoms],2],
-					Potential -> potential,
-					ShowBar -> False,
-					Sequence[FilterRules[{options}, Options[PlotWavefunction]]]
+					
+					(* avoid t=0 state; ambiguous phases *)
+					{{t, duration/100, "time"}, 0, duration}
 				],
-				
-				(* avoid t=0 state; ambiguous phases *)
-				{{t, duration/100, "time"}, 0, duration}
+				ColorBar[]
 			],
-			ColorBar[]
+			"animating"
 		]
 	]

@@ -10,6 +10,9 @@ PackageExport[ShowBar]
 PackageExport[Potential]
 PackageExport[PotentialFilling]
 PackageExport[PotentialTransform]
+
+PackageExport[PlotOptions]
+
 PackageExport[PointsActivePassive]
 
 (* PlotRange not exported *)
@@ -53,6 +56,8 @@ Options[PlotWavefunction] = {
 	PotentialFilling -> True,
 	PotentialTransform -> (#&),
 	PointsActivePassive -> {10, 50},
+	
+	PlotOptions -> {},
 	
 	(* not exported *)
 	PlotRange -> {0,1} 
@@ -325,7 +330,7 @@ plotFunctionalPotential[potential_, {xL_, xR_}, {yL_, yR_}, options_] :=
 		Mesh -> 5,
 		MeshStyle -> {{Red}},
 		
-		PerformanceGoal -> "Quality"
+		PlotPoints -> Apply[ControlActive, options[PointsActivePassive]]
 	]
 
 

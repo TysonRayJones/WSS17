@@ -215,9 +215,6 @@ GetEigenmodes[potential_, domain_, OptionsPattern[]] :=
 			{\[Lambda], NormaliseWavefunction[#, x]& /@ \[Phi]},
 			"normalising eigenfunctions"];
 		
-		(* disable timing and printing *)
-		TimeEigFlag = False;
-		
 		(* return *)
 		{\[Lambda], \[Phi]}
 	]

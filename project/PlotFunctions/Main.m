@@ -63,7 +63,8 @@ Options[PlotWavefunction] = {
 	
 	ViewAngle -> 60 Degree,    (* only relevant for Plot3D *)
 	ViewPoint -> {1, 1, 1},
-	ViewVertical -> {0, 0, 1}
+	ViewVertical -> {0, 0, 1},
+	ImageSize -> Large
 }
 
 
@@ -294,7 +295,9 @@ plotFunctionalWavefunction[psi_, {xL_, xR_}, {yL_, yR_}, options_] :=
 				(* explicitly set angle vars for consistency when ListAnimating cache *)
 				ViewAngle -> options[ViewAngle],
 				ViewPoint -> options[ViewPoint],
-				ViewVertical -> options[ViewVertical]
+				ViewVertical -> options[ViewVertical],
+				
+				ImageSize -> options[ImageSize]
 			];
 			
 		(* optionally plot potential... *)

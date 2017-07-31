@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     15162,        432]
-NotebookOptionsPosition[     10782,        317]
-NotebookOutlinePosition[     11135,        333]
-CellTagsIndexPosition[     11092,        330]
+NotebookDataLength[     10850,        307]
+NotebookOptionsPosition[      7954,        229]
+NotebookOutlinePosition[      8295,        244]
+CellTagsIndexPosition[      8252,        241]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -31,12 +31,6 @@ Cell["Calendar of concluding events", "Subchapter",
  CellChangeTimes->{{3.708166512446836*^9, 
   3.708166524214181*^9}},ExpressionUUID->"7c4fa3b6-22e2-495b-b7e2-\
 1366a986118f"],
-
-Cell["Deadline for Project Notebooks  (WED noon)", "Section",
- CellChangeTimes->{{3.708166698460121*^9, 3.708166705930522*^9}, {
-  3.708178282900496*^9, 
-  3.708178285633246*^9}},ExpressionUUID->"7162a750-f10d-455c-9909-\
-1d19b351fde0"],
 
 Cell["Deadline for Wolfram Community post (WED 5 PM)", "Section",
  CellChangeTimes->{{3.708166709298422*^9, 3.708166723034438*^9}, {
@@ -79,18 +73,6 @@ Cell["Project Notebook (deadline WED noon)", "Section",
 6e329cd8aab4"],
 
 Cell[CellGroupData[{
-
-Cell["Fill out info for poster", "Item",
- CellChangeTimes->{{3.708168207849392*^9, 3.708168254514331*^9}, {
-  3.708168310998398*^9, 
-  3.7081683417384233`*^9}},ExpressionUUID->"746ed4f4-f9bd-4bda-ac4b-\
-4723006262ae"],
-
-Cell["Fill out info for presentation", "Item",
- CellChangeTimes->{{3.708168207849392*^9, 3.708168265340777*^9}, {
-   3.708168329344239*^9, 3.708168332347434*^9}, 
-   3.708168373151087*^9},ExpressionUUID->"69bd2835-8293-414f-8664-\
-8e51b3256a52"],
 
 Cell["Write full record of your project", "Item",
  CellChangeTimes->{{3.708168207849392*^9, 3.708168298208068*^9}, {
@@ -223,42 +205,6 @@ Cell["Copy content to GitHub .MD file", "Item",
 
 Cell[CellGroupData[{
 
-Cell["Two Minute Presentation", "Section",
- CellChangeTimes->{{3.708169076632359*^9, 3.708169092485209*^9}, {
-  3.708169173727696*^9, 
-  3.708169184807085*^9}},ExpressionUUID->"c0627437-8326-4d71-b772-\
-faa2e7273cd0"],
-
-Cell[CellGroupData[{
-
-Cell["Rehearse your 2 minute speech to perfection", "Item",
- CellChangeTimes->{{3.708169187363072*^9, 
-  3.70816921516637*^9}},ExpressionUUID->"493d3c0a-bc25-4652-961a-\
-ce1bb73598b8"],
-
-Cell["Do not go overtime", "Item",
- CellChangeTimes->{{3.708169187363072*^9, 3.7081692294735203`*^9}, {
-  3.708169468402248*^9, 
-  3.708169468402474*^9}},ExpressionUUID->"b0b56157-dffd-4865-a06c-\
-a6645e9e92ac"],
-
-Cell["Speak clearly ", "Item",
- CellChangeTimes->{{3.708169187363072*^9, 3.7081692294735203`*^9}, {
-  3.708169469138565*^9, 
-  3.708169479378524*^9}},ExpressionUUID->"8c8f649f-1483-4664-87b7-\
-06051986122c"],
-
-Cell["\<\
-This is just a teaser for your poster session - just place the bait \
-\>", "Item",
- CellChangeTimes->{{3.708169187363072*^9, 
-  3.708169289999895*^9}},ExpressionUUID->"bebef788-a3a1-457d-90b9-\
-1e87117337c1"]
-}, Open  ]]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
 Cell["Data Repository ", "Section",
  CellChangeTimes->{{3.7081693157896967`*^9, 3.708169321005433*^9}, {
   3.708169515740871*^9, 
@@ -277,48 +223,13 @@ Cell["Ask your instructor how", "Item",
   3.70816942410949*^9}},ExpressionUUID->"256b9ec2-ba78-4d31-bbc6-\
 bad8e4b887b0"]
 }, Open  ]]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell["Other Deliverables ", "Section",
- CellChangeTimes->{{3.708169503468606*^9, 
-  3.708169513665341*^9}},ExpressionUUID->"8922fb7b-1c94-4da0-a45d-\
-9eb5d1bd0c57"],
-
-Cell[CellGroupData[{
-
-Cell["Everything extra you did should be in:", "Item",
- CellChangeTimes->{{3.7081788631935673`*^9, 
-  3.7081788732348757`*^9}},ExpressionUUID->"5b441249-e44c-4a79-ab18-\
-e5b6ca17dd69"],
-
-Cell[CellGroupData[{
-
-Cell["Project Notebook", "Subitem",
- CellChangeTimes->{{3.7081788631935673`*^9, 
-  3.708178891055002*^9}},ExpressionUUID->"88515e7e-6fe0-4fe3-a38f-\
-280dc08f085b"],
-
-Cell["Or linked from your Project Notebook", "Subitem",
- CellChangeTimes->{{3.7081788631935673`*^9, 
-  3.7081789011137543`*^9}},ExpressionUUID->"6fc699c4-3284-42db-b026-\
-03e3441b67bf"],
-
-Cell["In this way your work will not get lost", "Subitem",
- CellChangeTimes->{{3.7081788631935673`*^9, 
-  3.7081789156776857`*^9}},ExpressionUUID->"0aba5857-e317-44e3-8cf7-\
-04b23f5db658"]
-}, Open  ]]
-}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
 WindowSize->{896, 850},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
-FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (April 18, \
-2017)",
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
 StyleDefinitions->"Default.nb"
 ]
 (* End of Notebook Content *)
@@ -333,103 +244,67 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[CellGroupData[{
-Cell[580, 22, 167, 3, 92, "Title", "ExpressionUUID" -> \
+Cell[580, 22, 167, 3, 101, "Title", "ExpressionUUID" -> \
 "bc4648e1-2cc8-4f02-b7ea-7b66416699bd"],
 Cell[CellGroupData[{
-Cell[772, 29, 177, 3, 63, "Subchapter", "ExpressionUUID" -> \
+Cell[772, 29, 177, 3, 67, "Subchapter", "ExpressionUUID" -> \
 "7c4fa3b6-22e2-495b-b7e2-1366a986118f"],
-Cell[952, 34, 236, 4, 64, "Section", "ExpressionUUID" -> \
-"7162a750-f10d-455c-9909-1d19b351fde0"],
-Cell[1191, 40, 240, 4, 50, "Section", "ExpressionUUID" -> \
+Cell[952, 34, 240, 4, 70, "Section", "ExpressionUUID" -> \
 "c41fa18d-09b7-4ffa-9039-de8a440b4ee7"],
-Cell[1434, 46, 229, 4, 50, "Section", "ExpressionUUID" -> \
+Cell[1195, 40, 229, 4, 56, "Section", "ExpressionUUID" -> \
 "7eafa337-40f4-4245-b183-6bc635330a4f"],
-Cell[1666, 52, 215, 4, 50, "Section", "ExpressionUUID" -> \
+Cell[1427, 46, 215, 4, 56, "Section", "ExpressionUUID" -> \
 "3662e4c1-98a8-4cb1-afa2-1140404d19b6"],
-Cell[1884, 58, 296, 4, 50, "Section", "ExpressionUUID" -> \
+Cell[1645, 52, 296, 4, 56, "Section", "ExpressionUUID" -> \
 "d18bb6cd-1272-4d5b-b146-79f812a773d0"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2217, 67, 161, 3, 63, "Subchapter", "ExpressionUUID" -> \
+Cell[1978, 61, 161, 3, 67, "Subchapter", "ExpressionUUID" -> \
 "a80ed85b-572b-4dc2-9b4f-bcb8870acd3d"],
 Cell[CellGroupData[{
-Cell[2403, 74, 258, 4, 64, "Section", "ExpressionUUID" -> \
+Cell[2164, 68, 258, 4, 70, "Section", "ExpressionUUID" -> \
 "1d9f8017-332b-4dc6-bb18-6e329cd8aab4"],
 Cell[CellGroupData[{
-Cell[2686, 82, 217, 4, 30, "Item", "ExpressionUUID" -> \
-"746ed4f4-f9bd-4bda-ac4b-4723006262ae"],
-Cell[2906, 88, 245, 4, 30, "Item", "ExpressionUUID" -> \
-"69bd2835-8293-414f-8664-8e51b3256a52"],
-Cell[3154, 94, 226, 4, 30, "Item", "ExpressionUUID" -> \
+Cell[2447, 76, 226, 4, 29, "Item", "ExpressionUUID" -> \
 "131f67ca-63b1-496c-a3a7-eec84ce37e97"],
-Cell[3383, 100, 272, 4, 30, "Item", "ExpressionUUID" -> \
+Cell[2676, 82, 272, 4, 29, "Item", "ExpressionUUID" -> \
 "17440711-3142-4ecc-ac46-46f649fc300f"],
-Cell[3658, 106, 432, 8, 45, "Item", "ExpressionUUID" -> \
+Cell[2951, 88, 432, 8, 45, "Item", "ExpressionUUID" -> \
 "e50fd419-fbec-49a4-b31f-292ae7c50f7e"],
-Cell[4093, 116, 454, 11, 30, "Item", "ExpressionUUID" -> \
+Cell[3386, 98, 454, 11, 29, "Item", "ExpressionUUID" -> \
 "5d668d1a-a605-4302-bc49-ec41f227f43e"],
-Cell[4550, 129, 379, 6, 30, "Item", "ExpressionUUID" -> \
+Cell[3843, 111, 379, 6, 29, "Item", "ExpressionUUID" -> \
 "c818338b-0491-407e-80d2-9ffc0048c7b0"],
-Cell[4932, 137, 369, 6, 30, "Item", "ExpressionUUID" -> \
+Cell[4225, 119, 369, 6, 29, "Item", "ExpressionUUID" -> \
 "4d8940e3-3c0c-4d57-883b-05cfa595a937"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5350, 149, 228, 4, 64, "Section", "ExpressionUUID" -> \
+Cell[4643, 131, 228, 4, 70, "Section", "ExpressionUUID" -> \
 "29e1c194-25a7-4f11-8cbe-db8631136d30"],
 Cell[CellGroupData[{
-Cell[5603, 157, 297, 7, 30, "Item", "ExpressionUUID" -> \
+Cell[4896, 139, 297, 7, 29, "Item", "ExpressionUUID" -> \
 "b3f86e0a-fb5b-4500-bffc-98f9eebfbb6e"],
-Cell[5903, 166, 370, 6, 30, "Item", "ExpressionUUID" -> \
+Cell[5196, 148, 370, 6, 29, "Item", "ExpressionUUID" -> \
 "44c75667-7732-4f26-bf48-2e134e01c84c"],
-Cell[6276, 174, 466, 12, 30, "Item", "ExpressionUUID" -> \
+Cell[5569, 156, 466, 12, 29, "Item", "ExpressionUUID" -> \
 "e6a14ad4-b42c-4b42-b8e3-30107dbbec73"],
-Cell[6745, 188, 547, 14, 30, "Item", "ExpressionUUID" -> \
+Cell[6038, 170, 547, 14, 29, "Item", "ExpressionUUID" -> \
 "2502910b-8873-4b5d-9fbf-29049dc3e539"],
-Cell[7295, 204, 372, 8, 30, "Item", "ExpressionUUID" -> \
+Cell[6588, 186, 372, 8, 29, "Item", "ExpressionUUID" -> \
 "849dcddc-bf08-4504-babc-04c93c57955a"],
-Cell[7670, 214, 303, 5, 30, "Item", "ExpressionUUID" -> \
+Cell[6963, 196, 303, 5, 29, "Item", "ExpressionUUID" -> \
 "58ce9dd0-a84c-479a-a584-4b8e8a37f8eb"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[8022, 225, 217, 4, 64, "Section", "ExpressionUUID" -> \
-"c0627437-8326-4d71-b772-faa2e7273cd0"],
-Cell[CellGroupData[{
-Cell[8264, 233, 184, 3, 30, "Item", "ExpressionUUID" -> \
-"493d3c0a-bc25-4652-961a-ce1bb73598b8"],
-Cell[8451, 238, 211, 4, 30, "Item", "ExpressionUUID" -> \
-"b0b56157-dffd-4865-a06c-a6645e9e92ac"],
-Cell[8665, 244, 207, 4, 30, "Item", "ExpressionUUID" -> \
-"8c8f649f-1483-4664-87b7-06051986122c"],
-Cell[8875, 250, 218, 5, 30, "Item", "ExpressionUUID" -> \
-"bebef788-a3a1-457d-90b9-1e87117337c1"]
-}, Open  ]]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[9142, 261, 212, 4, 64, "Section", "ExpressionUUID" -> \
+Cell[7315, 207, 212, 4, 70, "Section", "ExpressionUUID" -> \
 "99729f87-f676-44c0-9e96-65327fc12c4d"],
 Cell[CellGroupData[{
-Cell[9379, 269, 183, 3, 30, "Item", "ExpressionUUID" -> \
+Cell[7552, 215, 183, 3, 29, "Item", "ExpressionUUID" -> \
 "a2ac8ef1-622b-4ce7-908b-1422faca66fd"],
-Cell[9565, 274, 164, 3, 30, "Item", "ExpressionUUID" -> \
+Cell[7738, 220, 164, 3, 29, "Item", "ExpressionUUID" -> \
 "256b9ec2-ba78-4d31-bbc6-bad8e4b887b0"]
-}, Open  ]]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[9778, 283, 164, 3, 64, "Section", "ExpressionUUID" -> \
-"8922fb7b-1c94-4da0-a45d-9eb5d1bd0c57"],
-Cell[CellGroupData[{
-Cell[9967, 290, 184, 3, 30, "Item", "ExpressionUUID" -> \
-"5b441249-e44c-4a79-ab18-e5b6ca17dd69"],
-Cell[CellGroupData[{
-Cell[10176, 297, 163, 3, 26, "Subitem", "ExpressionUUID" -> \
-"88515e7e-6fe0-4fe3-a38f-280dc08f085b"],
-Cell[10342, 302, 185, 3, 26, "Subitem", "ExpressionUUID" -> \
-"6fc699c4-3284-42db-b026-03e3441b67bf"],
-Cell[10530, 307, 188, 3, 26, "Subitem", "ExpressionUUID" -> \
-"0aba5857-e317-44e3-8cf7-04b23f5db658"]
-}, Open  ]]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]

@@ -1,0 +1,31 @@
+
+presentation (2 mins):
+
+
+Hi,
+my name's on the screen
+
+
+My original project was to use neural networks to make predictions of quantum physics behaviour,	 
+>>    specifically the forms of the lowest lying eigenstates
+
+
+
+It turns out this is a rather uninteresting problem for a neural net.
+
+So join me in a minute and a half of mournful silence for my project
+
+
+<>
+
+
+
+
+In working on that, I found myself needing to plot or simulate a bunch of wavefunctions
+in different representations; lists of numbers, symbolic expressions and pure or interpolating functions.
+The code was different and ad hoc, but the underlying states were the same;  
+here's a potential, here's my wavefunction, evolve it for 4s.
+
+I realised this as a barrier to using Mathematica for students to experiment with quantum physics, computationally
+
+So I made a bunch of packages

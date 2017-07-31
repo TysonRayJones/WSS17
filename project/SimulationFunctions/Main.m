@@ -161,8 +161,6 @@ ShowRawEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), opt
 			{domains}, 
 			{plotdoms}
 		];
-		
-		(* CONSULT OPTIONS; CACHE RESULTS! *)
 
 		EchoTiming[
 			Legended[
@@ -241,9 +239,11 @@ ShowCachedEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), 
 						ViewPoint -> Dynamic@vp,
 						ViewVertical -> Dynamic@vv,
 						
+						ImageSize -> 900,
+						
 						Sequence[FilterRules[{options}, Options[PlotWavefunction]]]
 					],
-					{t, 0, duration, duration/10}   (* time increments *)
+					{t, 0, duration, duration/60}   (* time increments *)
 				],
 				"caching frames"
 			];
@@ -253,8 +253,9 @@ ShowCachedEvolution[psi_, potential_, domains__List, duration:(_Real|_Integer), 
 			Legended[			
 				ListAnimate[
 					frames, 
-					10,      (* fps *)
-					Initialization :> (vp = {1,1,1}; vv = {0,0, 2.0};)
+					20,      (* fps *)
+					Initialization :> (vp = {1,1,1}; vv = {0,0, 2.0};),
+					ImageSize->Full
 				],
 				ColorBar[]
 			], 

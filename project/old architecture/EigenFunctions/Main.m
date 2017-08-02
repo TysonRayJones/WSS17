@@ -287,5 +287,10 @@ processSymbolicPotential[potential_, {xL_, xR_}, numPoints_] :=
 
 	(* not supplying a var is valid, when potential is a constant *)
 	processSymbolicPotential[potential, {dummyvar, xL, xR}, numPoints]
-
+    
+	(* 
+		FOUND ABOVE 1/8/17; 
+		this is retarded. potential clearly isn't a symbolic expression of dummyvar. 
+		This makes it match though it won't render anyway. What's the point? 
+	*)
 	

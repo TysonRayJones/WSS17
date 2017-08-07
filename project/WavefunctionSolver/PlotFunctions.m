@@ -4,6 +4,7 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+	- add function for adding a colorbar to any plot (e.g. to wrap dynamic plots)
 	- automatic plotrange only considers probability density;
 	  can we make it the union of the individual automatic plotranges of probability density and potential?
 	  this would require (perhaps expensively) replotting both after finding the automatic ranges
@@ -11,11 +12,12 @@ Package["WavefunctionSolver`"]
 	- give PlotWavefunction a PotentialPlotOptions \[Rule] {options to customise potential plot};
 	  it may be tricky to validate passed PotentialPlotOptions (should we match only valid, or error on invalid?)
 	- non-square domain in Plot3D causes non-uniform axis scaling; should we fix by default?
+	- should this paclet have a function for time-caching/animating any wavefunction (w. time) function?
 *)
 
 (* 
 	NOTES:
-	- a 1D potential transformation function disables scaling higher dimensional potentials in certain directions
+	- a 1D potential transformation function disallows scaling higher dimensional potentials in certain directions
 	- plotting the colorbar (by ShowBar \[Rule] True) makes animations very laggy; avoid in dynamic plots
 *)
 
@@ -55,69 +57,84 @@ PlotWavefunction::usage = "PlotWavefunction[wavef, {x, xL, xR}, {y, yL, yR}] plo
 
 (* PRIVATE FUNCTION DEFINITIONS *)
 
-realNumPattern = Internal`RealValuedNumericQ;
-domainPattern = MatchQ[{_?realNumPattern, _?realNumPattern}];
-domainSymbPattern = MatchQ[{_Symbol, _?realNumPattern, _?realNumPattern}];
-domainOptSymbPattern = MatchQ[{Repeated[_Symbol, {0,1}], _?realNumPattern, _?realNumPattern}];
+(* 
+	pattern matching for {xL, xR}, {x, xL, xR} and both 
+*)
+realNumQ = Internal`RealValuedNumericQ;
+domainQ = MatchQ[{_?realNumQ, _?realNumQ}];
+domainSymbQ = MatchQ[{_Symbol, _?realNumQ, _?realNumQ}];
+domainOptSymbQ = MatchQ[{Repeated[_Symbol, {0,1}], _?realNumQ, _?realNumQ}];
 
 
 
 
 
+(* 
+	(silently) checks whether func has correct number of args
+*)
 is1DFunction[func:(_Function|_InterpolatingFunction)] :=
 	Quiet @ Not[Check[func[dummyval], None] === None]
-
 is2DFunction[func:(_Function|_InterpolatingFunction)] :=
 	Quiet @ Not[Check[func[dummyval1, dummyval2], None] === None]
 
 
 
-isValid1DInput[cons_?NumericQ, _?domainOptSymbPattern] := 
+(* 
+	checks input and domain types are compatible/valid
+*)
+isValid1DInput[cons_?NumericQ, _?domainOptSymbQ] := 
 	True
-isValid1DInput[list_/;VectorQ[list, NumericQ], _?domainOptSymbPattern] := 
+isValid1DInput[list_/;VectorQ[list, NumericQ], _?domainOptSymbQ] := 
 	True
-isValid1DInput[symb:Except[_Function|_InterpolatingFunction], _?domainSymbPattern] :=
+isValid1DInput[symb:Except[_Function|_InterpolatingFunction], _?domainSymbQ] :=
 	True
-isValid1DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbPattern] :=
+isValid1DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ] :=
 	is1DFunction[func]
-isValid1DInput[_, _?domainOptSymbPattern] := 
+isValid1DInput[_, _?domainOptSymbQ] := 
 	False
 	
 
 
-isValid2DInput[cons_?NumericQ, _?domainOptSymbPattern, _?domainOptSymbPattern] := 
+isValid2DInput[cons_?NumericQ, _?domainOptSymbQ, _?domainOptSymbQ] := 
 	True
-isValid2DInput[list_/;MatrixQ[list, NumericQ], _?domainOptSymbPattern, _?domainOptSymbPattern] := 
+isValid2DInput[list_/;MatrixQ[list, NumericQ], _?domainOptSymbQ, _?domainOptSymbQ] := 
 	True
-isValid2DInput[symb:Except[_Function|_InterpolatingFunction], _?domainSymbPattern, _?domainSymbPattern] :=
+isValid2DInput[symb:Except[_Function|_InterpolatingFunction], _?domainSymbQ, _?domainSymbQ] :=
 	True
-isValid2DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbPattern, _?domainOptSymbPattern] :=
+isValid2DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ, _?domainOptSymbQ] :=
 	is2DFunction[func]
-isValid2DInput[_, _?domainOptSymbPattern, _?domainOptSymbPattern] :=
+isValid2DInput[_, _?domainOptSymbQ, _?domainOptSymbQ] :=
 	False
 	
 	
 
-validTransform[transform:(_Function|_InterpolatingFunction)] :=
+(* 
+	checks a function given to PotentialTransform is valid
+*)
+isValidTransform[transform:(_Function|_InterpolatingFunction)] :=
 	is1DFunction[transform]
 	
 	
 
-valid1DOptions[
+(* 
+	checks PlotWavefunction's OptionPattern features valid Potential and PotentialTransform 
+	values (compatibl with the passed domain), if they're passed
+*)
+isValid1DOptions[
 	options:OptionsPattern[PlotWavefunction], 
-	endpoints:_?domainPattern
+	endpoints:_?domainQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
 		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, endpoints]] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?validTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
 	)
 	
-valid1DOptions[
+isValid1DOptions[
 	options:OptionsPattern[PlotWavefunction], 
-	domain:_?domainSymbPattern
+	domain:_?domainSymbQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
@@ -125,30 +142,28 @@ valid1DOptions[
 		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, domain]] 	
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?validTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
 	)
 
 
 
-(* non-symbolic potential *)
-valid2DOptions[
-	options:OptionsPattern[PlotWavefunction], 
-	endpoints1:_?domainPattern, 
-	endpoints2:_?domainPattern
+isValid2DOptions[
+	options:OptionsPattern[PlotWavefunction],   (* non-symbolic potential *)
+	endpoints1:_?domainQ, 
+	endpoints2:_?domainQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
 		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, endpoints1, endpoints2]] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?validTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
 	)
 
-(* possibly symbolic potential *)
-valid2DOptions[
-	options:OptionsPattern[PlotWavefunction], 
-	domain1:_?domainSymbPattern, 
-	domain2:_?domainSymbPattern
+isValid2DOptions[
+	options:OptionsPattern[PlotWavefunction],   (* possibly symbolic potential *)
+	domain1:_?domainSymbQ, 
+	domain2:_?domainSymbQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
@@ -156,41 +171,44 @@ valid2DOptions[
 		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, domain1, domain2]] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?validTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
 	)
 	
-(* a mix of non-symbolic and symbolic domain (treat both as non-symbolic) *)
-valid2DOptions[
+isValid2DOptions[
 	options:OptionsPattern[PlotWavefunction], 
-	domain1:_?domainSymbPattern, 
-	domain2:_?domainPattern
+	domain1:_?domainSymbQ,     (* a mix of non-symbolic and symbolic domain (treat both as non-symbolic) *)
+	domain2:_?domainQ
 ] :=
-	valid2DOptions[options, domain1[[2;;]], domain2]
+	isValid2DOptions[options, domain1[[2;;]], domain2]
 
-valid2DOptions[
+isValid2DOptions[
 	options:OptionsPattern[PlotWavefunction], 
-	domain1:_?domainPattern, 
-	domain2:_?domainSymbPattern
+	domain1:_?domainQ, 
+	domain2:_?domainSymbQ       (* a mix of non-symbolic and symbolic domain (treat both as non-symbolic) *)
 ] :=
-	valid2DOptions[options, domain1, domain2[[2;;]]]
+	isValid2DOptions[options, domain1, domain2[[2;;]]]
 	
 	
 	
+(*
+	converts numeric vectors, matrices and constants to functions,
+	and keeps functions, interpolating functions and None unchanged
+*)
 convertToFunction[
 	None, 
-	Repeated[_?domainOptSymbPattern, {1,2}]
+	Repeated[_?domainOptSymbQ, {1,2}]
 ] :=
 	None
 
 convertToFunction[
 	const_?NumericQ, 
-	Repeated[_?domainOptSymbPattern, {1,2}]
+	Repeated[_?domainOptSymbQ, {1,2}]
 ] :=
 	(const &)
 	
 convertToFunction[
 	func:(_Function|_InterpolatingFunction),
-	Repeated[_?domainOptSymbPattern, {1,2}]
+	Repeated[_?domainOptSymbQ, {1,2}]
 ] :=
 	func
 	
@@ -222,6 +240,9 @@ convertToFunction[
 
 
 
+(*
+	extracts end-points from any domain format
+*)
 convertToEndPoints[
 	{___Symbol, xL_?NumericQ, xR_?NumericQ}
 ] := 
@@ -229,6 +250,9 @@ convertToEndPoints[
 	
 	
 
+(*
+	options that apply to plotting both 1D and 2D wavefunctions
+*)
 Options[PlotWavefunction] = {
 
 	(* exported *)
@@ -238,11 +262,17 @@ Options[PlotWavefunction] = {
 	ColorScheme -> "Rainbow"
 };
 
+(*
+	options compatible only with 1D wavefunctions
+*)
 Options[plot1DWavefunction] = {
 	AxesLabel -> {"x", "Abs[\[Psi]]^2"},
 	LegendLabel -> "Phase[\[Psi]]"
 };
 
+(*
+	options compatible only with 2D wavefunctions
+*)
 Options[plot2DWavefunction] = {
 	AxesLabel -> {"x", "y", "Abs[\[Psi]]^2"},
 	LegendLabel -> "Phase[\[Psi]]"
@@ -252,11 +282,18 @@ Options[plot2DWavefunction] = {
 
 
 
-(* for accepting options to internal functions *)
+(*
+	functions of which these package-functions can accept the options;
+	used for matching options to internal functions
+*)
 optionFunctions1D = {PlotWavefunction, plot1DWavefunction, BarLegend, Plot};
 optionFunctions2D = {PlotWavefunction, plot2DWavefunction, BarLegend, Plot3D};
 
-(* for merging given and default options to functions defined in this package (avoids passed option clutter) *)
+(*
+	merges passed options with the defaults of these package-functions;
+	avoids the clutter of passing defaults of external (BarLegend, Plot, Plot3D)
+	to these package-functions
+*)
 optionFilter1D[
 	options:OptionsPattern[optionFunctions1D]
 ] :=
@@ -271,6 +308,11 @@ optionFilter2D[
 	
 
 
+
+(*
+	plots a functional wavefunction, combined with a potential 
+	(if not None) and a colorbar (if ShowBar \[Rule] True in options)
+*)
 plot1DWavefunction[
 	wavef:(_Function|_InterpolatingFunction),
 	potential:(_Function|_InterpolatingFunction|None),
@@ -282,6 +324,7 @@ plot1DWavefunction[
 		probabilityPlot = plot1DProbabilityDensity[wavef, domain, options];
 		
 		(******* THE OVERRIDING OF POTENTIAL PLOTRANGE BELOW SHOULD BE UNDONE BY PASSING OF AN EXPLICIT POTENTIAL PLOTRANGE LATER *******)
+		(* (though I suspect it will be automatic within plot1DPotential, if we apply eval options before our own styling) *)
 		potentialPlot = plot1DPotential[potential, domain, PlotRange[probabilityPlot][[2]], options];
 		colorBar = plotColorBar[
 			OptionValue[optionFunctions1D, {options}, ColorScheme],
@@ -305,6 +348,7 @@ plot2DWavefunction[
 		probabilityPlot = plot2DProbabilityDensity[wavef, xDomain, yDomain, options];
 		
 		(******* THE OVERRIDING OF POTENTIAL PLOTRANGE BELOW SHOULD BE UNDONE BY PASSING OF AN EXPLICIT POTENTIAL PLOTRANGE LATER *******)
+		(* (though I suspect it will be automatic within plot1DPotential, if we apply eval options before our own styling) *)
 		potentialPlot = plot2DPotential[potential, xDomain, yDomain, PlotRange[probabilityPlot][[3]], options];
 		colorBar = plotColorBar[
 			OptionValue[optionFunctions2D, {options}, ColorScheme],
@@ -317,6 +361,11 @@ plot2DWavefunction[
 	
 	
 	
+(*
+	plots the probability distribution of a given wavefunction,
+	accepting external plotting function options, which override
+	those explicit here
+*)
 plot1DProbabilityDensity[
 	wavef:(_Function|_InterpolatingFunction),
 	{xL_?NumericQ, xR_?NumericQ},
@@ -327,6 +376,10 @@ plot1DProbabilityDensity[
 			Abs[wavef[x]]^2,
 			{x, xL, xR},
 			
+			(* apply (overridding) user-given Plot options first *)
+			Evaluate @ FilterRules[optionFilter1D[options], Options[Plot]],
+			
+			(* otherwise apply this default styling ... *)
 			Filling -> Axis,
 			ColorFunctionScaling -> False,
 			ColorFunction -> 
@@ -334,10 +387,9 @@ plot1DProbabilityDensity[
 					ColorData[OptionValue[optionFunctions1D, {options}, ColorScheme]][
 						Rescale[Arg[wavef[x]], {-\[Pi], \[Pi]}]
 					]
-				],
-			
-			Evaluate @ FilterRules[optionFilter1D[options], Options[Plot]]
+				]
 		],
+		(* make plot outline black (not the ColorFunction) *)
 		Line[pts_, _] :> {Black, Line[pts]}
 	]
 
@@ -352,6 +404,10 @@ plot2DProbabilityDensity[
 		{x, xL, xR},
 		{y, yL, yR},
 		
+		(* apply (overridding) user-given Plot3D options first *)
+		Evaluate @ FilterRules[optionFilter2D[options], Options[Plot3D]],
+		
+		(* otherwise apply this default styling ... *)
 		Mesh -> None,
 		Exclusions -> None,
 		ColorFunctionScaling -> False,
@@ -360,17 +416,19 @@ plot2DProbabilityDensity[
 				ColorData[OptionValue[optionFunctions2D, {options}, ColorScheme]][
 					Rescale[Arg[wavef[x,y]], {-\[Pi], \[Pi]}]
 				]
-			],
-		
-		Evaluate @ FilterRules[optionFilter2D[options], Options[Plot3D]]
+			]
 	]
 
 
 
+
+(*
+	plots a potential if not None, otherwise returns None
+*)
 plot1DPotential[
 	None,
-	_?domainPattern,  (* domain *)
-	_?domainPattern,  (* range *)
+	_?domainQ,  (* domain *)
+	_?domainQ,  (* range *)
 	OptionsPattern[optionFunctions1D]
 ] :=
 	None
@@ -390,6 +448,7 @@ plot1DPotential[
 		PlotRange -> range,
 		
 		(* for now; do not use the Plot options *)   (* TODO: an PlotWavefunction option for Potential plot options! *)
+		(* ^^^ update above doc when implemented *)
 		
 		Exclusions -> None,
 		Filling -> Axis,
@@ -400,9 +459,9 @@ plot1DPotential[
 
 plot2DPotential[
 	None,
-	_?domainPattern, (* x domain *)
-	_?domainPattern, (* y domain *)
-	_?domainPattern, (* range *)
+	_?domainQ, (* x domain *)
+	_?domainQ, (* y domain *)
+	_?domainQ, (* range *)
 	OptionsPattern[optionFunctions2D]
 ] :=
 	None	
@@ -424,6 +483,7 @@ plot2DPotential[
 		PlotRange -> {zL, zR},
 		
 		(* for now; do not use the Plot options *)   (* TODO: an PlotWavefunction option for Potential plot options! *)
+		(* ^^^ update above doc when implemented *)
 
 		ClippingStyle -> None,
 		Exclusions -> None,
@@ -434,6 +494,11 @@ plot2DPotential[
 
 
 
+
+
+(*
+	plots a color bar, accepting options for BarLegend
+*)
 plotColorBar[
 	_String,
 	False,
@@ -453,52 +518,75 @@ plotColorBar[
 		options
 	]
 	
+	
+	
 
 
+(*
+	combines a probability density with a potential plot and a 
+	color bar (each of which may be None)
+*)
 combineGraphics[
 	probabilityPlot:(_Graphics|_Graphics3D),
-	potentialPlot:(_Graphics|_Graphics3D|None),
-	colorBar:(_BarLegend|None)
+	potentialPlot:(_Graphics|_Graphics3D),
+	colorBar:_BarLegend
 ] :=
-	Module[
-		{combinedPlot},
-		
-		combinedPlot = 
-			If[
-				potentialPlot === None,
-				probabilityPlot,
-				Show[
-					probabilityPlot,
-					potentialPlot
-				]
-			];
-		
-		combinedPlot = 
-			If[
-				colorBar === None,
-				combinedPlot,
-				Legended[
-					combinedPlot,
-					colorBar
-				]
-			];
-		
-		combinedPlot
+	Legended[
+		Show[
+			probabilityPlot,
+			potentialPlot
+		],
+		colorBar
 	]
-		
+combineGraphics[
+	probabilityPlot:(_Graphics|_Graphics3D),
+	potentialPlot:(_Graphics|_Graphics3D),
+	None
+] :=
+	Show[
+		probabilityPlot,
+		potentialPlot
+	]
+combineGraphics[
+	probabilityPlot:(_Graphics|_Graphics3D),
+	None,
+	colorBar:_BarLegend
+] :=
+	Legended[
+		probabilityPlot,
+		colorBar
+	]
+combineGraphics[
+	probabilityPlot:(_Graphics|_Graphics3D),
+	None,
+	None
+] :=
+	probabilityPlot
+
 		
 		
 
 
 (* PUBLIC FUNCTION DEFINITIONS *)
 
+(*
+	Plots a 1D or 2D wavefunction, with optional potential.
+	A 1D wavefunction can be specified as a quantity, vector
+	(of numeric quantities), function, interpolating function 
+	or a symbolic expression (requiring a symbol is passed 
+	within the domain).
+	A 2D wavefunction can be specified as a quantity, matrix
+	(of numeric quantities), function, interpolating function
+	or a symbolic expression (requiring symbols are passed
+	within the two domains)
+*)
 PlotWavefunction[
 	wavef_,
-	domain_?domainOptSymbPattern,
+	domain_?domainOptSymbQ,
 	options:OptionsPattern[optionFunctions1D]
 ] /; (
 	isValid1DInput[wavef, domain] &&
-	valid1DOptions[options, domain]
+	isValid1DOptions[options, domain]
 ) :=
 	plot1DWavefunction[
 		convertToFunction[wavef, domain],
@@ -509,12 +597,12 @@ PlotWavefunction[
 	
 PlotWavefunction[
 	wavef_, 
-	xDomain_?domainOptSymbPattern, 
-	yDomain_?domainOptSymbPattern, 
+	xDomain_?domainOptSymbQ, 
+	yDomain_?domainOptSymbQ, 
 	options:OptionsPattern[optionFunctions2D]
 ] /; (
 	isValid2DInput[wavef, xDomain, yDomain] &&
-	valid2DOptions[options, xDomain, yDomain]
+	isValid2DOptions[options, xDomain, yDomain]
 ) := 
 	plot2DWavefunction[
 		convertToFunction[wavef, xDomain, yDomain],

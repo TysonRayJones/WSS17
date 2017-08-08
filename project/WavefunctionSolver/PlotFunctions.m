@@ -4,13 +4,12 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+	- remove all except outermost OptionsPattern[1dfuncs] such that 'unknown option' error fires once from PlotWavefunction?
 	- add function for adding a colorbar to any plot (e.g. to wrap dynamic plots)
 	- automatic plotrange only considers probability density;
 	  can we make it the union of the individual automatic plotranges of probability density and potential?
 	  this would require (perhaps expensively) replotting both after finding the automatic ranges
 	- "Ticks" and "TickLabels" aren't captured by BarLegend options, so can't be passed to PlotWavefunction. How can we fix this?
-	- give PlotWavefunction a PotentialPlotOptions \[Rule] {options to customise potential plot};
-	  it may be tricky to validate passed PotentialPlotOptions (should we match only valid, or error on invalid?)
 	- non-square domain in Plot3D causes non-uniform axis scaling; should we fix by default?
 	- should this paclet have a function for time-caching/animating any wavefunction (w. time) function?
 *)
@@ -32,6 +31,9 @@ Potential::usage = "Specify the external potential as a function/list/number/sym
 
 PackageExport[PotentialTransform]
 PotentialTransform::usage = "Specify a function by which to transform the external potential when plotting";
+
+PackageExport[PotentialPlotOptions]
+PotentialPlotOptions::usage = "Specify a list of Plot/Plot3D options to apply to the plot of the Potential";
 
 PackageExport[ShowBar]
 ShowBar::usage = "Whether to display a phase-colorbar in the plot. Dynamic plots should set to False";
@@ -258,6 +260,7 @@ Options[PlotWavefunction] = {
 	(* exported *)
 	Potential -> None,
 	PotentialTransform -> (#&),
+	PotentialPlotOptions -> {},
 	ShowBar -> True,
 	ColorScheme -> "Rainbow"
 };
@@ -310,6 +313,21 @@ optionFilter2D[
 
 
 (*
+	causes an alert if the passed options aren't strictly for Plot/Plot3D
+*)
+check1DPotentialPlotOptions[
+	OptionsPattern[Plot]
+] :=
+	OptionValue[PlotStyle]    (* accesses arbitrary Plot option to trigger OptionsPattern *)
+
+check2DPotentialPlotOptions[
+	OptionsPattern[Plot3D]
+] :=
+	OptionValue[PlotStyle]    (* accesses arbitrary Plot3D option to trigger OptionsPattern *)
+
+
+
+(*
 	plots a functional wavefunction, combined with a potential 
 	(if not None) and a colorbar (if ShowBar \[Rule] True in options)
 *)
@@ -321,10 +339,12 @@ plot1DWavefunction[
 ] :=
 	Module[
 		{probabilityPlot, potentialPlot, colorBar},
-		probabilityPlot = plot1DProbabilityDensity[wavef, domain, options];
 		
-		(******* THE OVERRIDING OF POTENTIAL PLOTRANGE BELOW SHOULD BE UNDONE BY PASSING OF AN EXPLICIT POTENTIAL PLOTRANGE LATER *******)
-		(* (though I suspect it will be automatic within plot1DPotential, if we apply eval options before our own styling) *)
+		(* MONKEY-PATCH to throw alert if PotentialPlotOptions contains options unknown to Plot *)
+		check1DPotentialPlotOptions[Sequence @@ OptionValue[optionFunctions1D, {options}, PotentialPlotOptions]];
+		
+		(* plots potential with probabilityPlot's plot-range, unless overridden in PotentialPlotOptions *)
+		probabilityPlot = plot1DProbabilityDensity[wavef, domain, options];
 		potentialPlot = plot1DPotential[potential, domain, PlotRange[probabilityPlot][[2]], options];
 		colorBar = plotColorBar[
 			OptionValue[optionFunctions1D, {options}, ColorScheme],
@@ -345,10 +365,11 @@ plot2DWavefunction[
 	Module[
 		{probabilityPlot, potentialPlot, colorBar},
 		
-		probabilityPlot = plot2DProbabilityDensity[wavef, xDomain, yDomain, options];
+		(* MONKEY-PATCH to throw alert if PotentialPlotOptions contains options unknown to Plot3D *)
+		check2DPotentialPlotOptions[Sequence @@ OptionValue[optionFunctions2D, {options}, PotentialPlotOptions]];
 		
-		(******* THE OVERRIDING OF POTENTIAL PLOTRANGE BELOW SHOULD BE UNDONE BY PASSING OF AN EXPLICIT POTENTIAL PLOTRANGE LATER *******)
-		(* (though I suspect it will be automatic within plot1DPotential, if we apply eval options before our own styling) *)
+		(* plots potential with probabilityPlot's plot-range, unless overridden in PotentialPlotOptions *)
+		probabilityPlot = plot2DProbabilityDensity[wavef, xDomain, yDomain, options];
 		potentialPlot = plot2DPotential[potential, xDomain, yDomain, PlotRange[probabilityPlot][[3]], options];
 		colorBar = plotColorBar[
 			OptionValue[optionFunctions2D, {options}, ColorScheme],
@@ -379,7 +400,7 @@ plot1DProbabilityDensity[
 			(* apply (overridding) user-given Plot options first *)
 			Evaluate @ FilterRules[optionFilter1D[options], Options[Plot]],
 			
-			(* otherwise apply this default styling ... *)
+			(* otherwise apply this default styling *)
 			Filling -> Axis,
 			ColorFunctionScaling -> False,
 			ColorFunction -> 
@@ -407,7 +428,7 @@ plot2DProbabilityDensity[
 		(* apply (overridding) user-given Plot3D options first *)
 		Evaluate @ FilterRules[optionFilter2D[options], Options[Plot3D]],
 		
-		(* otherwise apply this default styling ... *)
+		(* otherwise apply this default styling *)
 		Mesh -> None,
 		Exclusions -> None,
 		ColorFunctionScaling -> False,
@@ -422,8 +443,11 @@ plot2DProbabilityDensity[
 
 
 
+
 (*
-	plots a potential if not None, otherwise returns None
+	plots a potential if not None, otherwise returns None.
+	applies Plot styling given in PotentialPlotOptions to a
+	plot of the potential after transformation PotentialTransform
 *)
 plot1DPotential[
 	None,
@@ -440,16 +464,21 @@ plot1DPotential[
 	options:OptionsPattern[optionFunctions1D]
 ] :=
 	Plot[
+		(* transform the potential *)
 		Composition[
 			OptionValue[optionFunctions1D, {options}, PotentialTransform],
 			potential
 		][x],
 		{x, xL, xR},
+		
+		(* apply (overridding) user-given Plot options first *)
+		Evaluate @ FilterRules[
+			OptionValue[optionFunctions1D, {options}, PotentialPlotOptions], 
+			Options[Plot]
+		],
+		
+		(* otherwise apply this default styling *)
 		PlotRange -> range,
-		
-		(* for now; do not use the Plot options *)   (* TODO: an PlotWavefunction option for Potential plot options! *)
-		(* ^^^ update above doc when implemented *)
-		
 		Exclusions -> None,
 		Filling -> Axis,
 		PlotStyle -> {Thick, Red}
@@ -474,17 +503,22 @@ plot2DPotential[
 	options:OptionsPattern[optionFunctions2D]
 ] :=
 	Plot3D[
+		(* transform the potential *)
 		Composition[
 			OptionValue[optionFunctions2D, {options}, PotentialTransform],
 			potential
 		][x, y],
 		{x, xL, xR},
 		{y, yL, yR},
-		PlotRange -> {zL, zR},
 		
-		(* for now; do not use the Plot options *)   (* TODO: an PlotWavefunction option for Potential plot options! *)
-		(* ^^^ update above doc when implemented *)
-
+		(* apply (overridding) user-given Plot3D options first *)
+		Evaluate @ FilterRules[
+			OptionValue[optionFunctions2D, {options}, PotentialPlotOptions], 
+			Options[Plot3D]
+		],
+		
+		(* otherwise apply this default styling *)
+		PlotRange -> {zL, zR},
 		ClippingStyle -> None,
 		Exclusions -> None,
 		PlotStyle -> {{Opacity[.3], Red}},

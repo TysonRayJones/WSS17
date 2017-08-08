@@ -4,11 +4,6 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
-	- remove all except outermost OptionsPattern[1dfuncs] such that 'unknown option' error fires once from PlotWavefunction?
-	- add function for adding a colorbar to any plot (e.g. to wrap dynamic plots)
-	- automatic plotrange only considers probability density;
-	  can we make it the union of the individual automatic plotranges of probability density and potential?
-	  this would require (perhaps expensively) replotting both after finding the automatic ranges
 	- "Ticks" and "TickLabels" aren't captured by BarLegend options, so can't be passed to PlotWavefunction. How can we fix this?
 	- non-square domain in Plot3D causes non-uniform axis scaling; should we fix by default?
 	- should this paclet have a function for time-caching/animating any wavefunction (w. time) function?
@@ -17,7 +12,10 @@ Package["WavefunctionSolver`"]
 (* 
 	NOTES:
 	- a 1D potential transformation function disallows scaling higher dimensional potentials in certain directions
-	- plotting the colorbar (by ShowBar \[Rule] True) makes animations very laggy; avoid in dynamic plots
+	- plotting the colorbar (by ShowColorBar \[Rule] True) makes animations very laggy; avoid in dynamic plots
+	- automatic plotrange only considers probability density;
+	  can we make it the union of the individual automatic plotranges of probability density and potential?
+	  this would require (perhaps expensively) replotting both after finding the automatic ranges
 *)
 
 
@@ -35,11 +33,11 @@ PotentialTransform::usage = "Specify a function by which to transform the extern
 PackageExport[PotentialPlotOptions]
 PotentialPlotOptions::usage = "Specify a list of Plot/Plot3D options to apply to the plot of the Potential";
 
-PackageExport[ShowBar]
-ShowBar::usage = "Whether to display a phase-colorbar in the plot. Dynamic plots should set to False";
+PackageExport[ShowColorBar]
+ShowColorBar::usage = "Whether to display a phase-colorbar in the plot. Dynamic plots should set to False";
 
 PackageExport[ColorScheme]
-ColorScheme::usage = "The name of the color scheme to use for the phase in wavefunction plots";
+ColorScheme::usage = "The name of the color scheme to use for the phase in wavefunction and colorbar plots";
 
 
 
@@ -53,7 +51,11 @@ PlotWavefunction::usage = "PlotWavefunction[wavef, {xL, xR}, {yL, yR}] plots a 2
 PlotWavefunction::usage = "PlotWavefunction[wavef, {x, xL, xR}] plots a 1D symbolic (in x) wavefunction between xL and xR";
 PlotWavefunction::usage = "PlotWavefunction[wavef, {x, xL, xR}, {y, yL, yR}] plots a 2D symbolic (in x and y) wavefunction on x \[Element] [xL, xR], y \[Element] [yL, yR]";
 
+PackageExport[PlotColorBar]
+PlotColorBar::usage = "PlotColorBar[] plots a colorbar from -\[Pi] to \[Pi], accepting a ColorScheme and all BarLegend option(s)"
 
+PackageExport[AddColorBar]
+AddColorBar::usage = "AddColorBar[graphic] adds a colorbar legend to the graphic, accepting all PlotColorBar options"
 
 
 
@@ -261,7 +263,7 @@ Options[PlotWavefunction] = {
 	Potential -> None,
 	PotentialTransform -> (#&),
 	PotentialPlotOptions -> {},
-	ShowBar -> True,
+	ShowColorBar -> True,
 	ColorScheme -> "Rainbow"
 };
 
@@ -281,16 +283,31 @@ Options[plot2DWavefunction] = {
 	LegendLabel -> "Phase[\[Psi]]"
 };
 
+(* 
+	options for plotting the colorbar 
+*)
+Options[PlotColorBar] = {
+	ColorScheme -> "Rainbow"
+}
 
-
+(* 
+	options for adding a colorbar legend
+*)
+Options[AddColorBar] = Options[PlotColorBar]
 
 
 (*
 	functions of which these package-functions can accept the options;
 	used for matching options to internal functions
 *)
+(*
 optionFunctions1D = {PlotWavefunction, plot1DWavefunction, BarLegend, Plot};
 optionFunctions2D = {PlotWavefunction, plot2DWavefunction, BarLegend, Plot3D};
+*)
+optionFunctions1D = {PlotWavefunction, BarLegend, Plot};     (* I removed private functions to avoid unsightly alerts *)
+optionFunctions2D = {PlotWavefunction, BarLegend, Plot3D};   (* this is only possible now because the options in
+																plotDDWavefunction are purely for Plot/Plot3D
+																(and not some pre-plottng discriminiator) *)
 
 (*
 	merges passed options with the defaults of these package-functions;
@@ -313,23 +330,17 @@ optionFilter2D[
 
 
 (*
-	causes an alert if the passed options aren't strictly for Plot/Plot3D
+	throws an alert if passed Options contain an option unknown to Plot/Plot3D.
+	accesses an arbitrary OptionValue to enforce OptionsPattern (grrr Mathematica wart!)
 *)
-check1DPotentialPlotOptions[
-	OptionsPattern[Plot]
-] :=
-	OptionValue[PlotStyle]    (* accesses arbitrary Plot option to trigger OptionsPattern *)
-
-check2DPotentialPlotOptions[
-	OptionsPattern[Plot3D]
-] :=
-	OptionValue[PlotStyle]    (* accesses arbitrary Plot3D option to trigger OptionsPattern *)
+check1DPotentialPlotOptions[OptionsPattern[Plot]] := OptionValue[PlotStyle]   
+check2DPotentialPlotOptions[OptionsPattern[Plot3D]] := OptionValue[PlotStyle]
 
 
 
 (*
 	plots a functional wavefunction, combined with a potential 
-	(if not None) and a colorbar (if ShowBar \[Rule] True in options)
+	(if not None) and a colorbar (if ShowColorBar \[Rule] True in options)
 *)
 plot1DWavefunction[
 	wavef:(_Function|_InterpolatingFunction),
@@ -340,7 +351,7 @@ plot1DWavefunction[
 	Module[
 		{probabilityPlot, potentialPlot, colorBar},
 		
-		(* MONKEY-PATCH to throw alert if PotentialPlotOptions contains options unknown to Plot *)
+		(* throws alert if PotentialPlotOptions contains options unknown to Plot *)
 		check1DPotentialPlotOptions[Sequence @@ OptionValue[optionFunctions1D, {options}, PotentialPlotOptions]];
 		
 		(* plots potential with probabilityPlot's plot-range, unless overridden in PotentialPlotOptions *)
@@ -348,7 +359,7 @@ plot1DWavefunction[
 		potentialPlot = plot1DPotential[potential, domain, PlotRange[probabilityPlot][[2]], options];
 		colorBar = plotColorBar[
 			OptionValue[optionFunctions1D, {options}, ColorScheme],
-			OptionValue[optionFunctions1D, {options}, ShowBar],
+			OptionValue[optionFunctions1D, {options}, ShowColorBar],
 			Evaluate @ FilterRules[optionFilter1D[options], Options[BarLegend]]
 		];
 		
@@ -365,7 +376,7 @@ plot2DWavefunction[
 	Module[
 		{probabilityPlot, potentialPlot, colorBar},
 		
-		(* MONKEY-PATCH to throw alert if PotentialPlotOptions contains options unknown to Plot3D *)
+		(* throws alert if PotentialPlotOptions contains options unknown to Plot3D *)
 		check2DPotentialPlotOptions[Sequence @@ OptionValue[optionFunctions2D, {options}, PotentialPlotOptions]];
 		
 		(* plots potential with probabilityPlot's plot-range, unless overridden in PotentialPlotOptions *)
@@ -373,7 +384,7 @@ plot2DWavefunction[
 		potentialPlot = plot2DPotential[potential, xDomain, yDomain, PlotRange[probabilityPlot][[3]], options];
 		colorBar = plotColorBar[
 			OptionValue[optionFunctions2D, {options}, ColorScheme],
-			OptionValue[optionFunctions2D, {options}, ShowBar],
+			OptionValue[optionFunctions2D, {options}, ShowColorBar],
 			Evaluate @ FilterRules[optionFilter2D[options], Options[BarLegend]]
 		];
 		
@@ -461,7 +472,7 @@ plot1DPotential[
 	potential:(_Function|_InterpolatingFunction),
 	domain:{xL_?NumericQ, xR_?NumericQ},
 	range:{_?NumericQ, _?NumericQ},
-	options:OptionsPattern[optionFunctions1D]
+	options:OptionsPattern[optionFunctions1D]    
 ] :=
 	Plot[
 		(* transform the potential *)
@@ -471,7 +482,7 @@ plot1DPotential[
 		][x],
 		{x, xL, xR},
 		
-		(* apply (overridding) user-given Plot options first *)
+		(* apply (overridding) user-given Plot3D options first *)
 		Evaluate @ FilterRules[
 			OptionValue[optionFunctions1D, {options}, PotentialPlotOptions], 
 			Options[Plot]
@@ -617,7 +628,7 @@ combineGraphics[
 PlotWavefunction[
 	wavef_,
 	domain_?domainOptSymbQ,
-	options:OptionsPattern[optionFunctions1D]
+	options:OptionsPattern[optionFunctions1D]    (* throws a single alert for unknown options *)
 ] /; (
 	isValid1DInput[wavef, domain] &&
 	isValid1DOptions[options, domain]
@@ -626,14 +637,16 @@ PlotWavefunction[
 		convertToFunction[wavef, domain],
 		convertToFunction[OptionValue[optionFunctions1D, {options}, Potential], domain],
 		convertToEndPoints[domain],
-		options
+		
+		(* remove unknown options to avoid repeated alerts *)
+		Evaluate @ FilterRules[{options}, Options /@ optionFunctions1D]
 	]
 	
 PlotWavefunction[
 	wavef_, 
 	xDomain_?domainOptSymbQ, 
 	yDomain_?domainOptSymbQ, 
-	options:OptionsPattern[optionFunctions2D]
+	options:OptionsPattern[optionFunctions2D]    (* throws a single alert for invalid options *)
 ] /; (
 	isValid2DInput[wavef, xDomain, yDomain] &&
 	isValid2DOptions[options, xDomain, yDomain]
@@ -643,5 +656,33 @@ PlotWavefunction[
 		convertToFunction[OptionValue[optionFunctions2D, {options}, Potential], xDomain, yDomain],
 		convertToEndPoints[xDomain],
 		convertToEndPoints[yDomain],
-		options
+		
+		(* remove unknown options to avoid repeated alerts *)
+		Evaluate @ FilterRules[{options}, Options /@ optionFunctions2D]
 	]
+	
+	
+
+(*
+	Plots a colorbar from -\[Pi] to \[Pi]
+*)
+PlotColorBar[
+	options:OptionsPattern[{PlotColorBar, BarLegend}]
+] :=
+	plotColorBar[
+		OptionValue[{PlotColorBar, BarLegend}, {options}, ColorScheme],
+		True,
+		Evaluate @ FilterRules[{options, Sequence @@ Options[PlotColorBar]}, Options[BarLegend]]
+	] 
+	
+
+
+(*
+	Adds a colorbar to an existing entity;
+	uses the same options as PlotColorBar
+*)
+AddColorBar[
+	entity:_,
+	options:OptionsPattern[{AddColorBar, BarLegend}]
+] :=
+	Legended[entity, PlotColorBar[options]]

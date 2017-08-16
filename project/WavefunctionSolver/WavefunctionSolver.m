@@ -21,13 +21,7 @@ PacletManager`Package`loadWolframLanguageCode[
     "WavefunctionSolver", 
     "WavefunctionSolver`", 
     DirectoryName[$InputFileName], 
-    "PlotFunctions.m",
-	
-	(*
-	"EigenFunctions.m",
-	"EvolveFunctions.m",
-	*)
-	
+    "Main.m",    
     "AutoUpdate" -> True,
     "ForceMX" -> False, 
     "Lock" -> False,

@@ -4,6 +4,8 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+	- vertical label should include V if it's passed!!!! 
+	- will this always correctly handle xL and xR swapped? (xL > xR)
 	- "Ticks" and "TickLabels" aren't captured by BarLegend options, so can't be passed to PlotWavefunction. How can we fix this?
 	- non-square domain in Plot3D causes non-uniform axis scaling; should we fix by default?
 	- should this paclet have a function for time-caching/animating any wavefunction (w. time) function?
@@ -16,6 +18,8 @@ Package["WavefunctionSolver`"]
 	- automatic plotrange only considers probability density;
 	  can we make it the union of the individual automatic plotranges of probability density and potential?
 	  this would require (perhaps expensively) replotting both after finding the automatic ranges
+	- we could easily avoid matching complex list/number potentials by NumericQ \[Rule] realNumQ, but we can't discriminate
+	  for function and symbolic potentials, so we don't bother
 *)
 
 
@@ -59,6 +63,20 @@ AddColorBar::usage = "AddColorBar[graphic] adds a colorbar legend to the graphic
 
 
 
+
+
+(* CONSTANTS *)
+
+defaultProbDensityLabel = "Abs[\[Psi]\!\(\*SuperscriptBox[\(]\), \(2\)]\)";
+defaultXLabel = "x";
+defaultYLabel = "y";
+defaultPhaseLabel = "Phase[\[Psi]]";
+defaultColorScheme = "Rainbow";
+
+
+
+
+
 (* PRIVATE FUNCTION DEFINITIONS *)
 
 (* 
@@ -80,6 +98,8 @@ is1DFunction[func:(_Function|_InterpolatingFunction)] :=
 	Quiet @ Not[Check[func[dummyval], None] === None]
 is2DFunction[func:(_Function|_InterpolatingFunction)] :=
 	Quiet @ Not[Check[func[dummyval1, dummyval2], None] === None]
+	
+
 
 
 
@@ -96,7 +116,7 @@ isValid1DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ] :=
 	is1DFunction[func]
 isValid1DInput[_, _?domainOptSymbQ] := 
 	False
-	
+
 
 
 isValid2DInput[cons_?NumericQ, _?domainOptSymbQ, _?domainOptSymbQ] := 
@@ -109,16 +129,16 @@ isValid2DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ, _?doma
 	is2DFunction[func]
 isValid2DInput[_, _?domainOptSymbQ, _?domainOptSymbQ] :=
 	False
-	
-	
+
+
 
 (* 
 	checks a function given to PotentialTransform is valid
 *)
-isValidTransform[transform:(_Function|_InterpolatingFunction)] :=
+isValidPotentialTransform[transform:(_Function|_InterpolatingFunction)] :=
 	is1DFunction[transform]
-	
-	
+
+
 
 (* 
 	checks PlotWavefunction's OptionPattern features valid Potential and PotentialTransform 
@@ -133,7 +153,7 @@ isValid1DOptions[
 		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, endpoints]] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
 	)
 	
 isValid1DOptions[
@@ -146,7 +166,7 @@ isValid1DOptions[
 		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, domain]] 	
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
 	)
 
 
@@ -161,7 +181,7 @@ isValid2DOptions[
 		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, endpoints1, endpoints2]] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
 	)
 
 isValid2DOptions[
@@ -175,7 +195,7 @@ isValid2DOptions[
 		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, domain1, domain2]] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidTransform] 
+		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
 	)
 	
 isValid2DOptions[
@@ -218,27 +238,27 @@ convertToFunction[
 	
 convertToFunction[
 	list_/;VectorQ[list, NumericQ], 
-	{___Symbol, xL_?NumericQ, xR_?NumericQ}
+	{___Symbol, xL_?realNumQ, xR_?realNumQ}
 ] :=
 	ListInterpolation[list, {{xL, xR}}]
 	
 convertToFunction[
 	matrix_/;MatrixQ[matrix, NumericQ], 
-	{___Symbol, xL_?NumericQ, xR_?NumericQ},
-	{___Symbol, yL_?NumericQ, yR_?NumericQ}
+	{___Symbol, xL_?realNumQ, xR_?realNumQ},
+	{___Symbol, yL_?realNumQ, yR_?realNumQ}
 ] :=
 	ListInterpolation[matrix, {{xL, xR}, {yL, yR}}]
 	
 convertToFunction[
 	symbolic_,
-	{symb_Symbol, _?NumericQ, _?NumericQ}
+	{symb_Symbol, _?realNumQ, _?realNumQ}
 ] :=
 	Function @@ {symb, symbolic}
 	
 convertToFunction[
 	symbolic_,
-	{symb1_Symbol, _?NumericQ, _?NumericQ},
-	{symb2_Symbol, _?NumericQ, _?NumericQ}
+	{symb1_Symbol, _?realNumQ, _?realNumQ},
+	{symb2_Symbol, _?realNumQ, _?realNumQ}
 ] :=
 	Function @@ {{symb1, symb2}, symbolic}
 
@@ -248,9 +268,38 @@ convertToFunction[
 	extracts end-points from any domain format
 *)
 convertToEndPoints[
-	{___Symbol, xL_?NumericQ, xR_?NumericQ}
+	{___Symbol, xL_?realNumQ, xR_?realNumQ}
 ] := 
 	{xL, xR}
+	
+	
+	
+(* silently returns only the options belonging to the given list of functions (can be nested) *)
+extractOptions[
+	options:OptionsPattern[],
+	functions:_List (* /;VectorQ[functions, MatchQ[_Symbol]] *)   (* allowing nestedness *)
+] := 
+	(* silently return only options for functions *)
+	Sequence @@ FilterRules[{options}, Options /@ Flatten[functions]]
+	
+extractOptions[
+	options:OptionsPattern[],
+	function:_Symbol
+] :=
+	extractOptions[options, {function}]
+
+(* merges the passed options with the default options to the passed list of functions (can be nested) *)
+addDefaultOptions[
+	options:OptionsPattern[],
+	functions:_List (* /;VectorQ[functions, MatchQ[_Symbol]] *)   (* allowing nestedness *) 
+] :=
+	Sequence @@ Flatten @ Join[{options}, Options /@ Flatten[functions]]
+	
+addDefaultOptions[
+	options:OptionsPattern[],
+	function:_Symbol
+] :=
+	addDefaultOptions[options, {function}]
 	
 	
 
@@ -264,36 +313,35 @@ Options[PlotWavefunction] = {
 	PotentialTransform -> (#&),
 	PotentialPlotOptions -> {},
 	ShowColorBar -> True,
-	ColorScheme -> "Rainbow"
+	ColorScheme -> defaultColorScheme
 };
 
 (*
 	options compatible only with 1D wavefunctions
 *)
 Options[plot1DWavefunction] = {
-	AxesLabel -> {"x", "Abs[\[Psi]]^2"},
-	LegendLabel -> "Phase[\[Psi]]"
+	AxesLabel -> {defaultXLabel, defaultProbDensityLabel},
+	LegendLabel -> defaultPhaseLabel
 };
 
 (*
 	options compatible only with 2D wavefunctions
 *)
 Options[plot2DWavefunction] = {
-	AxesLabel -> {"x", "y", "Abs[\[Psi]]^2"},
-	LegendLabel -> "Phase[\[Psi]]"
+	AxesLabel -> {defaultXLabel, defaultYLabel, defaultProbDensityLabel},
+	LegendLabel -> defaultPhaseLabel
 };
 
 (* 
 	options for plotting the colorbar 
 *)
 Options[PlotColorBar] = {
-	ColorScheme -> "Rainbow"
+	ColorScheme -> defaultColorScheme,
+	LegendLabel -> defaultPhaseLabel
 }
 
-(* 
-	options for adding a colorbar legend
-*)
-Options[AddColorBar] = Options[PlotColorBar]
+
+
 
 
 (*
@@ -308,6 +356,8 @@ optionFunctions1D = {PlotWavefunction, BarLegend, Plot};     (* I removed privat
 optionFunctions2D = {PlotWavefunction, BarLegend, Plot3D};   (* this is only possible now because the options in
 																plotDDWavefunction are purely for Plot/Plot3D
 																(and not some pre-plottng discriminiator) *)
+
+
 
 (*
 	merges passed options with the defaults of these package-functions;
@@ -338,6 +388,8 @@ check2DPotentialPlotOptions[OptionsPattern[Plot3D]] := OptionValue[PlotStyle]
 
 
 
+
+
 (*
 	plots a functional wavefunction, combined with a potential 
 	(if not None) and a colorbar (if ShowColorBar \[Rule] True in options)
@@ -345,7 +397,7 @@ check2DPotentialPlotOptions[OptionsPattern[Plot3D]] := OptionValue[PlotStyle]
 plot1DWavefunction[
 	wavef:(_Function|_InterpolatingFunction),
 	potential:(_Function|_InterpolatingFunction|None),
-	domain:{xL_?NumericQ, xR_?NumericQ},
+	domain:{xL_?realNumQ, xR_?realNumQ},
 	options:OptionsPattern[optionFunctions1D]
 ] :=
 	Module[
@@ -369,8 +421,8 @@ plot1DWavefunction[
 plot2DWavefunction[
 	wavef:(_Function|_InterpolatingFunction),
 	potential:(_Function|_InterpolatingFunction|None),
-	xDomain:{xL_?NumericQ, xR_?NumericQ},
-	yDomain:{yL_?NumericQ, yR_?NumericQ},
+	xDomain:{xL_?realNumQ, xR_?realNumQ},
+	yDomain:{yL_?realNumQ, yR_?realNumQ},
 	options:OptionsPattern[optionFunctions2D]
 ] :=
 	Module[
@@ -400,7 +452,7 @@ plot2DWavefunction[
 *)
 plot1DProbabilityDensity[
 	wavef:(_Function|_InterpolatingFunction),
-	{xL_?NumericQ, xR_?NumericQ},
+	{xL_?realNumQ, xR_?realNumQ},
 	options:OptionsPattern[optionFunctions1D]
 ] :=
 	ReplaceAll[
@@ -427,8 +479,8 @@ plot1DProbabilityDensity[
 
 plot2DProbabilityDensity[
 	wavef:(_Function|_InterpolatingFunction),
-	{xL_?NumericQ, xR_?NumericQ},
-	{yL_?NumericQ, yR_?NumericQ},
+	{xL_?realNumQ, xR_?realNumQ},
+	{yL_?realNumQ, yR_?realNumQ},
 	options:OptionsPattern[optionFunctions2D]
 ] :=
 	Plot3D[
@@ -470,8 +522,8 @@ plot1DPotential[
 
 plot1DPotential[
 	potential:(_Function|_InterpolatingFunction),
-	domain:{xL_?NumericQ, xR_?NumericQ},
-	range:{_?NumericQ, _?NumericQ},
+	domain:{xL_?realNumQ, xR_?realNumQ},
+	range:{_?realNumQ, _?realNumQ},
 	options:OptionsPattern[optionFunctions1D]    
 ] :=
 	Plot[
@@ -508,9 +560,9 @@ plot2DPotential[
 
 plot2DPotential[
 	potential:(_Function|_InterpolatingFunction),
-	{xL_?NumericQ, xR_?NumericQ},
-	{yL_?NumericQ, yR_?NumericQ},
-	{zL_?NumericQ, zR_?NumericQ},
+	{xL_?realNumQ, xR_?realNumQ},
+	{yL_?realNumQ, yR_?realNumQ},
+	{zL_?realNumQ, zR_?realNumQ},
 	options:OptionsPattern[optionFunctions2D]
 ] :=
 	Plot3D[
@@ -562,9 +614,37 @@ plotColorBar[
 		"TickLabels" -> {"-\[Pi]", "-\[Pi]/2", "0", "\[Pi]/2", "\[Pi]"},
 		options
 	]
+
+
+
+(*
+	adds a color bar to an existing plot
+*)
+addColorBar[
+	entity_,
+	_String,
+	False,
+	OptionsPattern[BarLegend]
+] :=
+	entity
 	
-	
-	
+addColorBar[
+	entity_,
+	scheme_String,
+	True,
+	options:OptionsPattern[BarLegend]
+] :=
+	Legended[
+		entity,
+		plotColorBar[
+			scheme,
+			True,
+			options
+		]
+	]
+
+
+
 
 
 (*
@@ -628,40 +708,58 @@ combineGraphics[
 PlotWavefunction[
 	wavef_,
 	domain_?domainOptSymbQ,
-	options:OptionsPattern[optionFunctions1D]    (* throws a single alert for unknown options *)
+	options:OptionsPattern[optionFunctions1D]    
 ] /; (
 	isValid1DInput[wavef, domain] &&
 	isValid1DOptions[options, domain]
 ) :=
 	plot1DWavefunction[
 		convertToFunction[wavef, domain],
-		convertToFunction[OptionValue[optionFunctions1D, {options}, Potential], domain],
+		convertToFunction[
+			OptionValue[optionFunctions1D, {options}, Potential],    (* throws a single alert for unknown options *)
+			domain],   
 		convertToEndPoints[domain],
 		
-		(* remove unknown options to avoid repeated alerts *)
-		Evaluate @ FilterRules[{options}, Options /@ optionFunctions1D]
+		(* silently remove unknown options to avoid repeated alerts *)
+		Evaluate @ extractOptions[options, optionFunctions1D],
+		
+		(* unless AxesLabel already user-given, label the axes with the passed symbol (if passed) *)
+		Sequence @@ If[
+			Length[domain] === 3,
+			{AxesLabel -> {domain[[1]], defaultProbDensityLabel}},
+			{}
+		]
 	]
 	
 PlotWavefunction[
 	wavef_, 
 	xDomain_?domainOptSymbQ, 
 	yDomain_?domainOptSymbQ, 
-	options:OptionsPattern[optionFunctions2D]    (* throws a single alert for invalid options *)
+	options:OptionsPattern[optionFunctions2D]   
 ] /; (
 	isValid2DInput[wavef, xDomain, yDomain] &&
 	isValid2DOptions[options, xDomain, yDomain]
 ) := 
 	plot2DWavefunction[
 		convertToFunction[wavef, xDomain, yDomain],
-		convertToFunction[OptionValue[optionFunctions2D, {options}, Potential], xDomain, yDomain],
+		convertToFunction[
+			OptionValue[optionFunctions2D, {options}, Potential],  (* throws a single alert for invalid options *)
+			xDomain, yDomain],    
 		convertToEndPoints[xDomain],
 		convertToEndPoints[yDomain],
 		
-		(* remove unknown options to avoid repeated alerts *)
-		Evaluate @ FilterRules[{options}, Options /@ optionFunctions2D]
+		(* silently remove unknown options to avoid repeated alerts *)
+		Evaluate @ extractOptions[options, optionFunctions2D],
+		
+		(* unless AxesLabel already user-given, label the axes with the passed symbol (if passed) *)
+		Sequence @@ If[
+			Length[xDomain] === Length[yDomain] === 3,
+			{AxesLabel -> {xDomain[[1]], yDomain[[1]], defaultProbDensityLabel}},
+			{}
+		]
 	]
-	
-	
+
+
 
 (*
 	Plots a colorbar from -\[Pi] to \[Pi]
@@ -670,10 +768,12 @@ PlotColorBar[
 	options:OptionsPattern[{PlotColorBar, BarLegend}]
 ] :=
 	plotColorBar[
-		OptionValue[{PlotColorBar, BarLegend}, {options}, ColorScheme],
+		OptionValue[{PlotColorBar, BarLegend}, {options}, ColorScheme],  (* throws a single alert for invalid options *)
 		True,
 		Evaluate @ FilterRules[{options, Sequence @@ Options[PlotColorBar]}, Options[BarLegend]]
 	] 
+	
+	
 	
 
 
@@ -683,6 +783,11 @@ PlotColorBar[
 *)
 AddColorBar[
 	entity:_,
-	options:OptionsPattern[{AddColorBar, BarLegend}]
+	options:OptionsPattern[{PlotColorBar, BarLegend}]
 ] :=
-	Legended[entity, PlotColorBar[options]]
+	addColorBar[
+		entity,
+		OptionValue[{PlotColorBar, BarLegend}, {options}, ColorScheme],   (* throws a single alert for invalid options *)
+		True,
+		Evaluate @ FilterRules[{options, Sequence @@ Options[PlotColorBar]}, Options[BarLegend]]
+	]

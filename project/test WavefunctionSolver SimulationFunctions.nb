@@ -1,0 +1,916 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     33819,        908]
+NotebookOptionsPosition[     29325,        790]
+NotebookOutlinePosition[     29667,        805]
+CellTagsIndexPosition[     29624,        802]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["SimulationFunctions", "Title",
+ CellChangeTimes->{{3.7078364324206233`*^9, 3.7078364362366924`*^9}, {
+  3.7117929659474344`*^9, 
+  3.7117929691116595`*^9}},ExpressionUUID->"188f0b90-686a-4794-ae50-\
+d1596d89ed67"],
+
+Cell["\<\
+Tyson Jones
+tyson.jones@monash.edu
+August 2017\
+\>", "Subtitle",
+ CellChangeTimes->{{3.7078623336702824`*^9, 3.7078623531022215`*^9}, {
+  3.710674188936492*^9, 
+  3.7106741894084225`*^9}},ExpressionUUID->"93c25f1b-6978-4d7d-a009-\
+0697b15e33b7"],
+
+Cell[CellGroupData[{
+
+Cell["WavefunctionSolver Package Test", "Chapter",
+ CellChangeTimes->{{3.707836441770815*^9, 3.707836443342235*^9}, {
+  3.7106741957288685`*^9, 3.710674196040546*^9}, {3.711272647908688*^9, 
+  3.7112726497297072`*^9}},ExpressionUUID->"2a2fe54c-77ee-4a66-bfa9-\
+729f765db0ac"],
+
+Cell[BoxData[
+ RowBox[{"Clear", "[", "\"\<Global`*\>\"", "]"}]], "Code",
+ CellChangeTimes->{{3.707840501672269*^9, 
+  3.7078405083890257`*^9}},ExpressionUUID->"c1335f2a-57a5-4ced-a8a4-\
+1dc201945941"],
+
+Cell[CellGroupData[{
+
+Cell["Import", "Section",
+ CellChangeTimes->{{3.7078364762026434`*^9, 
+  3.7078364768093433`*^9}},ExpressionUUID->"cc5d17d8-ac29-4069-be2c-\
+307f21ab75ef"],
+
+Cell["\<\
+The location of the folder containing the package must be added to the paclet \
+directories\
+\>", "Text",
+ CellChangeTimes->{{3.7110932069294972`*^9, 
+  3.7110932280504513`*^9}},ExpressionUUID->"82f26a70-79c0-4c84-8da0-\
+4086ea58bf60"],
+
+Cell[TextData[{
+ "In rare circumstances, the ",
+ StyleBox["PacletManager` ",
+  FontWeight->"Bold"],
+ "context will not be known, and must be prepended to the below call"
+}], "Text",
+ CellChangeTimes->{{3.7110931517974586`*^9, 3.7110931859338975`*^9}},
+ Background->RGBColor[
+  1, 0.9, 0.8],ExpressionUUID->"8382a5ea-a224-48fb-8a36-280663ea082f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"PacletDirectoryAdd", "[", 
+   RowBox[{"NotebookDirectory", "[", "]"}], "]"}], ";"}]], "Code",
+ CellChangeTimes->{3.7078364787778397`*^9, 3.70783652828582*^9, 
+  3.7106760521773033`*^9, 
+  3.7106798003543415`*^9},ExpressionUUID->"45bae22a-4e43-4ce9-b2c0-\
+a5e45c4c404c"],
+
+Cell[BoxData[
+ RowBox[{"<<", " ", "WavefunctionSolver`"}]], "Code",
+ CellChangeTimes->{
+  3.7078364858773084`*^9, {3.7106742173604107`*^9, 3.71067422219291*^9}, {
+   3.7106761451612062`*^9, 3.710676148312687*^9}, {3.7110819891937585`*^9, 
+   3.7110819904297915`*^9}, {3.7112407655223856`*^9, 3.711240765762385*^9}, 
+   3.711242744805478*^9, {3.7112429657942524`*^9, 
+   3.7112429681802535`*^9}},ExpressionUUID->"9677f21c-66d5-498b-965c-\
+cde752e5b27a"],
+
+Cell["The available functions and their options:", "Text",
+ CellChangeTimes->{{3.711241149358759*^9, 3.7112411536527605`*^9}, {
+  3.7112412095937767`*^9, 
+  3.711241216323779*^9}},ExpressionUUID->"08d3ddbf-9041-4f26-b7a1-\
+36611d19e43a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "WavefunctionSolver`*"}]], "Input",
+ CellChangeTimes->{{3.7112427685484858`*^9, 
+  3.7112427697934885`*^9}},ExpressionUUID->"dbc188d0-db40-46ac-b187-\
+b6fd22d1ea34"],
+
+Cell[BoxData[
+ DynamicModuleBox[{Typeset`open$$ = True}, 
+  PaneSelectorBox[{False->
+   RowBox[{
+    OpenerBox[Dynamic[Typeset`open$$],
+     ImageSize->Small], 
+    StyleBox["WavefunctionSolver`", "InfoHeading"]}], True->GridBox[{
+     {
+      RowBox[{
+       OpenerBox[Dynamic[Typeset`open$$],
+        ImageSize->Small], 
+       StyleBox["WavefunctionSolver`", "InfoHeading"]}]},
+     {GridBox[{
+        {
+         ButtonBox["AddColorBar",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "AddColorBar", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["NormalizeWavefunction",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "NormalizeWavefunction", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["PlotColorBar",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "PlotColorBar", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["PotentialPlotOptions",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "PotentialPlotOptions", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"]},
+        {
+         ButtonBox["AutoNormalize",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "AutoNormalize", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["NumberOfModes",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "NumberOfModes", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["PlotSpectrum",
+          BaseStyle->"InformationLink",
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "PlotSpectrum", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["PotentialTransform",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "PotentialTransform", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"]},
+        {
+         ButtonBox["ColorScheme",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "ColorScheme", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["NumberOfPoints",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "NumberOfPoints", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["PlotWavefunction",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "PlotWavefunction", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["ShowColorBar",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "ShowColorBar", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"]},
+        {
+         ButtonBox["GetEigenmodes",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "GetEigenmodes", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["OutputAsFunctions",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {
+            "OutputAsFunctions", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], 
+         ButtonBox["Potential",
+          BaseStyle->"InformationLink",
+          
+          ButtonData:>{
+           "Info4333711742229-6962651", {"Potential", "WavefunctionSolver`"}},
+          ButtonNote->"WavefunctionSolver`"], ""}
+       },
+       DefaultBaseStyle->"InfoGrid",
+       GridBoxItemSize->{"Columns" -> {{
+            Scaled[0.2375]}}}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}}]}, 
+   Dynamic[Typeset`open$$],
+   ImageSize->Automatic]]], "Print", "InfoCell",
+ CellChangeTimes->{
+  3.7117062298376417`*^9},ExpressionUUID->"dfae5ad9-9cb4-4de5-bb65-\
+7490e69bd7ee"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+   RowBox[{"HAVE", " ", "OPTION", " ", "InitNormalize"}], " ", "\[Rule]", " ", 
+   RowBox[{"True", " ", 
+    RowBox[{"(", 
+     RowBox[{
+     "to", " ", "normalise", " ", "the", " ", "wavefunction", " ", "before", 
+      " ", "evolution"}], ")"}]}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.7118518486896677`*^9, 
+  3.7118518678229733`*^9}},ExpressionUUID->"ab6c4a5f-58cb-41d1-b7d2-\
+5dc65c3579c4"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["One/Two Space Dimensions", "Chapter",
+ CellChangeTimes->{{3.708137300001224*^9, 3.7081373178197613`*^9}, {
+  3.710675868123107*^9, 3.710675869474675*^9}, {3.7106804293164883`*^9, 
+  3.7106804472440753`*^9}, {3.711793000532336*^9, 3.7117930012120233`*^9}, {
+  3.7118518969392433`*^9, 
+  3.711851905304494*^9}},ExpressionUUID->"12de6207-2ead-4c88-a8f6-\
+913e40e634c9"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    RowBox[{"Exp", "[", 
+     RowBox[{
+      RowBox[{"-", 
+       SuperscriptBox["space", "2"]}], "-", "time"}], "]"}], ",", 
+    "\[IndentingNewLine]", "\t", 
+    RowBox[{"{", 
+     RowBox[{"space", ",", " ", 
+      RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+    "\t", 
+    RowBox[{"{", 
+     RowBox[{"time", ",", " ", "0", ",", " ", "10"}], "}"}]}], 
+   "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.7117931242028008`*^9, 3.711793201766472*^9}, {
+   3.7117933454586253`*^9, 3.711793361295125*^9}, 3.711851294857574*^9, {
+   3.711858238397682*^9, 3.7118582479309607`*^9}, {3.711866114883767*^9, 
+   3.711866130974411*^9}},ExpressionUUID->"e35d8ce5-da19-4194-ba07-\
+5a76dc50c0d2"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{
+    WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$$ = 
+    2.2978439331054688`, Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$$], 
+       0, $CellContext`time}, 0, 10}}, Typeset`size$$ = {434., {124., 130.}}, 
+    Typeset`update$$ = 0, Typeset`initDone$$, Typeset`skipInitDone$$ = True, 
+    WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$23794$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {
+       WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$$ = 0}, 
+      "ControllerVariables" :> {
+        Hold[
+        WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$$, 
+         WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$23794$$, 
+         0]}, "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      WavefunctionSolver`PlotWavefunction[
+        Function[{$CellContext`space, $CellContext`time}, 
+         E^(-$CellContext`space^2 - $CellContext`time)][$CellContext`space, 
+         WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$$], \
+{$CellContext`space, -5, 5}, 
+        Evaluate[
+         WavefunctionSolver`SimulationFunctions`PackagePrivate`extractOptions[
+         WavefunctionSolver`SimulationFunctions`PackagePrivate`\
+plotOptionFunctions1D]], WavefunctionSolver`Potential -> None], 
+      "Specifications" :> {{{
+         WavefunctionSolver`SimulationFunctions`PackagePrivate`tVar$$, 
+          0, $CellContext`time}, 0, 10, 
+         AppearanceElements -> {
+          "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+           "DirectionButton"}}}, 
+      "Options" :> {
+       ControlType -> Animator, AppearanceElements -> None, DefaultBaseStyle -> 
+        "Animate", DefaultLabelStyle -> "AnimateLabel", SynchronousUpdating -> 
+        True, ShrinkingDelay -> 10.}, "DefaultOptions" :> {}],
+     ImageSizeCache->{485., {163., 169.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Animate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.711858280781697*^9, 3.7118583121218314`*^9}, 
+   3.711866070278366*^9, {3.711866102424555*^9, 
+   3.711866131876054*^9}},ExpressionUUID->"affe6be8-d35d-41fe-8445-\
+ea76c9b23766"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"PASS", " ", "POTENTIAL", " ", "AS", " ", "AN", " ", "OPTION", " ", 
+    RowBox[{"(", 
+     RowBox[{
+     "for", " ", "both", " ", "explicit", " ", "and", " ", "to", " ", "be", 
+      " ", "found"}], ")"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "not", " ", "plotting", " ", "Potential", " ", "can", " ", "be", " ", 
+     "achieved", " ", "by", " ", "PotentialTransform"}], " ", "\[Rule]", " ", 
+    "0"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"have", " ", "potential", " ", "passed", " ", "explicitly"}], ",",
+     " ", 
+    RowBox[{
+    "but", " ", "default", " ", "it", " ", "to", " ", "1", " ", "or", " ", 
+     RowBox[{"something", ".", " ", "Never"}], " ", "use", " ", "Potential", 
+     " ", "option", " ", "numerically"}]}], " ", "*)"}]}]], "Input",
+ CellChangeTimes->{{3.7118533732469273`*^9, 3.7118534153669214`*^9}, {
+  3.7118534745670877`*^9, 3.7118535054817777`*^9}, {3.711853757017332*^9, 
+  3.711853777781992*^9}},ExpressionUUID->"42364bc5-6067-4ea2-b591-\
+e017ec8246b7"],
+
+Cell[BoxData[
+ RowBox[{"Clear", "[", "PlotEvolution", "]"}]], "Input",
+ CellChangeTimes->{{3.711853886646192*^9, 
+  3.711853888776114*^9}},ExpressionUUID->"c0f53ead-ee9e-4ff1-b946-\
+bbd34e0ea74d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", "\n", "\t", 
+   RowBox[{"1", "D"}], "\n", "*)"}], "\n", "\n", 
+  RowBox[{"(*", " ", 
+   RowBox[{"explicit", " ", "time", " ", "dependence"}], " ", "*)"}], "\n", 
+  "\n", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"PlotEvolution", "[", "\n", "\t", 
+     RowBox[{"dynamicWavef_", ",", "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"x_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"t_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}]}], "  ", 
+     RowBox[{"(*", " ", "time", " ", "*)"}], "\n", "]"}], " ", ":=", "\n", 
+    "\t", 
+    RowBox[{"\"\<1D space: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "x", "]"}], " ", "<>", " ", "\"\<, time: \>\"", 
+     " ", "<>", " ", 
+     RowBox[{"ToString", "[", "t", "]"}]}]}], "\n", "\t", "\n", 
+   RowBox[{
+    RowBox[{"PlotEvolution", "[", "\n", "\t", 
+     RowBox[{"dynamicWavef_", ",", "\n", "\t", 
+      RowBox[{"dom", ":", 
+       RowBox[{"{", 
+        RowBox[{"_Symbol", ",", " ", 
+         RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+         RowBox[{"_", "?", "NumericQ"}]}], "}"}]}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"t_Symbol", ",", " ", 
+        RowBox[{"dur", ":", 
+         RowBox[{"_", "?", "NumericQ"}]}]}], "}"}]}], "              ", 
+     RowBox[{"(*", " ", "time", " ", "*)"}], "\n", "]"}], " ", ":=", "\n", 
+    "\t", 
+    RowBox[{"PlotEvolution", "[", 
+     RowBox[{"dynamicWavef", ",", " ", "dom", ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"t", ",", " ", "0", ",", " ", "dur"}], "}"}]}], "]"}]}], "\n", 
+   "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{"find", " ", "evolution"}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"PlotEvolution", "[", "\n", "\t", 
+     RowBox[{
+     "dynamicWavef_", ",", "\n", "\t", "potential_", ",", " ", "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"x_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"duration_", "?", "NumericQ"}]}], "                  ", 
+     RowBox[{"(*", " ", "time", " ", "*)"}], "\n", "]"}], " ", ":=", "\n", 
+    "\t", 
+    RowBox[{"\"\<1D space: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "x", "]"}], " ", "<>", " ", 
+     "\"\<, duration: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "duration", "]"}]}]}], "\n", "\t", "\n", 
+   RowBox[{"(*", " ", "\n", "\t", 
+    RowBox[{"2", "D"}], "\n", "*)"}], "\t", "\n", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{"explicit", " ", "time", " ", "dependence"}], " ", "*)"}], "\n", 
+   "\n", 
+   RowBox[{
+    RowBox[{"PlotEvolution", "[", "\n", "\t", 
+     RowBox[{"dynamicWavef_", ",", "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"x_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"y_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"t_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}]}], "  ", 
+     RowBox[{"(*", " ", "time", " ", "*)"}], "\n", "]"}], " ", ":=", "\n", 
+    "\t", 
+    RowBox[{"\"\<1D space: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "x", "]"}], " ", "<>", " ", 
+     "\"\<, 2D space: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "y", "]"}], " ", "<>", " ", "\"\<, time: \>\"", 
+     " ", "<>", " ", 
+     RowBox[{"ToString", "[", "t", "]"}]}]}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"PlotEvolution", "[", "\n", "\t", 
+     RowBox[{"dynamicWavef_", ",", "\n", "\t", 
+      RowBox[{"dom1", ":", 
+       RowBox[{"{", 
+        RowBox[{"x_Symbol", ",", " ", 
+         RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+         RowBox[{"_", "?", "NumericQ"}]}], "}"}]}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"dom2", ":", 
+       RowBox[{"{", 
+        RowBox[{"y_Symbol", ",", " ", 
+         RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+         RowBox[{"_", "?", "NumericQ"}]}], "}"}]}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"t_Symbol", ",", " ", 
+        RowBox[{"dur", ":", 
+         RowBox[{"_", "?", "NumericQ"}]}]}], "}"}]}], "  ", 
+     RowBox[{"(*", " ", "time", " ", "*)"}], "\n", "]"}], " ", ":=", "\n", 
+    "\t", 
+    RowBox[{"PlotEvolution", "[", 
+     RowBox[{"dynamicWavef", ",", " ", "dom1", ",", " ", "dom2", ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"t", ",", " ", "0", ",", " ", "dur"}], "}"}]}], "]"}]}], "\n", 
+   "\t", "\n", 
+   RowBox[{"(*", " ", 
+    RowBox[{"find", " ", "evolution"}], " ", "*)"}], "\n", "\n", 
+   RowBox[{
+    RowBox[{"PlotEvolution", "[", "\n", "\t", 
+     RowBox[{
+     "dynamicWavef_", ",", "\n", "\t", "potential_", ",", " ", "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"x_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}], ",", " ", 
+      RowBox[{"(*", " ", "space", " ", "*)"}], "\n", "\t", 
+      RowBox[{"{", 
+       RowBox[{"y_Symbol", ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}], ",", " ", 
+        RowBox[{"_", "?", "NumericQ"}]}], "}"}], ",", "\n", "\t", 
+      RowBox[{"duration_", "?", "NumericQ"}]}], "                  ", 
+     RowBox[{"(*", " ", "time", " ", "*)"}], "\n", "]"}], " ", ":=", "\n", 
+    "\t", 
+    RowBox[{"\"\<1D space: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "x", "]"}], " ", "<>", " ", 
+     "\"\<, 2D space: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "y", "]"}], " ", "<>", " ", 
+     "\"\<, duration: \>\"", " ", "<>", " ", 
+     RowBox[{"ToString", "[", "duration", "]"}]}]}]}]}]], "Code",
+ CellChangeTimes->{{3.711850347850444*^9, 3.711850386547916*^9}, {
+  3.7118504482130804`*^9, 3.7118504491649714`*^9}, {3.711850856179809*^9, 
+  3.711850915614561*^9}, {3.711851258891334*^9, 3.7118515041085577`*^9}, {
+  3.711851573751274*^9, 3.7118516399882307`*^9}, {3.711851705410601*^9, 
+  3.7118517685582757`*^9}, {3.7118518075884743`*^9, 3.7118518190263615`*^9}, {
+  3.711853896272373*^9, 3.7118539306911116`*^9}, {3.7118544523921804`*^9, 
+  3.7118544651388826`*^9}},ExpressionUUID->"c3435cfa-764c-4a78-ad0c-\
+df605e2b3af9"],
+
+Cell[CellGroupData[{
+
+Cell["solving evolution", "Section",
+ CellChangeTimes->{{3.7117930141483946`*^9, 3.711793026835621*^9}, {
+  3.7117939533042536`*^9, 
+  3.711793955235685*^9}},ExpressionUUID->"2ae219e4-ad21-4a55-ab16-\
+8e1e015aaa26"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FindEvolution", "[", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", 
+      SuperscriptBox["x", "2"]}], " ", "-", " ", 
+     SuperscriptBox["y", "2"]}], "]"}], ",", "\[IndentingNewLine]", "\t", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", " ", 
+     RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{"{", 
+    RowBox[{"y", ",", " ", 
+     RowBox[{"-", "6"}], ",", " ", "6"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", "10"}], "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.711793972841384*^9, 
+  3.711794020283407*^9}},ExpressionUUID->"7bb81e0b-4fdb-41f1-8064-\
+0472d54d595d"],
+
+Cell[BoxData[
+ RowBox[{"FindEvolution", "[", 
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", 
+      SuperscriptBox["x", "2"]}], "-", 
+     SuperscriptBox["y", "2"]}]], ",", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", 
+     RowBox[{"-", "5"}], ",", "5"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"y", ",", 
+     RowBox[{"-", "6"}], ",", "6"}], "}"}], ",", "10"}], "]"}]], "Output",
+ CellChangeTimes->{
+  3.711858215608283*^9},ExpressionUUID->"db2e2d01-5a3c-4478-b569-\
+e3bc937df406"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["passing evolution", "Section",
+ CellChangeTimes->{{3.7117930141483946`*^9, 
+  3.711793026835621*^9}},ExpressionUUID->"53673f8f-ed34-4717-966e-\
+07970e607f9e"],
+
+Cell[CellGroupData[{
+
+Cell["symbolic", "Subsection",
+ CellChangeTimes->{{3.7117931828389673`*^9, 
+  3.71179318464791*^9}},ExpressionUUID->"002c1fca-9ff7-4944-b9f8-\
+8f356abd7bf6"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    RowBox[{"Exp", "[", 
+     RowBox[{
+      RowBox[{"-", 
+       SuperscriptBox["space", "2"]}], "-", "time"}], "]"}], ",", 
+    "\[IndentingNewLine]", "\t", 
+    RowBox[{"{", 
+     RowBox[{"space", ",", " ", 
+      RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+    "\t", 
+    RowBox[{"{", 
+     RowBox[{"time", ",", " ", "0", ",", " ", "10"}], "}"}]}], 
+   "\[IndentingNewLine]", "]"}], "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.7117931242028008`*^9, 3.711793201766472*^9}, {
+   3.7117933454586253`*^9, 3.711793361295125*^9}, 3.711851294857574*^9, {
+   3.711858238397682*^9, 
+   3.7118582479309607`*^9}},ExpressionUUID->"2249be47-06ad-44dc-8021-\
+9b5b6283ec33"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    RowBox[{"Exp", "[", 
+     RowBox[{
+      RowBox[{"-", 
+       SuperscriptBox["x", "2"]}], " ", "-", " ", 
+      SuperscriptBox["y", "2"], "-", "t"}], "]"}], ",", "\[IndentingNewLine]",
+     "\t", 
+    RowBox[{"{", 
+     RowBox[{"x", ",", " ", 
+      RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+    "\t", 
+    RowBox[{"{", 
+     RowBox[{"y", ",", " ", 
+      RowBox[{"-", "6"}], ",", " ", "6"}], "}"}], ",", "\[IndentingNewLine]", 
+    "\t", 
+    RowBox[{"{", 
+     RowBox[{"t", ",", " ", "0", ",", " ", "10"}], "}"}]}], 
+   "\[IndentingNewLine]", "]"}]}]], "Input",ExpressionUUID->"5733ee97-aa5c-\
+443b-a4a8-17d006e2dec0"],
+
+Cell[BoxData["\<\"1D space: x, 2D space: y, time: t\"\>"], "Output",
+ CellChangeTimes->{3.711851838803308*^9, 
+  3.711854489563689*^9},ExpressionUUID->"bb0e86cc-64ab-461c-876f-\
+093efb867971"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", 
+      SuperscriptBox["x", "2"]}], " ", "-", "t"}], "]"}], ",", 
+   "\[IndentingNewLine]", "\t", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", " ", 
+     RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{"{", 
+    RowBox[{"t", ",", " ", "10"}], "}"}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.711793207890013*^9, 3.7117932758906*^9}, {
+  3.7117934524088926`*^9, 3.711793457381919*^9}, {3.7118513003657885`*^9, 
+  3.7118513032299967`*^9}, {3.7118518733821416`*^9, 
+  3.7118518818494196`*^9}},ExpressionUUID->"145619e0-e55f-4150-9dda-\
+310fbeeec869"],
+
+Cell[BoxData["\<\"1D space: x, time: t\"\>"], "Output",
+ CellChangeTimes->{3.711851882132841*^9, 
+  3.7118544917351947`*^9},ExpressionUUID->"198acec7-43c3-4d5f-b2f4-\
+4f2f944ccc6a"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", 
+      SuperscriptBox["x", "2"]}], " ", "-", " ", 
+     SuperscriptBox["y", "2"], "-", "t"}], "]"}], ",", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", " ", 
+     RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{"{", 
+    RowBox[{"y", ",", " ", 
+     RowBox[{"-", "6"}], ",", " ", "6"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{"{", 
+    RowBox[{"t", ",", " ", "10"}], "}"}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",ExpressionUUID->"ab98ce70-b75a-4f55-8ca2-635257321253"],
+
+Cell[BoxData["\<\"1D space: x, 2D space: y, time: t\"\>"], "Output",
+ CellChangeTimes->{3.711851884487686*^9, 
+  3.711854493368286*^9},ExpressionUUID->"9cc6583c-333f-4b4f-9eb9-\
+f125cdd252b9"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["finding evolution", "Section",
+ CellChangeTimes->{{3.7117930141483946`*^9, 3.711793026835621*^9}, {
+  3.7117933145049686`*^9, 
+  3.711793315234996*^9}},ExpressionUUID->"ee4d1044-c2ee-47da-9bd8-\
+ef0b783c3fda"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{"-", 
+     SuperscriptBox["x", "2"]}], "]"}], ",", "\[IndentingNewLine]", "\t", 
+   SuperscriptBox["x", "2"], ",", "\[IndentingNewLine]", "\t", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", " ", 
+     RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", "10"}], "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.711793319842212*^9, 3.7117933284291916`*^9}, {
+  3.711793934529125*^9, 3.7117939365158997`*^9}, {3.711794025727213*^9, 
+  3.71179403788824*^9}, {3.7118545410086985`*^9, 
+  3.711854545259549*^9}},ExpressionUUID->"a239d2e7-384c-42ae-bcfc-\
+aa0edfdee7b7"],
+
+Cell[BoxData["\<\"1D space: x, duration: 10\"\>"], "Output",
+ CellChangeTimes->{3.7118519131731715`*^9, 3.711854495544979*^9, 
+  3.7118545458401423`*^9},ExpressionUUID->"e43c04cc-89f1-44d9-a378-\
+d0f2d89413d2"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PlotEvolution", "[", "\[IndentingNewLine]", "\t", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", 
+      SuperscriptBox["x", "2"]}], " ", "-", " ", 
+     SuperscriptBox["y", "2"]}], "]"}], ",", "\[IndentingNewLine]", "\t", 
+   RowBox[{
+    SuperscriptBox["x", "2"], "+", " ", 
+    SuperscriptBox["y", "2"]}], ",", "\[IndentingNewLine]", "\t", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", " ", 
+     RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", 
+   RowBox[{"{", 
+    RowBox[{"y", ",", " ", 
+     RowBox[{"-", "5"}], ",", " ", "5"}], "}"}], ",", "\[IndentingNewLine]", 
+   "\t", "10"}], "\[IndentingNewLine]", "]"}]], "Input",
+ CellChangeTimes->{{3.7117940465040054`*^9, 3.7117940540018263`*^9}, {
+  3.711854525128809*^9, 
+  3.711854534511159*^9}},ExpressionUUID->"1329e7bd-fb90-4cad-9964-\
+03c22b24d7d7"],
+
+Cell[BoxData["\<\"1D space: x, 2D space: y, duration: 10\"\>"], "Output",
+ CellChangeTimes->{3.711851914697034*^9, 3.7118544974669333`*^9, 
+  3.7118545348934636`*^9},ExpressionUUID->"bdddf71f-2c3e-43db-814b-\
+32c7a22a57c5"]
+}, Open  ]]
+}, Open  ]],
+
+Cell["solving general pde", "Section",
+ CellChangeTimes->{{3.7117930141483946`*^9, 3.711793026835621*^9}, {
+  3.7117939533042536`*^9, 
+  3.711793967985141*^9}},ExpressionUUID->"e23046fd-6261-42b8-8732-\
+24b80cd27b30"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{972, 988},
+WindowMargins->{{Automatic, -7}, {Automatic, 0}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 219, 4, 101, "Title", "ExpressionUUID" -> \
+"188f0b90-686a-4794-ae50-d1596d89ed67"],
+Cell[802, 28, 255, 8, 126, "Subtitle", "ExpressionUUID" -> \
+"93c25f1b-6978-4d7d-a009-0697b15e33b7"],
+Cell[CellGroupData[{
+Cell[1082, 40, 275, 4, 72, "Chapter", "ExpressionUUID" -> \
+"2a2fe54c-77ee-4a66-bfa9-729f765db0ac"],
+Cell[1360, 46, 200, 4, 50, "Code", "ExpressionUUID" -> \
+"c1335f2a-57a5-4ced-a8a4-1dc201945941"],
+Cell[CellGroupData[{
+Cell[1585, 54, 155, 3, 70, "Section", "ExpressionUUID" -> \
+"cc5d17d8-ac29-4069-be2c-307f21ab75ef"],
+Cell[1743, 59, 245, 6, 30, "Text", "ExpressionUUID" -> \
+"82f26a70-79c0-4c84-8da0-4086ea58bf60"],
+Cell[1991, 67, 345, 8, 46, "Text", "ExpressionUUID" -> \
+"8382a5ea-a224-48fb-8a36-280663ea082f"],
+Cell[2339, 77, 304, 7, 50, "Code", "ExpressionUUID" -> \
+"45bae22a-4e43-4ce9-b2c0-a5e45c4c404c"],
+Cell[2646, 86, 452, 8, 50, "Code", "ExpressionUUID" -> \
+"9677f21c-66d5-498b-965c-cde752e5b27a"],
+Cell[3101, 96, 237, 4, 30, "Text", "ExpressionUUID" -> \
+"08d3ddbf-9041-4f26-b7a1-36611d19e43a"],
+Cell[CellGroupData[{
+Cell[3363, 104, 193, 4, 30, "Input", "ExpressionUUID" -> \
+"dbc188d0-db40-46ac-b187-b6fd22d1ea34"],
+Cell[3559, 110, 4641, 130, 126, "Print", "ExpressionUUID" -> \
+"dfae5ad9-9cb4-4de5-bb65-7490e69bd7ee"]
+}, Open  ]],
+Cell[8215, 243, 450, 11, 30, "Input", "ExpressionUUID" -> \
+"ab6c4a5f-58cb-41d1-b7d2-5dc65c3579c4"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8714, 260, 372, 6, 72, "Chapter", "ExpressionUUID" -> \
+"12de6207-2ead-4c88-a8f6-913e40e634c9"],
+Cell[CellGroupData[{
+Cell[9111, 270, 849, 20, 139, "Input", "ExpressionUUID" -> \
+"e35d8ce5-da19-4194-ba07-5a76dc50c0d2"],
+Cell[9963, 292, 2972, 58, 349, "Output", "ExpressionUUID" -> \
+"affe6be8-d35d-41fe-8445-ea76c9b23766"]
+}, Open  ]],
+Cell[12950, 353, 1140, 25, 88, "Input", "ExpressionUUID" -> \
+"42364bc5-6067-4ea2-b591-e017ec8246b7"],
+Cell[14093, 380, 196, 4, 30, "Input", "ExpressionUUID" -> \
+"c0f53ead-ee9e-4ff1-b946-bbd34e0ea74d"],
+Cell[14292, 386, 6791, 151, 1149, "Code", "ExpressionUUID" -> \
+"c3435cfa-764c-4a78-ad0c-df605e2b3af9"],
+Cell[CellGroupData[{
+Cell[21108, 541, 215, 4, 70, "Section", "ExpressionUUID" -> \
+"2ae219e4-ad21-4a55-ab16-8e1e015aaa26"],
+Cell[CellGroupData[{
+Cell[21348, 549, 705, 18, 138, "Input", "ExpressionUUID" -> \
+"7bb81e0b-4fdb-41f1-8064-0472d54d595d"],
+Cell[22056, 569, 513, 16, 41, "Output", "ExpressionUUID" -> \
+"db2e2d01-5a3c-4478-b569-e3bc937df406"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22618, 591, 164, 3, 70, "Section", "ExpressionUUID" -> \
+"53673f8f-ed34-4717-966e-07970e607f9e"],
+Cell[CellGroupData[{
+Cell[22807, 598, 157, 3, 49, "Subsection", "ExpressionUUID" -> \
+"002c1fca-9ff7-4944-b9f8-8f356abd7bf6"],
+Cell[22967, 603, 803, 20, 139, "Input", "ExpressionUUID" -> \
+"2249be47-06ad-44dc-8021-9b5b6283ec33"],
+Cell[CellGroupData[{
+Cell[23795, 627, 776, 21, 158, "Input", "ExpressionUUID" -> \
+"5733ee97-aa5c-443b-a4a8-17d006e2dec0"],
+Cell[24574, 650, 192, 3, 30, "Output", "ExpressionUUID" -> \
+"bb0e86cc-64ab-461c-876f-093efb867971"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24803, 658, 753, 19, 119, "Input", "ExpressionUUID" -> \
+"145619e0-e55f-4150-9dda-310fbeeec869"],
+Cell[25559, 679, 181, 3, 30, "Output", "ExpressionUUID" -> \
+"198acec7-43c3-4d5f-b2f4-4f2f944ccc6a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25777, 687, 705, 19, 138, "Input", "ExpressionUUID" -> \
+"ab98ce70-b75a-4f55-8ca2-635257321253"],
+Cell[26485, 708, 192, 3, 30, "Output", "ExpressionUUID" -> \
+"9cc6583c-333f-4b4f-9eb9-f125cdd252b9"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26738, 718, 215, 4, 70, "Section", "ExpressionUUID" -> \
+"ee4d1044-c2ee-47da-9bd8-ef0b783c3fda"],
+Cell[CellGroupData[{
+Cell[26978, 726, 721, 15, 138, "Input", "ExpressionUUID" -> \
+"a239d2e7-384c-42ae-bcfc-aa0edfdee7b7"],
+Cell[27702, 743, 210, 3, 30, "Output", "ExpressionUUID" -> \
+"e43c04cc-89f1-44d9-a378-d0f2d89413d2"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27949, 751, 878, 22, 157, "Input", "ExpressionUUID" -> \
+"1329e7bd-fb90-4cad-9964-03c22b24d7d7"],
+Cell[28830, 775, 223, 3, 30, "Output", "ExpressionUUID" -> \
+"bdddf71f-2c3e-43db-814b-32c7a22a57c5"]
+}, Open  ]]
+}, Open  ]],
+Cell[29080, 782, 217, 4, 70, "Section", "ExpressionUUID" -> \
+"e23046fd-6261-42b8-8732-24b80cd27b30"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

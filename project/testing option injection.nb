@@ -1,0 +1,77 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      2083,         67]
+NotebookOptionsPosition[      1487,         47]
+NotebookOutlinePosition[      1830,         62]
+CellTagsIndexPosition[      1787,         59]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[{
+ RowBox[{"Clear", "[", "testfunc", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Clear", "[", "myfunc", "]"}]}], "Input",
+ CellChangeTimes->{{3.711859103468797*^9, 3.7118591048276362`*^9}, {
+  3.7118591379810905`*^9, 
+  3.7118591408951025`*^9}},ExpressionUUID->"c2bbd7eb-e848-4f7c-bc2d-\
+20118af04a42"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Options", "[", "testfunc", "]"}], " ", "=", " ", 
+  RowBox[{"{", 
+   RowBox[{"a", " ", "\[Rule]", " ", "3"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.711859097733219*^9, 
+  3.7118591259468355`*^9}},ExpressionUUID->"95aa5b26-8a5f-4a9e-8453-\
+2abda87134d0"],
+
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.7118591359505873`*^9, 
+  3.711859136291304*^9}},ExpressionUUID->"bc61bafd-0aec-414d-898f-\
+5642885e2f69"],
+
+Cell[BoxData["myfunc"], "Input",
+ CellChangeTimes->{{3.7118591461199226`*^9, 
+  3.71185914718694*^9}},ExpressionUUID->"df7fb06a-a6f7-450e-8330-\
+f1a8a730d02a"]
+},
+WindowSize->{958, 988},
+WindowMargins->{{11, Automatic}, {Automatic, 32}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 312, 6, 50, "Input", "ExpressionUUID" -> \
+"c2bbd7eb-e848-4f7c-bc2d-20118af04a42"],
+Cell[873, 28, 291, 7, 30, "Input", "ExpressionUUID" -> \
+"95aa5b26-8a5f-4a9e-8453-2abda87134d0"],
+Cell[1167, 37, 154, 3, 30, "Input", "ExpressionUUID" -> \
+"bc61bafd-0aec-414d-898f-5642885e2f69"],
+Cell[1324, 42, 159, 3, 30, "Input", "ExpressionUUID" -> \
+"df7fb06a-a6f7-450e-8330-f1a8a730d02a"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

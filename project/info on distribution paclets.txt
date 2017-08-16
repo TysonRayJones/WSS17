@@ -1,0 +1,11 @@
+packing paclets to be permanently installed on user machines:
+https://mathematica.stackexchange.com/questions/131101/how-to-distribute-mathematica-packages-as-paclets
+
+example of code to automatically download and install a packed paclet is on this github readme:
+https://github.com/szhorvat/MaTeX
+
+paclet server setup for permanently installing a paclet from a URL (second answer):
+https://mathematica.stackexchange.com/questions/131101/how-to-distribute-mathematica-packages-as-paclets
+
+wolfram cloud deploy (might require users sign in to free acc?) (third answer):
+https://mathematica.stackexchange.com/questions/131101/how-to-distribute-mathematica-packages-as-paclets

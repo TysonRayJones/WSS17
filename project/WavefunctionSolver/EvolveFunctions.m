@@ -1,4 +1,0 @@
-(* ::Package:: *)
-
-Package["WavefunctionSolver`"]
-

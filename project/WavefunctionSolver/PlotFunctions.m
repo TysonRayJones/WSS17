@@ -67,6 +67,9 @@ AddColorBar::usage = "AddColorBar[graphic] adds a colorbar legend to the graphic
 
 (* CONSTANTS *)
 
+(*
+    default plot labels
+*)
 defaultProbDensityLabel = "Abs[\[Psi]\!\(\*SuperscriptBox[\(]\), \(2\)]\)";
 defaultXLabel = "x";
 defaultYLabel = "y";
@@ -301,6 +304,21 @@ addDefaultOptions[
 ] :=
 	addDefaultOptions[options, {function}]
 	
+(* merges the given options with the defaults of the first passed functions, then returns
+   only those options accepted by one or more functions in the second list *)
+extractOptionsFromDefaults[
+	options:OptionsPattern[],
+	defaultFunctions:(_List|_Symbol),     (* allowing nestedness *)
+	filterFunctions:(_List|_Symbol)
+] :=
+	extractOptions[
+		addDefaultOptions[
+			options, 
+			defaultFunctions
+		],
+		filterFunctions
+	]
+	
 	
 
 (*
@@ -383,8 +401,8 @@ optionFilter2D[
 	throws an alert if passed Options contain an option unknown to Plot/Plot3D.
 	accesses an arbitrary OptionValue to enforce OptionsPattern (grrr Mathematica wart!)
 *)
-check1DPotentialPlotOptions[OptionsPattern[Plot]] := OptionValue[PlotStyle]   
-check2DPotentialPlotOptions[OptionsPattern[Plot3D]] := OptionValue[PlotStyle]
+check1DPotentialPlotOptions[OptionsPattern[Plot]] := OptionValue[{}]   
+check2DPotentialPlotOptions[OptionsPattern[Plot3D]] := OptionValue[{}]
 
 
 
@@ -515,7 +533,7 @@ plot2DProbabilityDensity[
 plot1DPotential[
 	None,
 	_?domainQ,  (* domain *)
-	_?domainQ,  (* range *)
+	(_?domainQ|Automatic),  (* range *)
 	OptionsPattern[optionFunctions1D]
 ] :=
 	None
@@ -523,7 +541,7 @@ plot1DPotential[
 plot1DPotential[
 	potential:(_Function|_InterpolatingFunction),
 	domain:{xL_?realNumQ, xR_?realNumQ},
-	range:{_?realNumQ, _?realNumQ},
+	range:({_?realNumQ, _?realNumQ}|Automatic),  
 	options:OptionsPattern[optionFunctions1D]    
 ] :=
 	Plot[
@@ -562,7 +580,7 @@ plot2DPotential[
 	potential:(_Function|_InterpolatingFunction),
 	{xL_?realNumQ, xR_?realNumQ},
 	{yL_?realNumQ, yR_?realNumQ},
-	{zL_?realNumQ, zR_?realNumQ},
+	range:({_?realNumQ, _?realNumQ}|Automatic),
 	options:OptionsPattern[optionFunctions2D]
 ] :=
 	Plot3D[
@@ -581,7 +599,7 @@ plot2DPotential[
 		],
 		
 		(* otherwise apply this default styling *)
-		PlotRange -> {zL, zR},
+		PlotRange -> range,
 		ClippingStyle -> None,
 		Exclusions -> None,
 		PlotStyle -> {{Opacity[.3], Red}},

@@ -132,6 +132,13 @@ isValid2DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ, _?doma
 	is2DFunction[func]
 isValid2DInput[_, _?domainOptSymbQ, _?domainOptSymbQ] :=
 	False
+	
+isValid1DPotential[potential_, domain_?domainOptSymbQ] := 
+	potential === None || isValid1DInput[potential, domain]
+	
+isValid2DPotential[potential_, domain1_?domainOptSymbQ, domain2_?domainOptSymbQ] := 
+	potential === None || isValid2DInput[potential, domain1, domain2]
+
 
 
 
@@ -144,76 +151,76 @@ isValidPotentialTransform[transform:(_Function|_InterpolatingFunction)] :=
 
 
 (* 
-	checks PlotWavefunction's OptionPattern features valid Potential and PotentialTransform 
-	values (compatibl with the passed domain), if they're passed
+	checks PlotWavefunction's OptionPattern features valid (first) Potential and PotentialTransform 
+	values (compatible with the passed domain), if they're passed
 *)
-isValid1DOptions[
+isValid1DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction], 
 	endpoints:_?domainQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
-		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, endpoints]] 
+		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], endpoints]
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
+		isValidPotentialTransform[First @ Cases[{options}, (PotentialTransform -> tran_) -> tran]]
 	)
 	
-isValid1DOptions[
+isValid1DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction], 
 	domain:_?domainSymbQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
-		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, domain[[2;;]]]] ||
-		MemberQ[{options}, Potential -> potential_ /; isValid1DInput[potential, domain]] 	
+		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain[[2;;]]] ||
+		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain]
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
+		isValidPotentialTransform[First @ Cases[{options}, (PotentialTransform -> tran_) -> tran]]
 	)
 
 
 
-isValid2DOptions[
+isValid2DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction],   (* non-symbolic potential *)
 	endpoints1:_?domainQ, 
 	endpoints2:_?domainQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
-		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, endpoints1, endpoints2]] 
+		isValid2DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], endpoints1, endpoints2] 
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
+		isValidPotentialTransform[First @ Cases[{options}, (PotentialTransform -> tran_) -> tran]]
 	)
 
-isValid2DOptions[
+isValid2DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction],   (* possibly symbolic potential *)
 	domain1:_?domainSymbQ, 
 	domain2:_?domainSymbQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
-		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, domain1[[2;;]], domain2[[2;;]]]] ||
-		MemberQ[{options}, Potential -> potential_ /; isValid2DInput[potential, domain1, domain2]] 
+		isValid2DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain1[[2;;]], domain2[[2;;]]] ||
+		isValid2DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain1, domain2]
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
-		MemberQ[{options}, PotentialTransform -> _?isValidPotentialTransform] 
+		isValidPotentialTransform[First @ Cases[{options}, (PotentialTransform -> tran_) -> tran]]
 	)
 	
-isValid2DOptions[
+isValid2DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction], 
 	domain1:_?domainSymbQ,     (* a mix of non-symbolic and symbolic domain (treat both as non-symbolic) *)
 	domain2:_?domainQ
 ] :=
-	isValid2DOptions[options, domain1[[2;;]], domain2]
+	isValid2DPotentialOptions[options, domain1[[2;;]], domain2]
 
-isValid2DOptions[
+isValid2DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction], 
 	domain1:_?domainQ, 
 	domain2:_?domainSymbQ       (* a mix of non-symbolic and symbolic domain (treat both as non-symbolic) *)
 ] :=
-	isValid2DOptions[options, domain1, domain2[[2;;]]]
+	isValid2DPotentialOptions[options, domain1, domain2[[2;;]]]
 	
 	
 	
@@ -296,8 +303,11 @@ addDefaultOptions[
 	options:OptionsPattern[],
 	functions:_List (* /;VectorQ[functions, MatchQ[_Symbol]] *)   (* allowing nestedness *) 
 ] :=
-	Sequence @@ Flatten @ Join[{options}, Options /@ Flatten[functions]]
-	
+	(* removes duplicates, keeping the first *)
+	Sequence @@ GatherBy[
+		Flatten @ Join[{options}, Options /@ Flatten[functions]],
+		First][[All, 1]]
+		
 addDefaultOptions[
 	options:OptionsPattern[],
 	function:_Symbol
@@ -571,7 +581,7 @@ plot2DPotential[
 	None,
 	_?domainQ, (* x domain *)
 	_?domainQ, (* y domain *)
-	_?domainQ, (* range *)
+	(_?domainQ|Automatic),  (* range *)
 	OptionsPattern[optionFunctions2D]
 ] :=
 	None	
@@ -729,7 +739,7 @@ PlotWavefunction[
 	options:OptionsPattern[optionFunctions1D]    
 ] /; (
 	isValid1DInput[wavef, domain] &&
-	isValid1DOptions[options, domain]
+	isValid1DPotentialOptions[options, domain]
 ) :=
 	plot1DWavefunction[
 		convertToFunction[wavef, domain],
@@ -756,7 +766,7 @@ PlotWavefunction[
 	options:OptionsPattern[optionFunctions2D]   
 ] /; (
 	isValid2DInput[wavef, xDomain, yDomain] &&
-	isValid2DOptions[options, xDomain, yDomain]
+	isValid2DPotentialOptions[options, xDomain, yDomain]
 ) := 
 	plot2DWavefunction[
 		convertToFunction[wavef, xDomain, yDomain],

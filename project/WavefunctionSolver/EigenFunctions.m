@@ -107,12 +107,17 @@ domainSymbQ = WavefunctionSolver`PlotFunctions`PackagePrivate`domainSymbQ;
 domainOptSymbQ = WavefunctionSolver`PlotFunctions`PackagePrivate`domainOptSymbQ;
 
 isValid1DInput = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid1DInput;
+isValid1DPotentialOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid1DPotentialOptions
 is1DFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`is1DFunction;
 is2DFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`is2DFunction;
 
 convertToFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`convertToFunction;
 
 plotOptionFunctions1D = WavefunctionSolver`PlotFunctions`PackagePrivate`optionFunctions1D;
+
+extractOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`extractOptions;
+addDefaultOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`addDefaultOptions;
+extractOptionsFromDefaults = WavefunctionSolver`PlotFunctions`PackagePrivate`extractOptionsFromDefaults;
 
 
 
@@ -521,7 +526,8 @@ PlotSpectrum[
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
 ] /; (
 	VectorQ[eigfuncs, (isValid1DInput[#, domain]&)] &&
-	Length[eigvals] === Length[eigfuncs]
+	Length[eigvals] === Length[eigfuncs] &&
+	isValid1DPotentialOptions[options, domain]
 ) := (
 	(* fires a single error when invalid options are passed *)
 	OptionValue[{}];
@@ -549,20 +555,6 @@ PlotSpectrum[
 		(* otherwise apply this default style *)
 		Paneled -> False
 	]
-	
-	     (*
-	          FUUUUUCK
-		(* color bar params (might disable showing c-bar) *)
-		Quiet @ OptionValue[PlotWavefunction, {options}, ColorScheme],
-		Quiet @ OptionValue[PlotWavefunction, {options}, ShowColorBar],
-		
-		(* applying over-riding user-given BarLegend options *)
-		Evaluate[Sequence @@ FilterRules[{options}, Options[BarLegend]]],
-		
-		(* otherwise apply this default style *)
-		LegendLabel -> getEigfuncPhaseString[n]        (********* MAKE THIS n ACCESSIBLE OUTSIDE MANIPULATE!!! ***)
-	]
-	*)
 )
 
 (* passing a grid and a pre-computed eigensystem *)
@@ -573,7 +565,8 @@ PlotSpectrum[
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
 ] /; (
 	VectorQ[eigfuncs, (isValid1DInput[#, {xL, xR}]&)] &&
-	Length[eigvals] === Length[eigfuncs]
+	Length[eigvals] === Length[eigfuncs] &&
+	isValid1DPotentialOptions[options, {xL, xR}]
 ) :=
 	PlotSpectrum[{xL, xR}, eigvals, eigfuncs, options]    (* will handle invalid option errors *)
 
@@ -587,7 +580,8 @@ PlotSpectrum[
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
 ] /; (
 	VectorQ[eigfuncs, (isValid1DInput[#, {xL, xR}]&)] &&
-	Length[eigvals] === Length[eigfuncs]
+	Length[eigvals] === Length[eigfuncs] &&
+	isValid1DPotentialOptions[options, {xL, xR}]
 ) :=
 	PlotSpectrum[domainOrGrid, eigvals, eigfuncs, options]    (* will handle invalid option errors *)
 	
@@ -597,7 +591,8 @@ PlotSpectrum[
 	domain:_?domainOptSymbQ,
 	options:OptionsPattern[{plotOptionFunctions1D, GetEigenmodes, Manipulate} // Flatten]
 ] /; (
-	isValid1DInput[potential, domain]
+	isValid1DInput[potential, domain] &&
+	isValid1DPotentialOptions[options, domain]
 ) :=
 	DynamicModule[
 		{eigsys},    (* avoids garbage collection *)
@@ -615,7 +610,18 @@ PlotSpectrum[
 		(* plot vectorised system *)
 		PlotSpectrum[
 			eigsys,
-			Evaluate @ FilterRules[{options}, Options /@ Flatten[{plotOptionFunctions1D, Manipulate}]],
+			
+			(* if the Potential option was passed, strip it of variables *)
+			Sequence @@ If[
+				Quiet @ OptionValue[Potential] === None, 
+				{}, 
+				{Potential -> convertToFunction[Quiet @ OptionValue[Potential], domain]}
+			],
+			
+			(* apply overriding user-given plot options *)
+			Evaluate @ extractOptions[options, {Manipulate, plotOptionFunctions1D}],
+			
+			(* plot the potential used for numerics, if no other Potential option was passed *)
 			Potential -> convertToFunction[potential, domain]
 		]
 	]

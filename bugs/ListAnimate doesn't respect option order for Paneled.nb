@@ -1,0 +1,185 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      6060,        175]
+NotebookOptionsPosition[      5625,        157]
+NotebookOutlinePosition[      5966,        172]
+CellTagsIndexPosition[      5923,        169]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"ListAnimate", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", " ", "2", ",", " ", "3", ",", " ", "4"}], "}"}], ",", 
+   " ", 
+   RowBox[{"Paneled", " ", "\[Rule]", " ", "True"}], ",", " ", 
+   RowBox[{"Paneled", " ", "\[Rule]", " ", "False"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.712215100469741*^9, 
+  3.71221511933554*^9}},ExpressionUUID->"cd95a7d8-8692-47d5-aa47-\
+af79c696cb33"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`i208$$ = 3, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {
+    "\"min\"" :> {$CellContext`i208$$ = 1}, 
+     "\"max\"" :> {$CellContext`i208$$ = 4}}, Typeset`bookmarkMode$$ = "Menu",
+     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`i208$$], 1, ""}, 1, 4, 1}}, Typeset`size$$ = 
+    Automatic, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`i208$9235$$ = 0}, 
+    PaneBox[
+     DynamicWrapperBox[GridBox[{
+        {
+         ItemBox[
+          ItemBox[
+           TagBox[
+            StyleBox[GridBox[{
+               {"\<\"\"\>", 
+                AnimatorBox[Dynamic[$CellContext`i208$$], {1, 4, 1},
+                 AnimationRate->Automatic,
+                 AnimationRunTime->18.48052406311035,
+                 AnimationTimeIndex->3.4805240631103516`,
+                 
+                 AppearanceElements->{
+                  "ProgressSlider", "PlayPauseButton", "FasterSlowerButtons", 
+                   "DirectionButton"},
+                 AutoAction->False,
+                 DisplayAllSteps->True]}
+              },
+              AutoDelete->False,
+              
+              GridBoxAlignment->{
+               "Columns" -> {Right, {Left}}, "ColumnsIndexed" -> {}, 
+                "Rows" -> {{Baseline}}, "RowsIndexed" -> {}},
+              
+              GridBoxItemSize->{
+               "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+             "ListAnimateLabel",
+             StripOnInput->False],
+            {"ControlArea", Top}],
+           Alignment->{Automatic, Inherited},
+           StripOnInput->False],
+          Background->None,
+          StripOnInput->False]},
+        {
+         ItemBox[
+          TagBox[
+           StyleBox[
+            PaneBox[
+             TagBox[
+              
+              PaneSelectorBox[{1->"1", 2->"2", 3->"3", 4->"4"}, 
+               Dynamic[$CellContext`i208$$],
+               Alignment->Automatic,
+               BaseStyle->"ListAnimateCore",
+               ImageSize->All,
+               TransitionDirection->Horizontal,
+               TransitionDuration->0.5,
+               TransitionEffect->Automatic],
+              Identity,
+              Editable->True,
+              Selectable->True],
+             ImageMargins->10],
+            Deployed->False,
+            StripOnInput->False,
+            ScriptLevel->0,
+            GraphicsBoxOptions->{PreserveImageOptions->True},
+            Graphics3DBoxOptions->{PreserveImageOptions->True}],
+           Identity,
+           Editable->False,
+           Selectable->False],
+          Alignment->{Left, Center},
+          ItemSize->Automatic,
+          StripOnInput->False]}
+       },
+       AutoDelete->False,
+       GridBoxAlignment->{
+        "Columns" -> {{Left}}, "ColumnsIndexed" -> {}, "Rows" -> {{Top}}, 
+         "RowsIndexed" -> {}},
+       GridBoxDividers->{
+        "Columns" -> {{False}}, "ColumnsIndexed" -> {}, "Rows" -> {{False}}, 
+         "RowsIndexed" -> {}},
+       GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.7], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.7]}, "ColumnsIndexed" -> {}, "Rows" -> {
+           Offset[0.4], {
+            Offset[0.8]}, 
+           Offset[0.4]}, "RowsIndexed" -> {}}], If[
+       And[
+        CurrentValue["NotebookSelected"], 
+        CurrentValue["SelectionOver"]], 
+       Manipulate`Dump`ReadControllerState[
+        Map[Manipulate`Dump`updateOneVar[#, 
+          CurrentValue["PreviousFormatTime"], 
+          CurrentValue["CurrentFormatTime"]]& , {
+          
+          Manipulate`Dump`controllerLink[{$CellContext`i208$$, \
+$CellContext`i208$9235$$}, "X1", 
+           If["DefaultAbsolute", True, "JB1"], False, {1, 4, 1}, 4, 1.]}], 
+        CurrentValue[{
+         "ControllerData", {
+          "Gamepad", "Joystick", "Multi-Axis Controller"}}], {}]],
+      ImageSizeCache->{298., {31.5, 37.5}}],
+     BaselinePosition->Automatic,
+     ImageMargins->0],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "ListAnimate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{
+  3.7122151301849957`*^9},ExpressionUUID->"661e120f-da53-4572-8355-\
+41f68290f448"]
+}, Open  ]]
+},
+WindowSize->{972, 988},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"11.1 for Microsoft Windows (64-bit) (March 13, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 419, 10, 30, "Input", "ExpressionUUID" -> \
+"cd95a7d8-8692-47d5-aa47-af79c696cb33"],
+Cell[1002, 34, 4607, 120, 87, "Output", "ExpressionUUID" -> \
+"661e120f-da53-4572-8355-41f68290f448"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

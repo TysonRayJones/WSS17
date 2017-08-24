@@ -4,6 +4,7 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+	- adding timing / loadbar stuff (use EchoFunction)
 	- user specify (as options) number of points / grid-spacing in each dimension in 2D
 	- fix awful private imports
 	- non-abs-squared plots for real station states?
@@ -126,6 +127,9 @@ extractOptionsFromDefaults = WavefunctionSolver`PlotFunctions`PackagePrivate`ext
 (* CONSTANTS *)
 
 defaultNumPoints = 10^4 + 1;    (* odd for pleasant grid spacing *)
+eigenValueLabel = "\!\(\*SubscriptBox[\(E\), \(`1`\)]\) = `2`";
+eigenFuncProbLabel = "|\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\)\!\(\*SuperscriptBox[\(|\), \(2\)]\)";
+eigenFuncPhaseLabel = "phase(\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\))";
 
 
 
@@ -280,18 +284,6 @@ get1DGridAndHamiltonian[
 		{grid, potentialVector} = discretise1DPotential[potential, domain, numPoints];
 		{grid, get1DHamiltonianMatrix[grid, potentialVector]}
 	]
-	
-
-
-(*
-	functions for building strings in wavefunction plots
-*)
-getEigvalString[n_Integer, eigvals_List] :=
-	"\!\(\*SubscriptBox[\(E\), \(" <> ToString[n] <> "\)]\) = " <> ToString[eigvals[[n+1]]]
-getEigfuncProbString[n_Integer] :=
-	"|\!\(\*SubscriptBox[\(\[Phi]\), \(" <> ToString[n] <> "\)]\)\!\(\*SuperscriptBox[\(|\), \(2\)]\)"
-getEigfuncPhaseString[n_Integer] :=
-	"phase(\!\(\*SubscriptBox[\(\[Phi]\), \(" <> ToString[n] <> "\)]\))"
 	
 	
 	
@@ -506,7 +498,165 @@ NormalizeWavefunction[
 (* 
 	2D
  *)
+ 
+(* constants *)
+NormalizeWavefunction[
+	wavefuncConst_?NumericQ,
+	{___Symbol, xL:_?realNumQ, xR_?realNumQ},
+	{___Symbol, yL:_?realNumQ, yR_?realNumQ}
+] :=
+	wavefuncConst / (Abs[wavefuncConst] Sqrt[xR - xL] Sqrt[yR - yL])
+	
+NormalizeWavefunction[
+	_?NumericQ,
+	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])},
+	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
+] :=
+	0
+	
+NormalizeWavefunction[
+	wavefuncConst_?NumericQ
+] :=
+	wavefuncConst
 
+(* matrix *)
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncVector, NumericQ],           (* assumed 0 outside grid *) 
+	xGridSpace_/;(realNumQ[xGridSpace] && Positive[xGridSpace]),
+	yGridSpace_/;(realNumQ[yGridSpace] && Positive[yGridSpace])
+] :=
+	wavefuncMatrix / Sqrt[xGridSpace yGridSpace Total[Abs[wavefuncMatrix]^2, 2]]
+
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncVector, NumericQ],           (* assumed 0 outside grid *)
+	gridSpace_/;(realNumQ[gridSpace] && Positive[gridSpace])
+] :=
+	wavefuncMatrix / Sqrt[gridSpace^2 Total[ Abs[wavefuncMatrix]^2 ]]	
+	
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],  
+	xGrid_/;VectorQ[xGrid, realNumQ],
+	yGrid_/;VectorQ[yGrid, realNumQ]
+] /; (
+	Length[xGrid] === Dimensions[wavefuncMatrix][[2]] &&
+	Length[yGrid] === Dimensions[wavefuncMatrix][[1]]
+) :=
+    NormalizeWavefunction[wavefuncMatrix, xGrid[[2]] - xGrid[[1]], yGrid[[2]] - yGrid[[1]]]
+    
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],   (
+	grid_/;VectorQ[grid, realNumQ]
+] /; (
+	Length[grid] === Dimensions[wavefuncMatrix][[1]] === Dimensions[wavefuncMatrix][[2]]
+) :=
+    NormalizeWavefunction[wavefuncMatrix, grid[[2]] - grid[[1]]]
+    
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],   (* assumed 0 outside grid *)
+	xDomain:{___Symbol, xL_?realNumQ, xR_?realNumQ},
+	yDomain:{___Symbol, yL_?realNumQ, yR_?realNumQ}
+] :=
+	NormalizeWavefunction[
+		wavefuncMatrix, 
+		(xR - xL)/(Dimensions[wavefuncMatrix][[2]] - 1),
+		(yR - yL)/(Dimensions[wavefuncMatrix][[1]] - 1)
+	]
+	
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],   (* assumed 0 outside grid *)
+	endpoints:{xyL_?realNumQ, xyR_?realNumQ}
+] :=
+	NormalizeWavefunction[
+		wavefuncMatrix, 
+		(xyR - xyL)/(Dimensions[wavefuncMatrix][[2]] - 1),
+		(xyR - xyL)/(Dimensions[wavefuncMatrix][[1]] - 1)
+	]
+	
+NormalizeWavefunction[
+	wavefuncMatrix_/;VectorQ[wavefuncMatrix, NumericQ],    
+	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])},
+	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
+] :=
+	ConstantArray[0, Dimensions[wavefuncMatrix]]
+	
+NormalizeWavefunction[
+	wavefuncMatrix_/;VectorQ[wavefuncMatrix, NumericQ] 
+] :=
+	NormalizeWavefunction[wavefuncMatrix, 1]
+	
+(* functions *)
+NormalizeWavefunction[                         
+	wavefuncFunc:_?func2DQ,                          (* converts InterpolatingFunction to Function *)
+	xDomain:{___Symbol, xL:(_?realNumQ|-\[Infinity]), xR:(_?realNumQ|\[Infinity])},
+	yDomain:{___Symbol, yL:(_?realNumQ|-\[Infinity]), yR:(_?realNumQ|\[Infinity])}
+] :=
+	With[
+		{norm = NIntegrate[
+			Abs[wavefuncFunc[x, y]]^2, 
+			{x, xL, xR}, 
+			{y, yL, yR},
+			Method -> {Automatic, "SymbolicProcessing" -> 0}
+		]},
+		(wavefuncFunc[#1, #2]/Sqrt[norm] &)
+	]
+
+NormalizeWavefunction[
+	wavefuncFunc:_?func2DQ,                          (* converts InterpolatingFunction to Function *)                      
+	xGrid:{xL_?realNumQ, ___?realNumQ, xR_?realNumQ},
+	yGrid:{yL_?realNumQ, ___?realNumQ, yR_?realNumQ}   
+] :=
+	With[
+		{xSpacing = xGrid[[2]] - xGrid[[1]],
+		 ySpacing = yGrid[[2]] - yGrid[[1]],
+		 samples = (wavefuncFunc @@ # &) /@ Flatten[Outer[List, xGrid, yGrid], 1]},
+		(wavefuncFunc[#1, #2] / Sqrt[ xSpacing ySpacing Total[Abs[samples]^2] ]  &)
+	]
+	
+NormalizeWavefunction[
+	wavefuncFunc:_?func2DQ,                          (* converts InterpolatingFunction to Function *)                      
+	grid:{xyL_?realNumQ, ___?realNumQ, xyR_?realNumQ}
+] :=
+	With[
+		{xySpacing = grid[[2]] - grid[[1]],
+		 samples = (wavefuncFunc @@ # &) /@ Flatten[Outer[List, grid, grid], 1]},
+		(wavefuncFunc[#1, #2] / Sqrt[ xySpacing^2 Total[Abs[samples]^2] ]  &)
+	]
+	
+NormalizeWavefunction[
+	wavefuncFunc:_?func2DQ
+] :=
+	NormalizeWavefunction[wavefuncFunc, {-\[Infinity], \[Infinity]}, {-\[Infinity], \[Infinity]}]
+	
+(* symbolic expression *)
+NormalizeWavefunction[
+	wavefuncSymbolic_,
+	xDomain:{_Symbol, (_?realNumQ|-\[Infinity]), (_?realNumQ|\[Infinity])},
+	yDomain:{_Symbol, (_?realNumQ|-\[Infinity]), (_?realNumQ|\[Infinity])}
+] :=
+	With[
+		(*
+		{norm = NIntegrate[
+			wavefuncSymbolic, domain, 
+			Method -> {Automatic, "SymbolicProcessing" -> 0}
+		]},
+		*)
+		{norm = Integrate[Abs[wavefuncSymbolic]^2, xDomain, yDomain]},          (* DANGEROUS SYMBOLIC INTERGRATION?!?!! *)
+		wavefuncSymbolic / Sqrt[norm]
+	]
+	
+NormalizeWavefunction[
+	wavefuncSymbolic_,
+	x_Symbol,
+	y_symbol
+] :=
+	NormalizeWavefunction[wavefuncSymbolic, {x, -\[Infinity], \[Infinity]}, {y, -\[Infinity], \[Infinity]}]
+
+NormalizeWavefunction[
+	wavefuncSymbolic_,
+	{x_Symbol},
+	{y_Symbol}
+] :=
+	NormalizeWavefunction[wavefuncSymbolic, x, y]	
 
 
 (*
@@ -542,10 +692,10 @@ PlotSpectrum[
 			Evaluate[Sequence @@ FilterRules[{options}, Options /@ plotOptionFunctions1D]],
 			
 			(* otherwise apply this default style *)
-			AxesLabel -> {"x", getEigfuncProbString[n]},
-			LegendLabel -> getEigfuncPhaseString[n],
+			AxesLabel -> {"x", StringForm[eigenFuncProbLabel, n]},
+			LegendLabel -> StringForm[eigenFuncPhaseLabel, n],
 			PlotRange -> All,
-			PlotLabel -> getEigvalString[n, eigvals]
+			PlotLabel -> StringForm[eigenValueLabel, n, eigvals[[n+1]]]
 		],
 		{{n, 0, "mode"}, 0, Length[eigfuncs]-1, 1},
 		

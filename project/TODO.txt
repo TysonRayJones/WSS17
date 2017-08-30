@@ -1,0 +1,18 @@
+TODO
+
+- extend PlotWavefunction to take specifying coords and values independently, 1D and 2D
+
+- make GetEigenmodes output grid in matrix format
+
+- make PlotSpectrum accept grid/wavefunc in the newly added PlotWavefunction formats
+
+- add 'PlotAsProbDensity -> False' option, overriden for complex wavefuncs
+  (to PlotSpectrum)
+
+- move symbolicQ to PlotFunctions to remove those dodgy cases where PlotWavefunction matches lists/matrices wavefunctions/potentials when a domain is passed (causing plotting of multiple functions, often unexpectedly)
+
+
+
+- apply Wolfram Certified instructor
+- speak to Travis
+- contact Arun? **

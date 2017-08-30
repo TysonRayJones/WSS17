@@ -4,6 +4,7 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+		
 	- adding timing / loadbar stuff (use EchoFunction)
 	- user specify (as options) number of points / grid-spacing in each dimension in 2D
 	- fix awful private imports
@@ -93,8 +94,10 @@ NormalizeWavefunction::usage = "NormalizeWavefunction[symb, {x}] symbolically L2
 
 (* FUNCTION ERROR MESSAGES *)
 
-GetEigenmodes::numPointsLessThanTwoError = "NumberOfPoints given to GetEigenmodes (`1`) too small; must be at least 2. Using NumberOfPoints -> `2` instead.";
-GetEigenmodes::numPointsLessThanNumModesError = "NumberOfPoints given to GetEigenmodes (`1`) is less than NumberOfModes (`2`). Using NumberOfPoints -> `3` instead.";
+GetEigenmodes::numPointsLessThanTwoError1D = "NumberOfPoints -> `1` given to GetEigenmodes is too small; must be at least 2. Using NumberOfPoints -> `2` instead.";
+GetEigenmodes::numPointsLessThanNumModesError1D = "NumberOfPoints -> `1` given to GetEigenmodes is less than NumberOfModes -> `2`. Using NumberOfPoints -> `3` instead.";
+
+GetEigenmodes::numPointsError2D = "NumberOfPoints -> `1` given to GetEigenmodes contains either too small a number (the number of points must be at least 2 in each dimension), or a number less than NumberOfModes -> `2`, or both. Using NumberOfPoints -> `3` instead.";
 
 
 
@@ -108,19 +111,23 @@ domainSymbQ = WavefunctionSolver`PlotFunctions`PackagePrivate`domainSymbQ;
 domainOptSymbQ = WavefunctionSolver`PlotFunctions`PackagePrivate`domainOptSymbQ;
 
 isValid1DInput = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid1DInput;
-isValid1DPotentialOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid1DPotentialOptions
+isValid1DPotentialOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid1DPotentialOptions;
+isValid2DInput = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid2DInput;
+isValid2DPotentialOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`isValid2DPotentialOptions
 is1DFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`is1DFunction;
 is2DFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`is2DFunction;
 
 convertToFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`convertToFunction;
 
 plotOptionFunctions1D = WavefunctionSolver`PlotFunctions`PackagePrivate`optionFunctions1D;
+plotOptionFunctions2D = WavefunctionSolver`PlotFunctions`PackagePrivate`optionFunctions2D;
 
 extractOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`extractOptions;
 addDefaultOptions = WavefunctionSolver`PlotFunctions`PackagePrivate`addDefaultOptions;
 extractOptionsFromDefaults = WavefunctionSolver`PlotFunctions`PackagePrivate`extractOptionsFromDefaults;
 
-
+defaultXLabel = WavefunctionSolver`PlotFunctions`PackagePrivate`defaultXLabel;
+defaultYLabel = WavefunctionSolver`PlotFunctions`PackagePrivate`defaultYLabel;
 
 
 
@@ -132,7 +139,7 @@ eigenValueLabel = "\!\(\*SubscriptBox[\(E\), \(`1`\)]\) = `2`";
 eigenFuncProbLabel = "|\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\)\!\(\*SuperscriptBox[\(|\), \(2\)]\)";
 eigenFuncPhaseLabel = "phase(\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\))";
 
-
+defaultModeLabel = "mode";
 
 
 
@@ -344,9 +351,9 @@ get1DLaplacianMatrix[
 		 gridSpace = grid[[2]] - grid[[1]]},
 		SparseArray[
 			{   (* 4th order accuracy of 1D finite difference 2nd-deriv *)
-				{i_,i_} :> -5/2,
-				{i_,j_} /; Abs[i-j] == 1 :> 4/3,
-				{i_,j_} /; Abs[i-j] == 2 :> -1/12 
+				{i_,i_} :> N @ -5/2,
+				{i_,j_} /; Abs[i-j] == 1 :> N @ 4/3,
+				{i_,j_} /; Abs[i-j] == 2 :> N @ -1/12 
 			},
 			{numPoints, numPoints}
 		]
@@ -420,8 +427,8 @@ get2DHamiltonianMatrix[
 
 get2DGridAndHamiltonian[
 	potential:_,                      (* has passed isValid2DInput *)
-	xDomain:{x_Symbol, _?realNumQ, _?realNumQ},
-	yDomain:{y_Symbol, _?realNumQ, _?realNumQ},
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
 	numXPoints:(_Integer|Automatic),
 	numYPoints:(_Integer|Automatic)
 ] :=
@@ -431,8 +438,12 @@ get2DGridAndHamiltonian[
 			discretise2DPotential[potential, xDomain, yDomain, numXPoints, numYPoints];
 			
 		(* return *)
-		{xyTuples, get2DHamiltonianMatrix[xPoints, yPoints, potentialVector]}
+		{
+			{Length[xPoints], Length[yPoints], xyTuples}, 
+			get2DHamiltonianMatrix[xPoints, yPoints, potentialVector]
+		}
 	]
+	
 
 
 (* 1D and 2D *)
@@ -444,12 +455,14 @@ getGridAndHamiltonian[
 	get1DGridAndHamiltonian[potential, domain, numPoints]
 getGridAndHamiltonian[
 	potential:_,                      (* has passed isValid2DInput *)
-	xDomain:{x_Symbol, _?realNumQ, _?realNumQ},
-	yDomain:{y_Symbol, _?realNumQ, _?realNumQ},
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
 	numXPoints:(_Integer|Automatic),
 	numYPoints:(_Integer|Automatic)
 ] :=
 	get2DGridAndHamiltonian[potential, xDomain, yDomain, numXPoints, numYPoints]
+
+
 
 
 
@@ -469,7 +482,7 @@ getEigenmodes[
 		{grid, hamiltonian, eigvals, eigfuncs},
 			
 		(* get grid vector and hamiltonian matrix *)
-		{grid, hamiltonian} = N @ getGridAndHamiltonian[
+		{grid, hamiltonian} = getGridAndHamiltonian[
 			potential, 
 			Evaluate @ domains, 
 			Evaluate @ numPoints
@@ -481,18 +494,31 @@ getEigenmodes[
 		(* sort eigenfunctions by increasing eigenvalue *)
 		{eigvals, eigfuncs} = {eigvals[[#]], eigfuncs[[#]]}& @ Ordering[eigvals];
 		
+		(* restore flat grid and convert vectors to matrices if we're working in 2D *)
+		{grid, eigfuncs} = If[
+			Length[{domains}] === 1,
+			{
+				grid, 
+				eigfuncs
+			},
+			{
+				grid[[3]], (* ArrayReshape[grid[[3]], Reverse @ grid[[;;2]]],  *)
+				(ArrayReshape[#, Reverse @ grid[[;;2]]]&) /@ eigfuncs
+			}
+		];
+		
 		(* optionally L2-normalise eigenfunctions *)
-		{eigvals, eigfuncs} = If[
+		eigfuncs = If[
 			normalise,
-			{eigvals, NormalizeWavefunction[#, Evaluate @ domains]& /@ eigfuncs},
-			{eigvals, eigfuncs}
+			NormalizeWavefunction[#, Evaluate @ domains]& /@ eigfuncs,
+			eigfuncs
 		];
 		
 		(* optionally interpolate eigenfunctions *)
-		{eigvals, eigfuncs} = If[
+		eigfuncs = If[
 			interpolate,
-			{eigvals, convertToFunction[#, Evaluate @ domains]& /@ eigfuncs},
-			{eigvals, eigfuncs}
+			convertToFunction[#, Evaluate @ domains]& /@ eigfuncs,
+			eigfuncs
 		];
 		
 		(* return *)
@@ -501,10 +527,112 @@ getEigenmodes[
 
 
 
+(* 
+	ensures NumberOfPoints option to GetEigenmodes is of correct dimensionality and size 
+*)
 
+(* 1D *)
+fix1DNumPointsParam[
+	numPoints:_Integer /; numPoints < 2,
+	numModes:_Integer
+] := (
+	Message[
+		GetEigenmodes::numPointsLessThanTwoError1D, 
+		numPoints,
+		default1DNumPoints
+	];
+	default1DNumPoints
+)
+
+fix1DNumPointsParam[
+	numPoints:_Integer?Positive,
+	numModes:_Integer
+] /; (
+	numPoints < Abs @ numModes
+) := 
+	With[
+		{substitute = Max[default1DNumPoints, Abs @ numModes]},
+		(
+			Message[
+				GetEigenmodes::numPointsLessThanNumModesError1D, 
+				numPoints, 
+				Abs @ numModes, 
+				substitute
+			];
+			substitute
+		)
+	]
+
+fix1DNumPointsParam[
+	numPoints:Automatic|(_Integer?Positive),
+	numModes:_Integer
+] :=
+	numPoints
+
+fix1DNumPointsParam[
+	tuple:{Repeated[Automatic|(_Integer?Positive), {1,2}]},
+	numModes:_Integer
+] :=
+	fix1DNumPointsParam[tuple[[1]], numModes]
 	
-
-
+(* 2D *)
+fix2DNumPointsParam[
+	tuple:{
+		numXPoints:(_Integer ? (# > 1 &))|Automatic,
+		numYPoints:(_Integer ? (# > 1 &))|Automatic
+	},
+	numModes:_Integer
+] /; (
+	(numXPoints === Automatic || numXPoints >= Abs @ numModes) &&
+	(numYPoints === Automatic || numYPoints >= Abs @ numModes)
+) :=
+	tuple
+	
+fix2DNumPointsParam[
+	tuple:{
+		numXPoints:(_Integer|Automatic),
+		numYPoints:(_Integer|Automatic)
+	},
+	numModes_Integer
+] :=
+	With[
+		{subtuple = {
+			If[
+				(numXPoints === Automatic) || (numXPoints >= Max[2, Abs @ numModes]), 
+				numXPoints, 
+				default2DNumPoints
+			],
+			If[
+				(numYPoints === Automatic) || (numYPoints >= Max[2, Abs @ numModes]), 
+				numYPoints, 
+				default2DNumPoints
+			]
+		}},
+		(
+			Message[
+				GetEigenmodes::numPointsError2D,
+				tuple, 
+				Abs @ numModes, 
+				subtuple
+			];
+			subtuple
+		)
+	]
+	
+fix2DNumPointsParam[
+	numPoints:(_Integer|Automatic),
+	numModes_Integer
+] :=
+	fix2DNumPointsParam[{numPoints, numPoints}, numModes]
+	
+fix2DNumPointsParam[
+	{numPoints:(_Integer|Automatic)},
+	numModes_Integer
+] :=
+	fix2DNumPointsParam[{numPoints, numPoints}, numModes]
+	
+	
+	
 
 
 (* PUBLIC FUNCTION DEFINITIONS *)
@@ -527,47 +655,42 @@ GetEigenmodes[
 	isValid1DInput[potential, domain]
 ) :=
 	Module[
-		{
-			(* extracted options *)
-			numPoints, numModes, autoNorm, outputAsFuncs
-		},
-		
-		(* extract once to fire a single error when an invalid option is passed *)
-		{numPoints, numModes, autoNorm, outputAsFuncs} = OptionValue[
-			{NumberOfPoints, NumberOfModes, AutoNormalize, OutputAsFunctions}
-		];
-		
-		(* correct for numPoints being too small *)
-		numPoints = If[
-			NumberQ[numPoints] && numPoints < 2,
-			( 
-				Message[
-					GetEigenmodes::numPointsLessThanTwoError, 
-					numPoints, 
-					default1DNumPoints
-				];
-				default1DNumPoints
-			),
-			numPoints
-		];		
-		
-		(* correct for numPoints being less than numModes *)
-		numPoints = If[
-			NumberQ[numPoints] && numPoints < Abs[numModes],
-			( 
-				Message[
-					GetEigenmodes::numPointsLessThanNumModesError, 
-					numPoints, 
-					Abs[numModes], 
-					Max[default1DNumPoints, numModes]
-				];
-				Max[default1DNumPoints, numModes]
-			),
-			numPoints
-		];	
-		
-		getEigenmodes[potential, domain, numPoints, numModes, autoNorm, outputAsFuncs]
+		(* unpack options once to throw at-most one error on unknown options *)
+		{optNumberOfPoints, optNumberOfModes, optAutoNormalize, optOutputAsFunctions},
+		{optNumberOfPoints, optNumberOfModes, optAutoNormalize, optOutputAsFunctions} =
+			OptionValue @ {NumberOfPoints, NumberOfModes, AutoNormalize, OutputAsFunctions};
+			
+		getEigenmodes[
+			potential,
+			domain,
+			fix1DNumPointsParam[optNumberOfPoints, optNumberOfModes],
+			optNumberOfModes, optAutoNormalize, optOutputAsFunctions
+		]
 	]
+	
+GetEigenmodes[
+	potential:_,
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	options:OptionsPattern[GetEigenmodes]
+] /; (
+	isValid2DInput[potential, xDomain, yDomain]
+) :=
+	Module[
+		(* unpack options once to throw at-most one error on unknown options *)
+		{optNumberOfPoints, optNumberOfModes, optAutoNormalize, optOutputAsFunctions},
+		{optNumberOfPoints, optNumberOfModes, optAutoNormalize, optOutputAsFunctions} =
+			OptionValue @ {NumberOfPoints, NumberOfModes, AutoNormalize, OutputAsFunctions};
+
+		getEigenmodes[
+			potential,
+			xDomain,
+			yDomain,
+			Sequence @@ fix2DNumPointsParam[optNumberOfPoints, optNumberOfModes],
+			optNumberOfModes, optAutoNormalize, optOutputAsFunctions
+		]
+	]
+	
 	
 	
 (* 
@@ -581,12 +704,10 @@ GetEigenmodes[
 *)
 
 
-(****************** HMMMMMMMMMMMMMM THIS MATCHES MATRICES WTH ***********************)
+
 symbolicQ := 
 	MatchQ @ Except[_?NumericQ|_?(VectorQ[#, NumericQ]&)|_?(MatrixQ[#, NumericQ]&)|_?func1DQ|_?func2DQ];
 	
-	
-
 (* constants *)
 NormalizeWavefunction[
 	wavefuncConst_?NumericQ,
@@ -611,14 +732,6 @@ NormalizeWavefunction[
 	gridSpace_/;(realNumQ[gridSpace] && Positive[gridSpace])
 ] :=
 	wavefuncVector / Sqrt[gridSpace Total[ Abs[wavefuncVector]^2 ]]	
-	
-NormalizeWavefunction[
-	wavefuncVector_/;VectorQ[wavefuncVector, NumericQ],   
-	grid_/;VectorQ[grid, realNumQ]
-] /; (
-	Length[grid] === Length[wavefuncVector]
-) :=
-    NormalizeWavefunction[wavefuncVector, grid[[2]] - grid[[1]]]
 
 NormalizeWavefunction[
 	wavefuncVector_/;VectorQ[wavefuncVector, NumericQ],   (* assumed 0 outside grid *)
@@ -631,6 +744,14 @@ NormalizeWavefunction[
 	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
 ] :=
 	ConstantArray[0, Length[wavefuncVector]]
+	
+NormalizeWavefunction[
+	wavefuncVector_/;VectorQ[wavefuncVector, NumericQ],   
+	grid_/;VectorQ[grid, realNumQ]
+] /; (
+	Length[grid] === Length[wavefuncVector]
+) :=
+    NormalizeWavefunction[wavefuncVector, grid[[2]] - grid[[1]]]
 	
 NormalizeWavefunction[
 	wavefuncVector_/;VectorQ[wavefuncVector, NumericQ]
@@ -726,24 +847,6 @@ NormalizeWavefunction[
 	gridSpace_/;(realNumQ[gridSpace] && Positive[gridSpace])
 ] := 
 	wavefuncMatrix / Sqrt[gridSpace^2 Total[Abs[wavefuncMatrix]^2, 2]]	
-	
-NormalizeWavefunction[
-	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],  
-	xGrid_/;VectorQ[xGrid, realNumQ],
-	yGrid_/;VectorQ[yGrid, realNumQ]
-] /; (
-	Length[xGrid] === Dimensions[wavefuncMatrix][[2]] &&
-	Length[yGrid] === Dimensions[wavefuncMatrix][[1]]
-) :=
-    NormalizeWavefunction[wavefuncMatrix, xGrid[[2]] - xGrid[[1]], yGrid[[2]] - yGrid[[1]]]
-    
-NormalizeWavefunction[
-	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ], 
-	grid_/;VectorQ[grid, realNumQ]
-] /; (
-	Length[grid] === Dimensions[wavefuncMatrix][[1]] === Dimensions[wavefuncMatrix][[2]]
-) :=
-    NormalizeWavefunction[wavefuncMatrix, grid[[2]] - grid[[1]]]
     
 NormalizeWavefunction[
 	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],   (* assumed 0 outside grid *)
@@ -778,6 +881,24 @@ NormalizeWavefunction[
 	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
 ] :=
 	ConstantArray[0, Dimensions[wavefuncMatrix]]
+	
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],  
+	xGrid_/;VectorQ[xGrid, realNumQ],
+	yGrid_/;VectorQ[yGrid, realNumQ]
+] /; (
+	Length[xGrid] === Dimensions[wavefuncMatrix][[2]] &&
+	Length[yGrid] === Dimensions[wavefuncMatrix][[1]]
+) :=
+    NormalizeWavefunction[wavefuncMatrix, xGrid[[2]] - xGrid[[1]], yGrid[[2]] - yGrid[[1]]]
+    
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ], 
+	grid_/;VectorQ[grid, realNumQ]
+] /; (
+	Length[grid] === Dimensions[wavefuncMatrix][[1]] === Dimensions[wavefuncMatrix][[2]]
+) :=
+    NormalizeWavefunction[wavefuncMatrix, grid[[2]] - grid[[1]]]
 	
 NormalizeWavefunction[
 	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ] 
@@ -907,12 +1028,16 @@ PlotSpectrum[
 			Evaluate[Sequence @@ FilterRules[{options}, Options /@ plotOptionFunctions1D]],
 			
 			(* otherwise apply this default style *)
-			AxesLabel -> {"x", StringForm[eigenFuncProbLabel, n]},
+			AxesLabel -> {
+				(* use domain symbol or default string for xlabel *)
+				If[MatchQ[domain[[1]], _Symbol], domain[[1]], defaultXLabel], 
+				StringForm[eigenFuncProbLabel, n]
+			},
 			LegendLabel -> StringForm[eigenFuncPhaseLabel, n],
 			PlotRange -> All,
 			PlotLabel -> StringForm[eigenValueLabel, n, eigvals[[n+1]]]
 		],
-		{{n, 0, "mode"}, 0, Length[eigfuncs]-1, 1},
+		{{n, 0, defaultModeLabel}, 0, Length[eigfuncs]-1, 1},
 		
 		(* apply over-riding user Manipulate options *)
 		Evaluate[Sequence @@ FilterRules[{options}, Options[Manipulate]]],
@@ -924,7 +1049,7 @@ PlotSpectrum[
 
 (* passing a grid and a pre-computed eigensystem *)
 PlotSpectrum[
-	grid:{xL_?realNumQ, ___?realNumQ, xR_?realNumQ},
+	grid:{x___Symbol, xL_?realNumQ, ___?realNumQ, xR_?realNumQ},
 	eigvals_List,   
 	eigfuncs_List,
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
@@ -933,7 +1058,7 @@ PlotSpectrum[
 	Length[eigvals] === Length[eigfuncs] &&
 	isValid1DPotentialOptions[options, {xL, xR}]
 ) :=
-	PlotSpectrum[{xL, xR}, eigvals, eigfuncs, options]    (* will handle invalid option errors *)
+	PlotSpectrum[{x, xL, xR}, eigvals, eigfuncs, options]    (* inner call will handle invalid option errors *)
 
 (* passing a grid and a pre-computed eigensystem in a vector; e..g output of EigenSystem *)
 PlotSpectrum[
@@ -948,7 +1073,7 @@ PlotSpectrum[
 	Length[eigvals] === Length[eigfuncs] &&
 	isValid1DPotentialOptions[options, {xL, xR}]
 ) :=
-	PlotSpectrum[domainOrGrid, eigvals, eigfuncs, options]    (* will handle invalid option errors *)
+	PlotSpectrum[domainOrGrid, eigvals, eigfuncs, options]    (* inner call will handle invalid option errors *)
 	
 (* passing a potential, to have the eigensystem computed then plotted *)
 PlotSpectrum[
@@ -966,11 +1091,16 @@ PlotSpectrum[
 		OptionValue[{}];
 			
 		(* compute the eigenmodes *)
-		eigsys = 
-			GetEigenmodes[
-				potential, domain, 
-				Evaluate @ FilterRules[{options}, Options[GetEigenmodes]]
-			];
+		eigsys = GetEigenmodes[
+			potential, domain, 
+			Evaluate @ FilterRules[{options}, Options[GetEigenmodes]]
+		];
+		
+		(* if domain contained a symbol, inject it back into eigsys' grid (for x labeling) *)
+		If[
+			MatchQ[domain[[1]], _Symbol],
+			PrependTo[eigsys[[1]], domain[[1]]]
+		];
 			
 		(* plot vectorised system *)
 		PlotSpectrum[
@@ -991,8 +1121,58 @@ PlotSpectrum[
 		]
 	]
 	
+	
+	
+	
 (* 
 	2D
 *)
+
+(* passing a domain and a pre-computed eigensystem *)
+PlotSpectrum[
+	xDomain_?domainOptSymbQ,
+	yDomain_?domainOptSymbQ,
+	eigvals_List,            (* eigvals don't actually need to be numbers! *)
+	eigfuncs_List,
+	options:OptionsPattern[{plotOptionFunctions2D, Manipulate} // Flatten]
+] /; (
+	VectorQ[eigfuncs, (isValid2DInput[#, xDomain, yDomain]&)] &&
+	Length[eigvals] === Length[eigfuncs] &&
+	isValid2DPotentialOptions[options, xDomain, yDomain]
+) := (
+	(* fires a single error when invalid options are passed *)
+	OptionValue[{}];
+
+	(* calls PlotWavefunction on the nth eigenfunction *)
+	Manipulate[
+		PlotWavefunction[
+			eigfuncs[[n+1]],
+			xDomain,
+			yDomain,
+			
+			(* apply over-riding user plot-options *)
+			Evaluate[Sequence @@ FilterRules[{options}, Options /@ plotOptionFunctions2D]],
+			
+			(* otherwise apply this default style *)
+			AxesLabel -> {
+				(* use domain symbol or default string for xlabel *)
+				If[MatchQ[xDomain[[1]], _Symbol], xDomain[[1]], defaultXLabel], 
+				If[MatchQ[yDomain[[1]], _Symbol], yDomain[[1]], defaultYLabel], 
+				StringForm[eigenFuncProbLabel, n]
+			},
+			LegendLabel -> StringForm[eigenFuncPhaseLabel, n],
+			PlotRange -> All,
+			PlotLabel -> StringForm[eigenValueLabel, n, eigvals[[n+1]]]
+		],
+		{{n, 0, defaultModeLabel}, 0, Length[eigfuncs]-1, 1},
+		
+		(* apply over-riding user Manipulate options *)
+		Evaluate[Sequence @@ FilterRules[{options}, Options[Manipulate]]],
+		
+		(* otherwise apply this default style *)
+		Paneled -> False
+	]
+)
+
 
 

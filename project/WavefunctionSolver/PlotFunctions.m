@@ -4,11 +4,14 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+	
+	- pass a (non-uniform?) grid instead of domain
+		(in 2D, accept 1D list of {x, y} tuples and an equal-length 1D list of wavefunc values?  Accept this for potential too)
+	
 	- vertical label should include V if it's passed!!!! 
 	- will this always correctly handle xL and xR swapped? (xL > xR)
 	- "Ticks" and "TickLabels" aren't captured by BarLegend options, so can't be passed to PlotWavefunction. How can we fix this?
 	- non-square domain in Plot3D causes non-uniform axis scaling; should we fix by default?
-	- should this paclet have a function for time-caching/animating any wavefunction (w. time) function?
 *)
 
 (* 
@@ -752,11 +755,10 @@ PlotWavefunction[
 		Evaluate @ extractOptions[options, optionFunctions1D],
 		
 		(* unless AxesLabel already user-given, label the axes with the passed symbol (if passed) *)
-		Sequence @@ If[
-			Length[domain] === 3,
-			{AxesLabel -> {domain[[1]], defaultProbDensityLabel}},
-			{}
-		]
+		AxesLabel -> {
+			If[Length[domain] === 3, domain[[1]], defaultXLabel],
+			defaultProbDensityLabel
+		}
 	]
 	
 PlotWavefunction[
@@ -779,12 +781,12 @@ PlotWavefunction[
 		(* silently remove unknown options to avoid repeated alerts *)
 		Evaluate @ extractOptions[options, optionFunctions2D],
 		
-		(* unless AxesLabel already user-given, label the axes with the passed symbol (if passed) *)
-		Sequence @@ If[
-			Length[xDomain] === Length[yDomain] === 3,
-			{AxesLabel -> {xDomain[[1]], yDomain[[1]], defaultProbDensityLabel}},
-			{}
-		]
+		(* unless AxesLabel already user-given in options, label the axes with the passed symbols (if passed) *)
+		AxesLabel -> {
+			If[Length[xDomain] === 3, xDomain[[1]], defaultXLabel],
+			If[Length[yDomain] === 3, yDomain[[1]], defaultYLabel],
+			defaultProbDensityLabel
+		}
 	]
 
 

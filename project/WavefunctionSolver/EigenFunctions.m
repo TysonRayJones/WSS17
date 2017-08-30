@@ -126,7 +126,8 @@ extractOptionsFromDefaults = WavefunctionSolver`PlotFunctions`PackagePrivate`ext
 
 (* CONSTANTS *)
 
-defaultNumPoints = 10^4 + 1;    (* odd for pleasant grid spacing *)
+default1DNumPoints = 10^4 + 1;    (* odd for pleasant grid spacing *)
+default2DNumPoints = 10^2 + 1;    (* in x and y, independently *)
 eigenValueLabel = "\!\(\*SubscriptBox[\(E\), \(`1`\)]\) = `2`";
 eigenFuncProbLabel = "|\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\)\!\(\*SuperscriptBox[\(|\), \(2\)]\)";
 eigenFuncPhaseLabel = "phase(\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\))";
@@ -156,7 +157,7 @@ func2DQ[Except[(_Function|_InterpolatingFunction)]] :=
 
 (*
 	returns a numerical grid {x1, x2, ... x_numPoints} and the potential sampled on those grid-points.
-	numPoints = Automatic will use the length of list inputs, and defaultNumPoints for other inputs
+	numPoints = Automatic will use the length of list inputs, and default1DNumPoints for other inputs
 *)
 
 (* functions *)
@@ -174,7 +175,7 @@ discretise1DPotential[
 	domain:_?domainOptSymbQ,
 	Automatic
 ] :=
-	discretise1DPotential[potential, domain, defaultNumPoints]
+	discretise1DPotential[potential, domain, default1DNumPoints]
 
 (* vectors *)
 discretise1DPotential[
@@ -211,7 +212,7 @@ discretise1DPotential[
 	domain:_?domainOptSymbQ,
 	Automatic
 ] :=
-	discretise1DPotential[potential, domain, defaultNumPoints]
+	discretise1DPotential[potential, domain, default1DNumPoints]
 	
 (* symbolic expressions *)
 discretise1DPotential[
@@ -228,13 +229,112 @@ discretise1DPotential[
 	domain:_?domainSymbQ,
 	Automatic
 ] :=
-	discretise1DPotential[potential, domain, defaultNumPoints]
+	discretise1DPotential[potential, domain, default1DNumPoints]
+
+(* 2D *)
+
+(* functions *)
+discretise2DPotential[
+	potential:_?func2DQ,
+	xDomain:{___Symbol, xL_?realNumQ, xR_?realNumQ},
+	yDomain:{___Symbol, yL_?realNumQ, yR_?realNumQ},
+	numXPoints:_Integer,
+	numYPoints:_Integer
+] :=
+	Module[
+		{xPoints, yPoints, xyTuples, potentialValues},
+		xPoints = Array[Identity, numXPoints, {xL, xR}];       (* flat list of x values *)
+		yPoints = Array[Identity, numYPoints, {yL, yR}];       (* flat list of y values *)
+		xyTuples = Flatten[Outer[List, xPoints, yPoints], 1];  (* flat list of {x, y} tuples *)
+		potentialValues = (potential @@ # &) /@ xyTuples;     (* flat list of potential values at {x, y} tuples *)
+		
+		(* returns *)
+		{xPoints, yPoints, xyTuples, potentialValues}
+	]
+discretise2DPotential[
+	potential:_?func2DQ,
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	numXPoints:Automatic,
+	numYPoints:(_Integer|Automatic)
+] :=
+	discretise2DPotential[potential, xDomain, yDomain, default2DNumPoints, numYPoints]
+discretise2DPotential[
+	potential:_?func2DQ,
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	numXPoints:(_Integer|Automatic),
+	numYPoints:Automatic
+] :=
+	discretise2DPotential[potential, xDomain, yDomain, numXPoints, default2DNumPoints]
+
+(* matrices *)
+discretise2DPotential[
+	potential_/;MatrixQ[potential, NumericQ],
+	xDomain:{___Symbol, xL_?realNumQ, xR_?realNumQ},
+	yDomain:{___Symbol, yL_?realNumQ, yR_?realNumQ},
+	numXPoints:_Integer,
+	numYPoints:_Integer
+] :=
+	discretise2DPotential[
+		ListInterpolation[potential, {{xL, xR}, {yL, yR}}],
+		xDomain, yDomain, numXPoints, numYPoints
+	]
+discretise2DPotential[
+	potential_/;MatrixQ[potential, NumericQ],
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	numXPoints:Automatic,
+	numYPoints:(_Integer|Automatic)
+] :=
+	discretise2DPotential[
+		potential, xDomain, yDomain,
+		Dimensions[potential][[2]],
+		numYPoints
+	]
+discretise2DPotential[
+	potential_/;MatrixQ[potential, NumericQ],
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	numXPoints:(_Integer|Automatic),
+	numYPoints:Automatic
+] :=
+	discretise2DPotential[
+		potential, xDomain, yDomain,
+		numXPoints,
+		Dimensions[potential][[1]]
+	]
 	
+(* constants *)
+discretise2DPotential[
+	potential_?NumericQ,
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	numXPoints:(_Integer|Automatic),
+	numYPoints:(_Integer|Automatic)
+] :=
+	discretise2DPotential[
+		(potential &),
+		xDomain, yDomain, numXPoints, numYPoints
+	]
 	
+(* symbolic expressions *)
+discretise2DPotential[
+	potential_,
+	xDomain:{x_Symbol, _?realNumQ, _?realNumQ},
+	yDomain:{y_Symbol, _?realNumQ, _?realNumQ},
+	numXPoints:(_Integer|Automatic),
+	numYPoints:(_Integer|Automatic)
+] :=
+	discretise2DPotential[
+		Function @@ {{x, y}, potential},
+		xDomain, yDomain, numXPoints, numYPoints
+	]
 	
 (* 
 	functions for building matrix operators
 *)
+(* 1D *)
 
 get1DLaplacianMatrix[
 	grid_/;VectorQ[grid, realNumQ]
@@ -285,15 +385,133 @@ get1DGridAndHamiltonian[
 		{grid, get1DHamiltonianMatrix[grid, potentialVector]}
 	]
 	
+(* 2D *)
+get2DLaplacianMatrix[   (* via kronecker sum *)
+	xPoints_/;VectorQ[xPoints, realNumQ],
+	yPoints_/;VectorQ[yPoints, realNumQ]
+] :=
+	KroneckerProduct[
+		get1DLaplacianMatrix[xPoints],
+		IdentityMatrix @ Length[yPoints]
+	] + 
+	KroneckerProduct[
+		IdentityMatrix @ Length[xPoints], 
+		get1DLaplacianMatrix[yPoints]
+	]
+
+get2DKineticEnergyMatrix[
+	xPoints_/;VectorQ[xPoints, realNumQ],
+	yPoints_/;VectorQ[yPoints, realNumQ]
+] :=
+	-(1/2) get2DLaplacianMatrix[xPoints, yPoints]
+
+get2DPotentialMatrix[
+	potentialVector_/;VectorQ[potentialVector, NumericQ]
+] :=
+	get1DPotentialMatrix[potentialVector]
 	
+get2DHamiltonianMatrix[
+	xPoints_/;VectorQ[xPoints, realNumQ],
+	yPoints_/;VectorQ[yPoints, realNumQ],
+	potentialVector_/;VectorQ[potentialVector, NumericQ]
+] :=
+	get2DKineticEnergyMatrix[xPoints, yPoints] + 
+	get2DPotentialMatrix[potentialVector]	
+
+get2DGridAndHamiltonian[
+	potential:_,                      (* has passed isValid2DInput *)
+	xDomain:{x_Symbol, _?realNumQ, _?realNumQ},
+	yDomain:{y_Symbol, _?realNumQ, _?realNumQ},
+	numXPoints:(_Integer|Automatic),
+	numYPoints:(_Integer|Automatic)
+] :=
+	Module[
+		{xPoints, yPoints, xyTuples, potentialVector},
+		{xPoints, yPoints, xyTuples, potentialVector} = 
+			discretise2DPotential[potential, xDomain, yDomain, numXPoints, numYPoints];
+			
+		(* return *)
+		{xyTuples, get2DHamiltonianMatrix[xPoints, yPoints, potentialVector]}
+	]
+
+
+(* 1D and 2D *)
+getGridAndHamiltonian[
+	potential:_,                      (* has passed isValid1DInput *)
+	domain:_?domainOptSymbQ,
+	numPoints:(_Integer|Automatic)
+] :=
+	get1DGridAndHamiltonian[potential, domain, numPoints]
+getGridAndHamiltonian[
+	potential:_,                      (* has passed isValid2DInput *)
+	xDomain:{x_Symbol, _?realNumQ, _?realNumQ},
+	yDomain:{y_Symbol, _?realNumQ, _?realNumQ},
+	numXPoints:(_Integer|Automatic),
+	numYPoints:(_Integer|Automatic)
+] :=
+	get2DGridAndHamiltonian[potential, xDomain, yDomain, numXPoints, numYPoints]
+
+
+
+(* 1D and 2D *)
+
+getEigenmodes[
+	potential_,
+	domains:Repeated[_?domainOptSymbQ, {1, 2}],       
+	numPoints:Repeated[(_Integer|Automatic), {1, 2}], 
+	numModes:_Integer,
+	normalise:(True|False),    (* whether to L2 normalise eigenfunctions *)
+	interpolate:(True|False)   (* whether to interpolate eigenfunctions vectors to InterpolatingFunctions *)
+] /; (
+	Length[{domains}] === Length[{numPoints}]  (* eliminates numPoints|numModes ambiguity *)
+) :=
+	Module[
+		{grid, hamiltonian, eigvals, eigfuncs},
+			
+		(* get grid vector and hamiltonian matrix *)
+		{grid, hamiltonian} = N @ getGridAndHamiltonian[
+			potential, 
+			Evaluate @ domains, 
+			Evaluate @ numPoints
+		];
+		
+		(* diagonalise hamiltonian *)
+		{eigvals, eigfuncs} = Eigensystem[hamiltonian, -numModes];
+		
+		(* sort eigenfunctions by increasing eigenvalue *)
+		{eigvals, eigfuncs} = {eigvals[[#]], eigfuncs[[#]]}& @ Ordering[eigvals];
+		
+		(* optionally L2-normalise eigenfunctions *)
+		{eigvals, eigfuncs} = If[
+			normalise,
+			{eigvals, NormalizeWavefunction[#, Evaluate @ domains]& /@ eigfuncs},
+			{eigvals, eigfuncs}
+		];
+		
+		(* optionally interpolate eigenfunctions *)
+		{eigvals, eigfuncs} = If[
+			interpolate,
+			{eigvals, convertToFunction[#, Evaluate @ domains]& /@ eigfuncs},
+			{eigvals, eigfuncs}
+		];
+		
+		(* return *)
+		{grid, eigvals, eigfuncs}
+	]
+
+
+
+
 	
+
+
 
 
 (* PUBLIC FUNCTION DEFINITIONS *)
 
 Options[GetEigenmodes] = {
 	NumberOfModes -> 10,
-	NumberOfPoints -> Automatic,
+	NumberOfPoints -> Automatic,  (* this can additionally be a {x, y} tuple in 2D *)
 	AutoNormalize -> True,
 	OutputAsFunctions -> False
 };
@@ -309,9 +527,7 @@ GetEigenmodes[
 	isValid1DInput[potential, domain]
 ) :=
 	Module[
-		{  (* local vars *)
-			grid, hamiltonian, eigvals, eigfuncs, 
-			
+		{
 			(* extracted options *)
 			numPoints, numModes, autoNorm, outputAsFuncs
 		},
@@ -328,9 +544,9 @@ GetEigenmodes[
 				Message[
 					GetEigenmodes::numPointsLessThanTwoError, 
 					numPoints, 
-					defaultNumPoints
+					default1DNumPoints
 				];
-				defaultNumPoints
+				default1DNumPoints
 			),
 			numPoints
 		];		
@@ -343,38 +559,14 @@ GetEigenmodes[
 					GetEigenmodes::numPointsLessThanNumModesError, 
 					numPoints, 
 					Abs[numModes], 
-					Max[defaultNumPoints, numModes]
+					Max[default1DNumPoints, numModes]
 				];
-				Max[defaultNumPoints, numModes]
+				Max[default1DNumPoints, numModes]
 			),
 			numPoints
 		];	
 		
-		(* get grid vector and hamiltonian matrix *)
-		{grid, hamiltonian} = N @ get1DGridAndHamiltonian[potential, domain, numPoints];
-		
-		(* diagonalise hamiltonian *)
-		{eigvals, eigfuncs} = Eigensystem[hamiltonian, -numModes];
-		
-		(* sort eigenfunctions by increasing eigenvalue *)
-		{eigvals, eigfuncs} = {eigvals[[#]], eigfuncs[[#]]}& @ Ordering[eigvals];
-		
-		(* optionally L2-normalise eigenfunctions *)
-		{eigvals, eigfuncs} = If[
-			autoNorm,
-			{eigvals, NormalizeWavefunction[#, grid]& /@ eigfuncs},
-			{eigvals, eigfuncs}
-		];
-		
-		(* optionally interpolate eigenfunctions *)
-		{eigvals, eigfuncs} = If[
-			outputAsFuncs,
-			{eigvals, convertToFunction[#, domain]& /@ eigfuncs},
-			{eigvals, eigfuncs}
-		];
-		
-		(* return *)
-		{grid, eigvals, eigfuncs}
+		getEigenmodes[potential, domain, numPoints, numModes, autoNorm, outputAsFuncs]
 	]
 	
 	
@@ -387,6 +579,13 @@ GetEigenmodes[
 (*
 	1D
 *)
+
+
+(****************** HMMMMMMMMMMMMMM THIS MATCHES MATRICES WTH ***********************)
+symbolicQ := 
+	MatchQ @ Except[_?NumericQ|_?(VectorQ[#, NumericQ]&)|_?(MatrixQ[#, NumericQ]&)|_?func1DQ|_?func2DQ];
+	
+	
 
 (* constants *)
 NormalizeWavefunction[
@@ -448,7 +647,7 @@ NormalizeWavefunction[
 			Abs[wavefuncFunc[x]]^2, {x, xL, xR}, 
 			Method -> {Automatic, "SymbolicProcessing" -> 0}
 		]},
-		(wavefuncFunc[#]/Sqrt[norm] &)
+		Sqrt[norm] // Function[{n}, (wavefuncFunc[#]/n&)]
 	]
 
 NormalizeWavefunction[
@@ -457,7 +656,7 @@ NormalizeWavefunction[
 ] :=
 	With[
 		{norm = (grid[[2]] - grid[[1]]) Total[Abs[ wavefuncFunc /@ grid ]^2]},
-		(wavefuncFunc[#]/Sqrt[norm] &)
+		Sqrt[norm] // Function[{n}, (wavefuncFunc[#]/n&)]
 	]
 	
 NormalizeWavefunction[
@@ -467,7 +666,7 @@ NormalizeWavefunction[
 	
 (* symbolic expression *)
 NormalizeWavefunction[
-	wavefuncSymbolic_,
+	wavefuncSymbolic_?symbolicQ,
 	domain:{_Symbol, (_?realNumQ|-\[Infinity]), (_?realNumQ|\[Infinity])}
 ] :=
 	With[
@@ -482,13 +681,13 @@ NormalizeWavefunction[
 	]
 	
 NormalizeWavefunction[
-	wavefuncSymbolic_,
+	wavefuncSymbolic:_?symbolicQ,
 	x_Symbol
 ] :=
 	NormalizeWavefunction[wavefuncSymbolic, {x, -\[Infinity], \[Infinity]}]
 
 NormalizeWavefunction[
-	wavefuncSymbolic_,
+	wavefuncSymbolic:_?symbolicQ,
 	{x_Symbol}
 ] :=
 	NormalizeWavefunction[wavefuncSymbolic, x]	
@@ -513,25 +712,20 @@ NormalizeWavefunction[
 	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
 ] :=
 	0
-	
-NormalizeWavefunction[
-	wavefuncConst_?NumericQ
-] :=
-	wavefuncConst
 
 (* matrix *)
 NormalizeWavefunction[
-	wavefuncMatrix_/;MatrixQ[wavefuncVector, NumericQ],           (* assumed 0 outside grid *) 
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],           (* assumed 0 outside grid *) 
 	xGridSpace_/;(realNumQ[xGridSpace] && Positive[xGridSpace]),
 	yGridSpace_/;(realNumQ[yGridSpace] && Positive[yGridSpace])
 ] :=
 	wavefuncMatrix / Sqrt[xGridSpace yGridSpace Total[Abs[wavefuncMatrix]^2, 2]]
 
 NormalizeWavefunction[
-	wavefuncMatrix_/;MatrixQ[wavefuncVector, NumericQ],           (* assumed 0 outside grid *)
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],           (* assumed 0 outside grid *)
 	gridSpace_/;(realNumQ[gridSpace] && Positive[gridSpace])
-] :=
-	wavefuncMatrix / Sqrt[gridSpace^2 Total[ Abs[wavefuncMatrix]^2 ]]	
+] := 
+	wavefuncMatrix / Sqrt[gridSpace^2 Total[Abs[wavefuncMatrix]^2, 2]]	
 	
 NormalizeWavefunction[
 	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],  
@@ -544,7 +738,7 @@ NormalizeWavefunction[
     NormalizeWavefunction[wavefuncMatrix, xGrid[[2]] - xGrid[[1]], yGrid[[2]] - yGrid[[1]]]
     
 NormalizeWavefunction[
-	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],   (
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ], 
 	grid_/;VectorQ[grid, realNumQ]
 ] /; (
 	Length[grid] === Dimensions[wavefuncMatrix][[1]] === Dimensions[wavefuncMatrix][[2]]
@@ -573,14 +767,20 @@ NormalizeWavefunction[
 	]
 	
 NormalizeWavefunction[
-	wavefuncMatrix_/;VectorQ[wavefuncMatrix, NumericQ],    
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],    
 	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])},
 	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
 ] :=
 	ConstantArray[0, Dimensions[wavefuncMatrix]]
 	
 NormalizeWavefunction[
-	wavefuncMatrix_/;VectorQ[wavefuncMatrix, NumericQ] 
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ],    
+	{___Symbol, (_?realNumQ|-\[Infinity]|\[Infinity]), (_?realNumQ|-\[Infinity]|\[Infinity])}
+] :=
+	ConstantArray[0, Dimensions[wavefuncMatrix]]
+	
+NormalizeWavefunction[
+	wavefuncMatrix_/;MatrixQ[wavefuncMatrix, NumericQ] 
 ] :=
 	NormalizeWavefunction[wavefuncMatrix, 1]
 	
@@ -597,7 +797,17 @@ NormalizeWavefunction[
 			{y, yL, yR},
 			Method -> {Automatic, "SymbolicProcessing" -> 0}
 		]},
-		(wavefuncFunc[#1, #2]/Sqrt[norm] &)
+		Sqrt[norm] // Function[{n}, (wavefuncFunc[#1, #2]/n &)]
+	]
+	
+NormalizeWavefunction[                         
+	wavefuncFunc_?func2DQ,                          (* converts InterpolatingFunction to Function *)
+	domain:{___Symbol, (_?realNumQ|-\[Infinity]), (_?realNumQ|\[Infinity])}
+] :=
+	NormalizeWavefunction[
+		wavefuncFunc,
+		domain,
+		domain
 	]
 
 NormalizeWavefunction[
@@ -605,21 +815,23 @@ NormalizeWavefunction[
 	xGrid:{xL_?realNumQ, ___?realNumQ, xR_?realNumQ},
 	yGrid:{yL_?realNumQ, ___?realNumQ, yR_?realNumQ}   
 ] :=
-	With[
-		{xSpacing = xGrid[[2]] - xGrid[[1]],
-		 ySpacing = yGrid[[2]] - yGrid[[1]],
-		 samples = (wavefuncFunc @@ # &) /@ Flatten[Outer[List, xGrid, yGrid], 1]},
-		(wavefuncFunc[#1, #2] / Sqrt[ xSpacing ySpacing Total[Abs[samples]^2] ]  &)
+	Module[
+		{xSpacing, ySpacing, samples, norm},
+		xSpacing = xGrid[[2]] - xGrid[[1]];
+		ySpacing = yGrid[[2]] - yGrid[[1]];
+		samples = (wavefuncFunc @@ # &) /@ Flatten[Outer[List, xGrid, yGrid], 1];
+		norm = N @ xSpacing ySpacing Total[Abs[samples]^2] ;
+		Sqrt[norm] // Function[{n}, (wavefuncFunc[#1, #2]/n &)]
 	]
 	
 NormalizeWavefunction[
 	wavefuncFunc:_?func2DQ,                          (* converts InterpolatingFunction to Function *)                      
 	grid:{xyL_?realNumQ, ___?realNumQ, xyR_?realNumQ}
 ] :=
-	With[
-		{xySpacing = grid[[2]] - grid[[1]],
-		 samples = (wavefuncFunc @@ # &) /@ Flatten[Outer[List, grid, grid], 1]},
-		(wavefuncFunc[#1, #2] / Sqrt[ xySpacing^2 Total[Abs[samples]^2] ]  &)
+	NormalizeWavefunction[
+		wavefuncFunc,
+		grid,
+		grid
 	]
 	
 NormalizeWavefunction[
@@ -629,7 +841,7 @@ NormalizeWavefunction[
 	
 (* symbolic expression *)
 NormalizeWavefunction[
-	wavefuncSymbolic_,
+	wavefuncSymbolic_?symbolicQ,
 	xDomain:{_Symbol, (_?realNumQ|-\[Infinity]), (_?realNumQ|\[Infinity])},
 	yDomain:{_Symbol, (_?realNumQ|-\[Infinity]), (_?realNumQ|\[Infinity])}
 ] :=
@@ -645,18 +857,21 @@ NormalizeWavefunction[
 	]
 	
 NormalizeWavefunction[
-	wavefuncSymbolic_,
+	wavefuncSymbolic:_?symbolicQ,
 	x_Symbol,
-	y_symbol
+	y_Symbol
 ] :=
 	NormalizeWavefunction[wavefuncSymbolic, {x, -\[Infinity], \[Infinity]}, {y, -\[Infinity], \[Infinity]}]
 
 NormalizeWavefunction[
-	wavefuncSymbolic_,
+	wavefuncSymbolic:_?symbolicQ,
 	{x_Symbol},
 	{y_Symbol}
 ] :=
 	NormalizeWavefunction[wavefuncSymbolic, x, y]	
+
+	
+	
 
 
 (*

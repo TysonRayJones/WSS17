@@ -5,6 +5,9 @@ Package["WavefunctionSolver`"]
 (*
 	TODO:
 	
+	- move all default options (except ColorFunction, sure) for plots to the outer PlotWavefunction function!
+		(they're dimension dipendent but we can supply ALL and filter for Plot vs Plot3D!, can't we? )
+	
 	- pass a (non-uniform?) grid instead of domain
 		(in 2D, accept 1D list of {x, y} tuples and an equal-length 1D list of wavefunc values?  Accept this for potential too)
 	
@@ -32,19 +35,19 @@ Package["WavefunctionSolver`"]
 (* SYMBOL EXPORTS *)
 
 PackageExport[Potential]
-Potential::usage = "Specify the external potential as a function/list/number/symbolic expression";
+Potential::usage = "Specify the external potential as a function/list/number/symbolic expression.";
 
 PackageExport[PotentialTransform]
-PotentialTransform::usage = "Specify a function by which to transform the external potential when plotting";
+PotentialTransform::usage = "Specify a function by which to transform the external potential when plotting.";
 
 PackageExport[PotentialPlotOptions]
-PotentialPlotOptions::usage = "Specify a list of Plot/Plot3D options to apply to the plot of the Potential";
+PotentialPlotOptions::usage = "Specify a list of Plot/Plot3D options to apply to the plot of the Potential.";
 
 PackageExport[ShowColorBar]
-ShowColorBar::usage = "Whether to display a phase-colorbar in the plot. Dynamic plots should set to False";
+ShowColorBar::usage = "Whether to display a phase-colorbar in the plot. Dynamic plots should set to False.";
 
 PackageExport[ColorScheme]
-ColorScheme::usage = "The name of the color scheme to use for the phase in wavefunction and colorbar plots";
+ColorScheme::usage = "The name of the color scheme to use for the phase in wavefunction and colorbar plots.";
 
 
 
@@ -53,16 +56,16 @@ ColorScheme::usage = "The name of the color scheme to use for the phase in wavef
 (* FUNCTION EXPORTS *)
 
 PackageExport[PlotWavefunction]
-PlotWavefunction::usage = "PlotWavefunction[wavef, {xL, xR}] plots a 1D functional/list/numerical wavefunction between xL and xR";
-PlotWavefunction::usage = "PlotWavefunction[wavef, {xL, xR}, {yL, yR}] plots a 2D functional/matrix/numerical wavefunction on x \[Element] [xL, xR], y \[Element] [yL, yR]";
-PlotWavefunction::usage = "PlotWavefunction[wavef, {x, xL, xR}] plots a 1D symbolic (in x) wavefunction between xL and xR";
-PlotWavefunction::usage = "PlotWavefunction[wavef, {x, xL, xR}, {y, yL, yR}] plots a 2D symbolic (in x and y) wavefunction on x \[Element] [xL, xR], y \[Element] [yL, yR]";
+PlotWavefunction::usage = "PlotWavefunction[wavef, {xL, xR}] plots a 1D functional/list/numerical wavefunction between xL and xR.
+PlotWavefunction[wavef, {xL, xR}, {yL, yR}] plots a 2D functional/matrix/numerical wavefunction on x \[Element] [xL, xR], y \[Element] [yL, yR].
+PlotWavefunction[wavef, {x, xL, xR}] plots a 1D symbolic (in x) wavefunction between xL and xR.
+PlotWavefunction[wavef, {x, xL, xR}, {y, yL, yR}] plots a 2D symbolic (in x and y) wavefunction on x \[Element] [xL, xR], y \[Element] [yL, yR].";
 
 PackageExport[PlotColorBar]
-PlotColorBar::usage = "PlotColorBar[] plots a colorbar from -\[Pi] to \[Pi], accepting a ColorScheme and all BarLegend option(s)"
+PlotColorBar::usage = "PlotColorBar[] plots a colorbar from -\[Pi] to \[Pi], accepting a ColorScheme and all BarLegend option(s)."
 
 PackageExport[AddColorBar]
-AddColorBar::usage = "AddColorBar[graphic] adds a colorbar legend to the graphic, accepting all PlotColorBar options"
+AddColorBar::usage = "AddColorBar[graphic] adds a colorbar legend to the graphic, accepting all PlotColorBar options."
 
 
 
@@ -122,6 +125,9 @@ isValid1DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ] :=
 	is1DFunction[func]
 isValid1DInput[_, _?domainOptSymbQ] := 
 	False
+	
+isValid1DPotential[potential_, domain:_?domainOptSymbQ] := 
+	potential === None || isValid1DInput[potential, domain]
 
 
 
@@ -135,9 +141,6 @@ isValid2DInput[func:(_Function|_InterpolatingFunction), _?domainOptSymbQ, _?doma
 	is2DFunction[func]
 isValid2DInput[_, _?domainOptSymbQ, _?domainOptSymbQ] :=
 	False
-	
-isValid1DPotential[potential_, domain_?domainOptSymbQ] := 
-	potential === None || isValid1DInput[potential, domain]
 	
 isValid2DPotential[potential_, domain1_?domainOptSymbQ, domain2_?domainOptSymbQ] := 
 	potential === None || isValid2DInput[potential, domain1, domain2]
@@ -159,11 +162,11 @@ isValidPotentialTransform[transform:(_Function|_InterpolatingFunction)] :=
 *)
 isValid1DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction], 
-	endpoints:_?domainQ
+	domain:_?domainQ
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
-		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], endpoints]
+		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain]
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
 		isValidPotentialTransform[First @ Cases[{options}, (PotentialTransform -> tran_) -> tran]]
@@ -171,12 +174,12 @@ isValid1DPotentialOptions[
 	
 isValid1DPotentialOptions[
 	options:OptionsPattern[PlotWavefunction], 
-	domain:_?domainSymbQ
+	domainSymb:{_Symbol, xL_?NumericQ, xR_?NumericQ}
 ] :=
 	(
 		Not[MemberQ[{options}, Potential -> _]] || 
-		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain[[2;;]]] ||
-		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domain]
+		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], {xL, xR}] ||
+		isValid1DPotential[First @ Cases[{options}, (Potential -> pot_) -> pot], domainSymb]
 	) && (
 		Not[MemberQ[{options}, PotentialTransform -> _]] || 
 		isValidPotentialTransform[First @ Cases[{options}, (PotentialTransform -> tran_) -> tran]]
@@ -278,10 +281,10 @@ convertToFunction[
 
 
 (*
-	extracts end-points from any domain format
+	extracts end-points from any domain format (including grids)
 *)
 convertToEndPoints[
-	{___Symbol, xL_?realNumQ, xR_?realNumQ}
+	{___Symbol, xL_?realNumQ, ___?realNumQ, xR_?realNumQ}
 ] := 
 	{xL, xR}
 	
@@ -575,7 +578,15 @@ plot1DPotential[
 		PlotRange -> range,
 		Exclusions -> None,
 		Filling -> Axis,
-		PlotStyle -> {Thick, Red}
+		PlotStyle -> {Thick, Red},
+		
+		(* apply PlotPoints option to the potential, if passed to prob density *)
+		Evaluate[Sequence @@ If[
+			MemberQ[{options}, PlotPoints -> _] ||
+			MemberQ[{options}, PlotPoints :> _],
+			{PlotPoints :> OptionValue[optionFunctions1D, {options}, PlotPoints]},
+			{}
+		]]
 	]
 
 
@@ -617,7 +628,15 @@ plot2DPotential[
 		Exclusions -> None,
 		PlotStyle -> {{Opacity[.3], Red}},
 		Mesh -> 5,
-		MeshStyle -> {{Red}}
+		MeshStyle -> {{Red}},
+		
+		(* apply PlotPoints option to the potential, if passed to prob density *)
+		Evaluate[Sequence @@ If[
+			MemberQ[{options}, PlotPoints -> _] ||
+			MemberQ[{options}, PlotPoints :> _],
+			{PlotPoints :> OptionValue[optionFunctions2D, {options}, PlotPoints]},
+			{}
+		]]
 	]
 
 

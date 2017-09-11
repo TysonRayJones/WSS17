@@ -4,12 +4,15 @@ Package["WavefunctionSolver`"]
 
 (*
 	TODO:
+	
+	- user specify (as options) number of points / grid-spacing in each dimension in 2D
+	- allow AxesLabel \[Rule] option to contain 1D Functions of the quantum number
 		
 	- adding timing / loadbar stuff (use EchoFunction)
-	- user specify (as options) number of points / grid-spacing in each dimension in 2D
+	
 	- fix awful private imports
 	- non-abs-squared plots for real station states?
-	- 2D stationary state finding (GetEigenmodes)
+	- 2D stationary state finding (GetSpectrum)
 	- plotting 2D spectra 
 	  hmmm will we need two manipulate variables for two quantum numbers? We'd have to ascertain energy degeneracy ourselves!
 	  NAH!
@@ -25,7 +28,6 @@ Package["WavefunctionSolver`"]
 	  so (maybe confusingly) would match calls with strange/irrelevant intra-grid values. Fix this?
 	- overload functions with British vs American english spelling (s vs z)
 	- user specify order of finite difference in laplacian operator (make general laplacian matrix construction
-	- warnings for too few NumberOfPoints
 	- error on negative NumberOfPoints or NumberOfModes
 	- make numerical methods (e.g. matrix generation) public? add a discretise method which can also discretise a wavefunction?
 	- make public functions for converting types (e.g. list to function, symbolic to list, etc)?
@@ -42,16 +44,16 @@ Package["WavefunctionSolver`"]
 (* SYMBOL EXPORTS *)
 
 PackageExport[NumberOfModes]
-NumberOfModes::usage = "Specifies how many modes GetEigenmodes[] should return (must be smaller than NumberOfPoints)";
+NumberOfModes::usage = "Specifies how many modes GetSpectrum[] should return (must be smaller than NumberOfPoints)";
 
 PackageExport[NumberOfPoints]
-NumberOfPoints::usage = "Specifies how many points on which GetEigenmodes should discretise the hamiltonian. An odd number larger than one-thousand is reccommended";
+NumberOfPoints::usage = "Specifies how many points on which GetSpectrum should discretise the hamiltonian. An odd number larger than one-thousand is reccommended";
 
 PackageExport[AutoNormalize]
-AutoNormalize::usage = "Specifies whether to L2-normalize the eigenvectors returned by GetEigenmodes";
+AutoNormalize::usage = "Specifies whether to L2-normalize the eigenvectors returned by GetSpectrum";
 
 PackageExport[OutputAsFunctions]
-OutputAsFunctions::usage = "Specifies whether to convert the eigenfunction vectors from GetEigenmodes to InterpolatingFunctions"
+OutputAsFunctions::usage = "Specifies whether to convert the eigenfunction vectors from GetSpectrum to InterpolatingFunctions"
 
 
 
@@ -59,7 +61,7 @@ OutputAsFunctions::usage = "Specifies whether to convert the eigenfunction vecto
 
 (* FUNCTION EXPORTS *)
 
-PackageExport[GetEigenmodes]
+PackageExport[GetSpectrum]
 PackageExport[PlotSpectrum]
 PackageExport[NormalizeWavefunction]
 
@@ -69,24 +71,45 @@ PackageExport[NormalizeWavefunction]
 
 (* FUNCTION USAGE MESSAGES *)
 
-GetEigenmodes::usage = "GetEigenmodes[potential, domain] returns the family of {eigenvalues, eigenfunctions} of the hamiltonian associated with the given potential, superposed with an infinite potential well";
+GetSpectrum::usage = "GetSpectrum[potential, domain] returns the family of {eigenvalues, eigenfunctions} of the hamiltonian associated with the given 1D potential, superposed with an infinite potential well.
+GetSpectrum[potential, xDomain, yDomain] returns the family of {eigenvalues, eigenfunctions} of the hamiltonian associated with the given 2D potential, superposed with an infinite potential well.";
 
-PlotSpectrum::usage = "PlotSpectrum[potential, domain] calculates and plots the single-particle energy-eigenfunctions of the given potential";
-PlotSpectrum::usage = "PlotSpectrum[domain/grid, eigvals, eigfuncs] plots the given eigensystem";
-PlotSpectrum::usage = "PlotSpectrum[{domain/grid, eigvals, eigfuncs}] plots the given eigensystem";
+PlotSpectrum::usage = "PlotSpectrum[potential, domain] calculates and plots the single-particle energy-eigenfunctions of the given 1D potential.
+PlotSpectrum[domain/grid, eigvals, eigfuncs] plots the given 1D eigensystem.
+PlotSpectrum[{domain/grid, eigvals, eigfuncs}] plots the given 1D eigensystem.
+PlotSpectrum[potential, xDomain, yDomain] calculates and plots the single-particle energy-eigenfunctions of the given 2D potential.
+PlotSpectrum[xDomain, yDomain, eigvals, eigfuncs] plots the given 2D eigensystem.
+PlotSpectrum[gridTensor, eigvals, eigfuncs] plots the given 2D eigensystem specified on the gridTensor of dimensions numXPoints * numYPoints * 2 (a matrix of tuple coordinates).
+PlotSpectrum[{gridTensor, eigvals, eigfuncs}] plots the given 2D eigensystem specified on the gridTensor of dimensions numXPoints * numYPoints * 2 (a matrix of tuple coordinates).";
 
-NormalizeWavefunction::usage = "NormalizeWavefunction[const, domain] L2 algebraically normalises a constant wavefunction assumed zero outside of domain, returning a constant";
-NormalizeWavefunction::usage = "NormalizeWavefunction[const] returns const, as if the wavefunction vanishes from const outside [0, 1]";
-NormalizeWavefunction::usage = "NormalizeWavefunction[vector, gridspace] L2 normalises (by Riemann integration) a vectorised wavefunction, with values separated by distance gridspace, returning a vector";
-NormalizeWavefunction::usage = "NormalizeWavefunction[vector, grid] L2 normalises (by Riemann integration) a vectorised wavefunction defined on a given grid vector, returning a vector";
-NormalizeWavefunction::usage = "NormalizeWavefunction[vector, domain] L2 normalises (by Riemann integration) a vectorised wavefunction defined across the given domain, returning a vector";
-NormalizeWavefunction::usage = "NormalizeWavefunction[vector] L2 normalises (by Riemann integration) assuming a grid-spacing of 1, and that the wavefunction vanishes outside [0, Length[vector]]";
-NormalizeWavefunction::usage = "NormalizeWavefunction[function, domain] numerically L2 normalises a Function/Interpolating function across the given domain, returning a function";
-NormalizeWavefunction::Usage = "NormalizeWavefunction[function, grid] L2 normalises a Function/Interpolating function by first sampling it on the given grid, then Riemann-integrates. Returns a function";
-NormalizeWavefunction::usage = "NormalizeWavefunction[function] numerically L2 normalises the function on [-\[Infinity], \[Infinity]]";
-NormalizeWavefunction::usage = "NormalizeWavefunction[symb, {x, xL, xR}] symbolically L2 normalises a symbolic expression on x \[Element] [xL, xR] (assuming the wavefunction vanishes outside)";
-NormalizeWavefunction::usage = "NormalizeWavefunction[symb, x] symbolically L2 normalises a symbolic expression on x \[Element] (-\[Infinity], \[Infinity])";
-NormalizeWavefunction::usage = "NormalizeWavefunction[symb, {x}] symbolically L2 normalises a symbolic expression on x \[Element] (-\[Infinity], \[Infinity])";
+NormalizeWavefunction::usage = "NormalizeWavefunction[const, domain] L2 algebraically normalises a 1D constant wavefunction assumed zero outside of domain, returning a constant.
+NormalizeWavefunction[const] returns const, as if the wavefunction vanishes from const outside [0, 1] or [0,1]^2.
+NormalizeWavefunction[vector, gridspace] L2 normalises (by Riemann integration) a 1D vectorised wavefunction, with values separated by distance gridspace, returning a vector.
+NormalizeWavefunction[vector, grid] L2 normalises (by Riemann integration) a 1D vectorised wavefunction defined on a given grid vector, returning a vector.
+NormalizeWavefunction[vector, domain] L2 normalises (by Riemann integration) a 1D vectorised wavefunction defined across the given domain, returning a vector.
+NormalizeWavefunction[vector] L2 normalises (by Riemann integration) assuming a grid-spacing of 1, and that the 1D wavefunction vanishes outside [0, Length[vector]].
+NormalizeWavefunction[function, domain] numerically L2 normalises a 1D Function/Interpolating function across the given domain, returning a function.
+NormalizeWavefunction[function, grid] L2 normalises a 1D Function/Interpolating function by first sampling it on the given grid, then Riemann-integrates. Returns a function.
+NormalizeWavefunction[function] numerically L2 normalises a 1D function on (-\[Infinity], \[Infinity]).
+NormalizeWavefunction[symb, {x, xL, xR}] symbolically L2 normalises a 1D symbolic expression on x \[Element] [xL, xR] (assuming the wavefunction vanishes outside).
+NormalizeWavefunction[symb, x] symbolically L2 normalises a 1D symbolic expression on x \[Element] (-\[Infinity], \[Infinity]).
+NormalizeWavefunction[symb, {x}] symbolically L2 normalises a 1D symbolic expression on x \[Element] (-\[Infinity], \[Infinity]).
+NormalizeWavefunction[const, xDomain, yDomain] L2 algebraically normalises a 2D constant wavefunction assumed zero outside of domain, returning a constant.
+NormalizeWavefunction[matrix, xGridspace, yGridspace] L2 normalises (by Riemann integration) a 2D matrix wavefunction, with values separated by different gridspaces in the x and y directions, returning a matrix.
+NormalizeWavefunction[matrix, gridspace] L2 normalises (by Riemann integration) a 2D matrix wavefunction, with values separated by gridspace in both the x and y directions, returning a matrix.
+NormalizeWavefunction[matrix, xGrid, yGrid] L2 normalises (by Riemann integration) a 2D matrix wavefunction defined on the given grid vectors, returning a matrix.
+NormalizeWavefunction[matrix, grid] L2 normalises (by Riemann integration) a 2D matrix wavefunction defined on the given grid vector in both the x and y directions, returning a matrix.
+NormalizeWavefunction[matrix, xDomain, yDomain] L2 normalises a 2D matrix wavefunction assumed zero outside of given domains, returning a matrix.
+NormalizeWavefunction[matrix, domain] L2 normalises a 2D matrix wavefunction assumed zero outside of given domain, assumed to apply to both x and y directions, returning a matrix.
+NormalizeWavefunction[matrix] L2 normalises (by Riemann integration) assuming a grid-spacing of 1, and that the 2D wavefunction vanishes outside the implied {x, y} \[Element] Dimensions[matrix] domain.
+NormalizeWavefunction[function, xDomain, yDomain] numerically L2 normalises a 2D Function/Interpolating function across the given domains, returning a function.
+NormalizeWavefunction[function, domain] numerically L2 normalises a 2D Function/Interpolating function across the given domains, assumed to apply in both x and y directions, returning a function.
+NormalizeWavefunction[function, xGrid, yGrid] L2 normalises a 2D Function/Interpolating function by first sampling it on an interlacing of the passed grids, then Riemann-integrates. Returns a function.
+NormalizeWavefunction[function, grid] L2 normalises a 2D Function/Interpolating function by first sampling it on a 2D grid (symmetric in x and y) then Riemann-integrates. Returns a function.
+NormalizeWavefunction[function] numerically L2 normalises the 2D function on x:(-\[Infinity], \[Infinity]), y:(-\[Infinity], \[Infinity]).
+NormalizeWavefunction[symb, {x, xL, xR}, {y, yL, yR}] symbolically L2 normalises a 2D symbolic expression on x \[Element] [xL, xR], y \[Element] [yL, yR] (assuming the wavefunction vanishes outside). Returns a symbolic expression.
+NormalizeWavefunction[symb, x, y] symbolically L2 normalises a 2D symbolic expression on x \[Element] (-\[Infinity], \[Infinity]), y \[Element] (-\[Infinity], \[Infinity]).
+NormalizeWavefunction[symb, {x}, {y}] symbolically L2 normalises a symbolic expression on x \[Element] (-\[Infinity], \[Infinity]), y \[Element] (-\[Infinity], \[Infinity]).";
 
 
 
@@ -94,10 +117,9 @@ NormalizeWavefunction::usage = "NormalizeWavefunction[symb, {x}] symbolically L2
 
 (* FUNCTION ERROR MESSAGES *)
 
-GetEigenmodes::numPointsLessThanTwoError1D = "NumberOfPoints -> `1` given to GetEigenmodes is too small; must be at least 2. Using NumberOfPoints -> `2` instead.";
-GetEigenmodes::numPointsLessThanNumModesError1D = "NumberOfPoints -> `1` given to GetEigenmodes is less than NumberOfModes -> `2`. Using NumberOfPoints -> `3` instead.";
-
-GetEigenmodes::numPointsError2D = "NumberOfPoints -> `1` given to GetEigenmodes contains either too small a number (the number of points must be at least 2 in each dimension), or a number less than NumberOfModes -> `2`, or both. Using NumberOfPoints -> `3` instead.";
+GetSpectrum::numPointsLessThanTwoError1D = "NumberOfPoints -> `1` given to GetSpectrum is too small; must be at least 2. Using NumberOfPoints -> `2` instead.";
+GetSpectrum::numPointsLessThanNumModesError1D = "NumberOfPoints -> `1` given to GetSpectrum is less than NumberOfModes -> `2`. Using NumberOfPoints -> `3` instead.";
+GetSpectrum::numPointsError2D = "NumberOfPoints -> `1` given to GetSpectrum contains either too small a number (the number of points must be at least 2 in each dimension), or a number less than NumberOfModes -> `2`, or both. Using NumberOfPoints -> `3` instead.";
 
 
 
@@ -118,6 +140,7 @@ is1DFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`is1DFunction;
 is2DFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`is2DFunction;
 
 convertToFunction = WavefunctionSolver`PlotFunctions`PackagePrivate`convertToFunction;
+convertToEndPoints = WavefunctionSolver`PlotFunctions`PackagePrivate`convertToEndPoints;
 
 plotOptionFunctions1D = WavefunctionSolver`PlotFunctions`PackagePrivate`optionFunctions1D;
 plotOptionFunctions2D = WavefunctionSolver`PlotFunctions`PackagePrivate`optionFunctions2D;
@@ -140,6 +163,8 @@ eigenFuncProbLabel = "|\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\)\!\(\*Superscrip
 eigenFuncPhaseLabel = "phase(\!\(\*SubscriptBox[\(\[Phi]\), \(`1`\)]\))";
 
 defaultModeLabel = "mode";
+
+
 
 
 
@@ -395,15 +420,15 @@ get1DGridAndHamiltonian[
 (* 2D *)
 get2DLaplacianMatrix[   (* via kronecker sum *)
 	xPoints_/;VectorQ[xPoints, realNumQ],
-	yPoints_/;VectorQ[yPoints, realNumQ]
+	yPoints_/;VectorQ[yPoints, realNumQ]     (* I DON'T THINK THIS IS RIGHT, WHEN xPoints \[NotEqual] yPoints *)
 ] :=
 	KroneckerProduct[
-		get1DLaplacianMatrix[xPoints],
-		IdentityMatrix @ Length[yPoints]
+		get1DLaplacianMatrix[yPoints],
+		IdentityMatrix @ Length[xPoints]
 	] + 
 	KroneckerProduct[
-		IdentityMatrix @ Length[xPoints], 
-		get1DLaplacianMatrix[yPoints]
+		IdentityMatrix @ Length[yPoints], 
+		get1DLaplacianMatrix[xPoints]
 	]
 
 get2DKineticEnergyMatrix[
@@ -502,7 +527,11 @@ getEigenmodes[
 				eigfuncs
 			},
 			{
-				grid[[3]], (* ArrayReshape[grid[[3]], Reverse @ grid[[;;2]]],  *)
+				(* transform grid from tuple array into tuple matrix *)
+				Transpose @ Table[
+					grid[[3, j + (i-1)grid[[2]]]],
+					{i, grid[[1]]}, {j, grid[[2]]}
+				],
 				(ArrayReshape[#, Reverse @ grid[[;;2]]]&) /@ eigfuncs
 			}
 		];
@@ -528,7 +557,7 @@ getEigenmodes[
 
 
 (* 
-	ensures NumberOfPoints option to GetEigenmodes is of correct dimensionality and size 
+	ensures NumberOfPoints option to GetSpectrum is of correct dimensionality and size 
 *)
 
 (* 1D *)
@@ -537,7 +566,7 @@ fix1DNumPointsParam[
 	numModes:_Integer
 ] := (
 	Message[
-		GetEigenmodes::numPointsLessThanTwoError1D, 
+		GetSpectrum::numPointsLessThanTwoError1D, 
 		numPoints,
 		default1DNumPoints
 	];
@@ -554,7 +583,7 @@ fix1DNumPointsParam[
 		{substitute = Max[default1DNumPoints, Abs @ numModes]},
 		(
 			Message[
-				GetEigenmodes::numPointsLessThanNumModesError1D, 
+				GetSpectrum::numPointsLessThanNumModesError1D, 
 				numPoints, 
 				Abs @ numModes, 
 				substitute
@@ -575,7 +604,64 @@ fix1DNumPointsParam[
 ] :=
 	fix1DNumPointsParam[tuple[[1]], numModes]
 	
+
+
+monkeyhackConstrainNumPoints[
+	tuple:{numXPoints_Integer, numYPoints_Integer}
+] /; (
+	numXPoints === numYPoints
+) :=
+	tuple
+monkeyhackConstrainNumPoints[
+	{numXPoints_Integer, numYPoints:(_Integer|Automatic)}
+] /; (
+	numXPoints != numYPoints
+) := (
+	Echo @ Style[
+		StringForm[
+			"GetSpectrum currently cannot accept a different number of points in the X and Y directions. Proceeding with NumberOfPoints -> {`1`, `1`}", 
+			numXPoints
+		],
+		Orange
+	];
+	{numXPoints, numXPoints}
+)
+monkeyhackConstrainNumPoints[
+	tuple:{Automatic, Automatic}
+] :=
+	tuple
+
+monkeyhackConstrainDomains[
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ
+] /; (
+	convertToEndPoints[xDomain] === convertToEndPoints[yDomain]
+) :=
+	Sequence @@ {xDomain, yDomain}
+
+monkeyhackConstrainDomains[
+	{x:Repeated[_Symbol, {0,1}], xL:_?realNumQ, xR_?realNumQ},
+	{y:Repeated[_Symbol, {0,1}], yL:_?realNumQ, yR_?realNumQ}
+] /; (
+	{xL, xR} != {yL, yR}
+) := (
+	Echo @ Style[
+		StringForm[
+			"GetSpectrum currently cannot accept different end-points in the X and Y directions. Proceeding using domains x: `1` and y:`1`",
+			{xL, xR}
+		],
+		Orange
+	];
+	Sequence @@ {
+		{x, xL, xR},
+		{y, xL, xR}
+	}
+)
+
+
+
 (* 2D *)
+
 fix2DNumPointsParam[
 	tuple:{
 		numXPoints:(_Integer ? (# > 1 &))|Automatic,
@@ -586,7 +672,7 @@ fix2DNumPointsParam[
 	(numXPoints === Automatic || numXPoints >= Abs @ numModes) &&
 	(numYPoints === Automatic || numYPoints >= Abs @ numModes)
 ) :=
-	tuple
+	monkeyhackConstrainNumPoints @ tuple (************************ MONKEY PATCH **************************)
 	
 fix2DNumPointsParam[
 	tuple:{
@@ -610,12 +696,12 @@ fix2DNumPointsParam[
 		}},
 		(
 			Message[
-				GetEigenmodes::numPointsError2D,
+				GetSpectrum::numPointsError2D,
 				tuple, 
 				Abs @ numModes, 
 				subtuple
 			];
-			subtuple
+			monkeyhackConstrainNumPoints @ subtuple  (************************ MONKEY PATCH **************************)
 		)
 	]
 	
@@ -637,7 +723,7 @@ fix2DNumPointsParam[
 
 (* PUBLIC FUNCTION DEFINITIONS *)
 
-Options[GetEigenmodes] = {
+Options[GetSpectrum] = {
 	NumberOfModes -> 10,
 	NumberOfPoints -> Automatic,  (* this can additionally be a {x, y} tuple in 2D *)
 	AutoNormalize -> True,
@@ -647,10 +733,12 @@ Options[GetEigenmodes] = {
 (*
 	Calculates {grid, {energy eigenvalues}, {energy eigenfunctions}} associated with a given potential
 *)
-GetEigenmodes[
+
+(* 1D *)
+GetSpectrum[
 	potential:_,
 	domain:_?domainOptSymbQ,
-	options:OptionsPattern[GetEigenmodes]
+	options:OptionsPattern[GetSpectrum]
 ] /; (
 	isValid1DInput[potential, domain]
 ) :=
@@ -667,15 +755,16 @@ GetEigenmodes[
 			optNumberOfModes, optAutoNormalize, optOutputAsFunctions
 		]
 	]
-	
-GetEigenmodes[
+
+(* 2D *)
+GetSpectrum[
 	potential:_,
 	xDomain:_?domainOptSymbQ,
 	yDomain:_?domainOptSymbQ,
-	options:OptionsPattern[GetEigenmodes]
+	options:OptionsPattern[GetSpectrum]
 ] /; (
 	isValid2DInput[potential, xDomain, yDomain]
-) :=
+) := 
 	Module[
 		(* unpack options once to throw at-most one error on unknown options *)
 		{optNumberOfPoints, optNumberOfModes, optAutoNormalize, optOutputAsFunctions},
@@ -684,13 +773,11 @@ GetEigenmodes[
 
 		getEigenmodes[
 			potential,
-			xDomain,
-			yDomain,
+			monkeyhackConstrainDomains @@ {xDomain, yDomain},
 			Sequence @@ fix2DNumPointsParam[optNumberOfPoints, optNumberOfModes],
 			optNumberOfModes, optAutoNormalize, optOutputAsFunctions
 		]
 	]
-	
 	
 	
 (* 
@@ -1008,7 +1095,7 @@ NormalizeWavefunction[
 PlotSpectrum[
 	domain_?domainOptSymbQ,
 	eigvals_List,            (* eigvals don't actually need to be numbers! *)
-	eigfuncs_List,
+	eigfuncs_List,           (* eigfuncs can have mixed type *)
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
 ] /; (
 	VectorQ[eigfuncs, (isValid1DInput[#, domain]&)] &&
@@ -1047,31 +1134,56 @@ PlotSpectrum[
 	]
 )
 
+
+interpolate1DEigenfunction[
+	eigfunc_/;VectorQ[eigfunc, NumericQ],
+	grid_/;VectorQ[grid, NumericQ]
+] /; (
+	Length[eigfunc] === Length[grid]
+) :=
+	Interpolation[
+		Partition[Riffle[grid, eigfunc], 2]
+	]
+	
+interpolate1DEigenfunction[
+	eigfunc_, domainOrGrid_
+] :=
+	eigfunc
+
+
 (* passing a grid and a pre-computed eigensystem *)
 PlotSpectrum[
-	grid:{x___Symbol, xL_?realNumQ, ___?realNumQ, xR_?realNumQ},
+	{symb:Repeated[_Symbol, {0, 1}], points:__?realNumQ},
 	eigvals_List,   
 	eigfuncs_List,
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
 ] /; (
-	VectorQ[eigfuncs, (isValid1DInput[#, {xL, xR}]&)] &&
+	Length[{points}] > 1 &&
+	VectorQ[eigfuncs, (isValid1DInput[#, {symb, 0, 0}]&)] &&   (* numerical vals don't matter *)
 	Length[eigvals] === Length[eigfuncs] &&
-	isValid1DPotentialOptions[options, {xL, xR}]
+	isValid1DPotentialOptions[options, {symb, 0, 0}]
 ) :=
-	PlotSpectrum[{x, xL, xR}, eigvals, eigfuncs, options]    (* inner call will handle invalid option errors *)
+	(* inner call will handle invalid option errors *)
+	PlotSpectrum[
+		{symb, Min @ {points}, Max @ {points}}, 
+		eigvals, 
+		(interpolate1DEigenfunction[#, {points}]&) /@ eigfuncs, 
+		options
+	]    
 
-(* passing a grid and a pre-computed eigensystem in a vector; e..g output of EigenSystem *)
+(* passing a grid and a pre-computed eigensystem in a vector; e.g. output of EigenSystem *)
 PlotSpectrum[
 	{
-		domainOrGrid:{___Symbol, xL_?realNumQ, ___?realNumQ, xR_?realNumQ},
+		domainOrGrid:{x:Repeated[_Symbol, {0, 1}], points:__?realNumQ},
 		eigvals_List,
 		eigfuncs_List
 	},
 	options:OptionsPattern[{plotOptionFunctions1D, Manipulate} // Flatten]
 ] /; (
-	VectorQ[eigfuncs, (isValid1DInput[#, {xL, xR}]&)] &&
+	Length[{points}] > 1 &&
+	VectorQ[eigfuncs, (isValid1DInput[#, {x, 0, 0}]&)] &&  (* numerical vals don't matter *)
 	Length[eigvals] === Length[eigfuncs] &&
-	isValid1DPotentialOptions[options, {xL, xR}]
+	isValid1DPotentialOptions[options, {x, 0, 0}]
 ) :=
 	PlotSpectrum[domainOrGrid, eigvals, eigfuncs, options]    (* inner call will handle invalid option errors *)
 	
@@ -1079,21 +1191,21 @@ PlotSpectrum[
 PlotSpectrum[
 	potential:_,
 	domain:_?domainOptSymbQ,
-	options:OptionsPattern[{plotOptionFunctions1D, GetEigenmodes, Manipulate} // Flatten]
+	options:OptionsPattern[{plotOptionFunctions1D, GetSpectrum, Manipulate} // Flatten]
 ] /; (
 	isValid1DInput[potential, domain] &&
 	isValid1DPotentialOptions[options, domain]
 ) :=
-	DynamicModule[
+	Module[
 		{eigsys},    (* avoids garbage collection *)
 			
 		(* fires a single error when invalid options are passed *)
 		OptionValue[{}];
 			
 		(* compute the eigenmodes *)
-		eigsys = GetEigenmodes[
+		eigsys = GetSpectrum[
 			potential, domain, 
-			Evaluate @ FilterRules[{options}, Options[GetEigenmodes]]
+			Evaluate @ FilterRules[{options}, Options[GetSpectrum]]
 		];
 		
 		(* if domain contained a symbol, inject it back into eigsys' grid (for x labeling) *)
@@ -1174,5 +1286,118 @@ PlotSpectrum[
 	]
 )
 
+interpolate2DEigenfunction[
+	eigfunc_/;MatrixQ[eigfunc, NumericQ],
+	grid_/;TensorQ[grid, realNumQ]
+] /; (
+	Dimensions[eigfunc] === Dimensions[grid][[;;2]]
+) :=
+	Interpolation[
+		Partition[
+			Riffle[
+				Flatten[grid, {2, 1}], 
+				Flatten[eigfunc, {2, 1}]
+			], 2
+		]
+	]
+	
+interpolate2DEigenfunction[
+	eigfunc_, domainOrGrid_
+] :=
+	eigfunc
 
 
+
+
+
+
+(* passing a grid and a pre-computed eigensystem *)
+PlotSpectrum[
+	grid_/;TensorQ[grid, realNumQ],
+	eigvals_List,   
+	eigfuncs_List,
+	options:OptionsPattern[{plotOptionFunctions2D, Manipulate} // Flatten]
+] /; (
+	VectorQ[eigfuncs, (isValid2DInput[#, {0, 0}, {0, 0}]&)] &&   (* numerical vals don't matter *)
+	Length[eigvals] === Length[eigfuncs] &&
+	isValid2DPotentialOptions[options, {0, 0}, {0, 0}]
+) := 
+	With[
+		{gridDomains = Sequence @@ {
+			{
+				Min @ Flatten[grid][[1;; ;;2]],
+				Max @ Flatten[grid][[1;; ;;2]]
+			}, 
+			{
+				Min @ Flatten[grid][[2;; ;;2]],
+				Max @ Flatten[grid][[2;; ;;2]]
+			}}
+		},
+		PlotSpectrum[
+			monkeyhackConstrainDomains[gridDomains], 
+			eigvals, 
+			(interpolate2DEigenfunction[#, grid]&) /@ eigfuncs, 
+			options
+		]  
+	]  
+
+(* passing a grid and a pre-computed eigensystem in a vector; e.g. output of EigenSystem *)
+PlotSpectrum[
+	{
+		grid_/;TensorQ[grid, realNumQ],
+		eigvals_List,   
+		eigfuncs_List
+	},
+	options:OptionsPattern[{plotOptionFunctions2D, Manipulate} // Flatten]
+] /; (
+	VectorQ[eigfuncs, (isValid2DInput[#, {0, 0}, {0, 0}]&)] &&   (* numerical vals don't matter *)
+	Length[eigvals] === Length[eigfuncs] &&
+	isValid2DPotentialOptions[options, {0, 0}, {0, 0}]
+) := 
+	PlotSpectrum[grid, eigvals, eigfuncs, options]
+
+
+
+(* passing a potential, to have the eigensystem computed then plotted *)
+PlotSpectrum[
+	potential:_,
+	xDomain:_?domainOptSymbQ,
+	yDomain:_?domainOptSymbQ,
+	options:OptionsPattern[{plotOptionFunctions2D, GetSpectrum, Manipulate} // Flatten]
+] /; (
+	isValid2DInput[potential, xDomain, yDomain] &&
+	isValid2DPotentialOptions[options, xDomain, yDomain]
+) :=
+	Module[
+		{eigvals, eigfuncs, monkeyDomains},    (* avoids garbage collection *)
+			
+		(* fires a single error when invalid options are passed *)
+		OptionValue[{}];
+		
+		monkeyDomains = monkeyhackConstrainDomains[xDomain, yDomain];
+			
+		(* compute the eigenmodes *)
+		{eigvals, eigfuncs} = (GetSpectrum[
+			potential, monkeyDomains,
+			Evaluate @ FilterRules[{options}, Options[GetSpectrum]]
+		][[2;;]]);
+			
+		(* plot vectorised system *)
+		PlotSpectrum[
+			monkeyDomains,
+			eigvals, eigfuncs,
+			
+			(* if the Potential option was passed, strip it of variables *)
+			Sequence @@ If[
+				Quiet @ OptionValue[Potential] === None, 
+				{}, 
+				{Potential -> convertToFunction[Quiet @ OptionValue[Potential], xDomain, yDomain]}
+			],
+			
+			(* apply overriding user-given plot options *)
+			Evaluate @ extractOptions[options, {Manipulate, plotOptionFunctions2D}],
+			
+			(* plot the potential used for numerics, if no other Potential option was passed *)
+			Potential -> convertToFunction[potential, xDomain, yDomain]
+		]
+	]

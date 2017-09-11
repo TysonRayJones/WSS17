@@ -1,6 +1,7 @@
 TODO
 
-- extend PlotWavefunction to take specifying coords and values independently, 1D and 2D
+- extend PlotWavefunction to take specifying coords and values independently, 1D and 2D, using 'Interpolation'
+>>> see if other methods which assumed uniform passed grids can be updated to relax that assumption
 
 - make GetEigenmodes output grid in matrix format
 

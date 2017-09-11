@@ -33,8 +33,8 @@ Package["WavefunctionSolver`"]
 
 PackageExport[NumberOfFrames]
 PackageExport[ShowCacheProgress]
-
 PackageExport[EvolutionEquation]
+PackageExport[PreNormalize]
 
 
 
@@ -51,9 +51,15 @@ PackageExport[GetSchrodingerEquation]
 
 (* FUNCTION USAGE MESSAGES *)
 
-PlotEvolution::usage = "PlotEvolution[wavefunction[x, t], {x, xL, xR}, {t, t0, t1}] animates the evolution of a symbolic time-dependent wavefunction";
-FindEvolution::usage = "TODO";
-GetSchrodingerEquation::usage = "TODO";
+PlotEvolution::usage = "PlotEvolution[wavefunction[x, t], {x, xL, xR}, {t, t0, t1}] animates the evolution of a 1D symbolic/functional time-dependent wavefunction.
+PlotEvolution[wavefunction[x, y, t], {x, xL, xR}, {y, yL, yR}, {t, t0, t1}] animates the evolution of a 2D symbolic/functional time-dependent wavefunction.
+PlotEvolution[wavefunction[x], potential[x], {x, xL, xR}, duration] finds and animates the evolution of a 1D symbolic/functional/constant/array wavefunction.
+PlotEvolution[wavefunction[x, y], potential[x, y], {x, xL, xR}, {y, yL, yR}, duration] finds and animates the evolution of a 2D symbolic/functional/constant/array wavefunction.";
+
+FindEvolution::usage = "FindEvolution[wavefunction[x], potential[x], {x, xL, xR}, duration] finds the evolution (returned as an interpolator f[x, t]) of a 1D symbolic/functional/constant/array wavefunction.
+FindEvolution[wavefunction[x, y], potential[x, y], {x, xL, xR}, {y, yL, yR}, duration] ffinds the evolution (returned as an interpolator f[x, y, t]) of a 2D symbolic/functional/constant/array wavefunction.";
+
+GetSchrodingerEquation::usage = "GetSchrodingerEquation[\[Psi], V, t, x, y] accepts symbols and returns the single-particle Schrodinger equation in those symbols, as used in FindEvolution's EvolutionEquation option.";
 
 
 
@@ -523,7 +529,7 @@ getBoundaryEquations[
 
 (* 1D *)
 getEquations[
-	initWavef_Function,
+	initWavef:(_Function|_InterpolatingFunction),
 	potential_Function,
 	evolutionEq:(_Function|_Symbol),
 	endpoints_?domainQ
@@ -536,7 +542,7 @@ getEquations[
 
 (* 2D *)
 getEquations[
-	initWavef_Function,
+	initWavef:(_Function|_InterpolatingFunction),
 	potential_Function,
 	evolutionEq:(_Function|_Symbol),
 	xEndpoints_?domainQ,
@@ -553,7 +559,7 @@ getEquations[
 evolutionOptionFunctions = {PlotEvolution, Manipulate, ListAnimate};
 
 
-	
+
 
 
 (* PUBLIC FUNCTION DEFINITIONS *)
@@ -572,7 +578,8 @@ GetSchrodingerEquation[
 
 Options[FindEvolution] = {
 
-	EvolutionEquation -> GetSchrodingerEquation
+	EvolutionEquation -> GetSchrodingerEquation,
+	PreNormalize -> True
 	
 }
 
@@ -587,18 +594,27 @@ FindEvolution[
 	isValid1DInput[wavef, domain] &&
 	isValid1DInput[potential, domain]
 ) := 
-	NDSolveValue[
-		getEquations[
-			convertToFunction[wavef, domain],
-			convertToFunction[potential, domain],
-			OptionValue[EvolutionEquation], 
-			convertToEndPoints[domain]
-		],
-		internalWavef,
-		{internalSpace1, Sequence @@ convertToEndPoints[domain]},
-		{internalTime, 0, duration},
-		
-		Evaluate @ extractOptions[options, NDSolveValue]
+	With[
+		{initPsi = 
+			If[
+				OptionValue[PreNormalize],
+				NormalizeWavefunction[wavef, domain],
+				wavef
+			]
+		},
+		NDSolveValue[
+			getEquations[
+				convertToFunction[initPsi, domain],
+				convertToFunction[potential, domain],
+				OptionValue[EvolutionEquation], 
+				convertToEndPoints[domain]
+			],
+			internalWavef,
+			{internalSpace1, Sequence @@ convertToEndPoints[domain]},
+			{internalTime, 0, duration},
+			
+			Evaluate @ extractOptions[options, NDSolveValue]
+		]
 	]
 			
 (* 2D *)
@@ -613,20 +629,29 @@ FindEvolution[
 	isValid2DInput[wavef, xDomain, yDomain] &&
 	isValid2DInput[potential, xDomain, yDomain]
 ) := 
-	NDSolveValue[
-		getEquations[
-			convertToFunction[wavef, xDomain, yDomain],
-			convertToFunction[potential, xDomain, yDomain],
-			OptionValue[EvolutionEquation], 
-			convertToEndPoints[xDomain],
-			convertToEndPoints[yDomain]
-		],
-		internalWavef,
-		{internalSpace1, Sequence @@ convertToEndPoints[xDomain]},
-		{internalSpace2, Sequence @@ convertToEndPoints[yDomain]},
-		{internalTime, 0, duration},
-		
-		Evaluate @ extractOptions[options, NDSolveValue]
+	With[
+		{initPsi = 
+			If[
+				OptionValue[PreNormalize],
+				NormalizeWavefunction[wavef, xDomain, yDomain],
+				wavef
+			]
+		},
+		NDSolveValue[
+			getEquations[
+				convertToFunction[initPsi, xDomain, yDomain],
+				convertToFunction[potential, xDomain, yDomain],
+				OptionValue[EvolutionEquation], 
+				convertToEndPoints[xDomain],
+				convertToEndPoints[yDomain]
+			],
+			internalWavef,
+			{internalSpace1, Sequence @@ convertToEndPoints[xDomain]},
+			{internalSpace2, Sequence @@ convertToEndPoints[yDomain]},
+			{internalTime, 0, duration},
+			
+			Evaluate @ extractOptions[options, NDSolveValue]
+		]
 	]
 
 
@@ -638,8 +663,6 @@ Options[PlotEvolution] = {
 
 	NumberOfFrames -> 0,
 	ShowCacheProgress -> True
-
-	(* AutoNormalize -> False *)   (* TODO *)
 };
 
 (* 1D *)
